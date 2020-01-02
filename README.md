@@ -1,6 +1,6 @@
-# rpc-stater-kit
+# images
 
-A starting point project to create `todo`-service
+A starting point project to create `image`-service
 
 ## Go Directories
 
