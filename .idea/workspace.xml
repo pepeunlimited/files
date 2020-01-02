@@ -3,15 +3,14 @@
   <component name="ChangeListManager">
     <list default="true" id="a1e4a88c-dc40-49e6-b550-c4f666b3c047" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/deployments/dev/users-deployment.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/deployments/dev/starter-kit-deployment.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/deployments/dev/users-ingress.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/deployments/dev/starter-kit-ingress.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/deployments/dev/users-service.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/deployments/dev/starter-kit-service.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/deployments/production/app-deployment.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/deployments/production/starter-kit-deployment.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/deployments/production/app-ingress.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/deployments/production/starter-kit-ingress.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/deployments/production/app-service.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/deployments/production/starter-kit-service.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/deployments/staging/app-deployment.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/deployments/staging/starter-kit-deployment.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/deployments/staging/app-ingress.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/deployments/staging/starter-kit-ingress.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/deployments/staging/app-service.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/deployments/staging/starter-kit-service.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/app/app1/server/todo_server.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/app/app1/server/image_server.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/app/app1/server/todo_server_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/app/app1/server/image_server_test.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/app/app1/server/todo_service_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/app/app1/server/image_service_test.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/app/app1/validator/todo.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/app/app1/validator/image.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rpc/todo.pb.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rpc/todo.proto" beforeDir="false" afterPath="$PROJECT_DIR$/rpc/image.proto" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rpc/todo.twirp.go" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -64,7 +63,7 @@
     <property name="go.sdk.automatically.set" value="true" />
     <property name="go.tried.to.enable.integration.dep.integrator" value="true" />
     <property name="go.vendoring.notification.had.been.shown" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/deployments" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/rpc/protobuf" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="nodejs_package_manager_path" value="npm" />
@@ -280,11 +279,6 @@
           <url>file:///usr/local/Cellar/go/1.12.2/libexec/src/database/sql/sql.go</url>
           <line>3051</line>
           <option name="timeStamp" value="24" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
-          <url>file://$PROJECT_DIR$/internal/app/app1/server/todo_server.go</url>
-          <line>2</line>
-          <option name="timeStamp" value="25" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
