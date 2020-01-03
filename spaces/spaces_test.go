@@ -6,9 +6,7 @@ import (
 	"testing"
 )
 
-
-
-func TestNewSpaces2(t *testing.T) {
+func TestSpacesCreateDeleteBucketAndObject(t *testing.T) {
 	spaces := NewSpaces(endpoint, accessKey, secretKey)
 	if err := spaces.
 		Files(bucketName).
