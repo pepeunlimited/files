@@ -1,7 +1,6 @@
 package spaces
 
 import (
-	"log"
 	"strings"
 	"testing"
 )
@@ -43,5 +42,8 @@ func TestSpacesCreateDeleteBucketAndObject(t *testing.T) {
 		t.Error(err)
 		t.FailNow()
 	}
-	log.Print(string(bytes))
+	if len(bytes) != int(body.Size()) {
+		t.FailNow()
+	}
+	t.Log(string(bytes))
 }
