@@ -9,9 +9,9 @@ import (
 
 type Files interface {
 	Create(file File, meta FileMetaData)  Files
-	Delete(fileName string) 				 Files
+	Delete(filename string) 				 Files
 	Update()							 Files
-	Get(fileName string)				 	 ([]byte, error)
+	Get(filename string)				 	 ([]byte, error)
 	Execute()							 error
 }
 
@@ -22,7 +22,7 @@ type files struct {
 }
 
 type FileMetaData struct {
-	fileName 	string
+	filename 	string
 	isPublic 	bool
 }
 
@@ -37,7 +37,7 @@ type create struct {
 	file 		File
 }
 type delete struct {
-	fileName 	string
+	filename 	string
 }
 
 type update struct {}
@@ -48,8 +48,8 @@ func (f *files) Create(file File, meta FileMetaData) Files {
 	return f
 }
 
-func (f *files) Delete(fileName string) Files {
-	f.executor[f.order] = delete{fileName:fileName}
+func (f *files) Delete(filename string) Files {
+	f.executor[f.order] = delete{filename:filename}
 	f.order++
 	return f
 }
@@ -60,8 +60,8 @@ func (f *files) Update() Files {
 	return f
 }
 
-func (f *files) Get(fileName string) ([]byte, error) {
-	file, err := f.bucket.spaces.client.GetObject(f.bucket.name, fileName, minio.GetObjectOptions{})
+func (f *files) Get(filename string) ([]byte, error) {
+	file, err := f.bucket.spaces.client.GetObject(f.bucket.name, filename, minio.GetObjectOptions{})
 	if err != nil {
 		return nil, err
 	}
@@ -104,7 +104,7 @@ func (f *files) Execute() error {
 			log.Panic("not implemented")
 		case delete:
 			delete := ec.(delete)
-			if err := f.bucket.spaces.client.RemoveObject(f.bucket.name, delete.fileName); err != nil {
+			if err := f.bucket.spaces.client.RemoveObject(f.bucket.name, delete.filename); err != nil {
 				return err
 			}
 		default:

@@ -32,8 +32,8 @@ func TestSpacesCreateDeleteBucketAndObject(t *testing.T) {
 	file := File{mimeType:"plain/text", fileSize: int64(body.Len()), body:body}
 	if err := spaces.
 		Create(bucketName).
-		Create(file, FileMetaData{fileName:"simo.txt", isPublic:true}).
-		Create(file, FileMetaData{fileName:"piia.txt", isPublic:true}). // throw error if file exist?
+		Create(file, FileMetaData{filename:"simo.txt", isPublic:true}).
+		Create(file, FileMetaData{filename:"piia.txt", isPublic:true}). // throw error if file exist?
 		Execute(); err != nil {
 		t.Error(err)
 		t.FailNow()

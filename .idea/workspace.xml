@@ -2,30 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="a1e4a88c-dc40-49e6-b550-c4f666b3c047" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/go-starter-kit.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/microservices.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/package/app1/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/build/package/app1/Dockerfile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmd/app1/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/app1/main.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/deployments/dev/starter-kit-deployment.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/deployments/dev/images-deployment.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/deployments/dev/starter-kit-ingress.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/deployments/dev/images-ingress.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/deployments/dev/starter-kit-service.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/deployments/dev/images-service.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/deployments/production/starter-kit-deployment.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/deployments/production/images-deployment.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/deployments/production/starter-kit-ingress.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/deployments/production/images-ingress.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/deployments/production/starter-kit-service.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/deployments/production/images-service.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/deployments/staging/starter-kit-deployment.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/deployments/staging/images-deployment.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/deployments/staging/starter-kit-ingress.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/deployments/staging/images-ingress.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/deployments/staging/starter-kit-service.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/deployments/staging/images-service.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/go.sum" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/app/app1/server/image_server.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/app/app1/server/image_server.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/app/app1/server/image_service_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/app/app1/server/image_service_test.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/app/app1/server/image_upload_server.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/app/app1/server/image_upload_server.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/scripts/release/build.sh" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/release/build.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/scripts/release/push.sh" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/release/push.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/scripts/release/tag.sh" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/release/tag.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rpc/protobuf/image.proto" beforeDir="false" afterPath="$PROJECT_DIR$/rpc/protobuf/image.proto" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -44,7 +21,7 @@
   </component>
   <component name="GOROOT" path="/usr/local/Cellar/go/1.13.4/libexec" />
   <component name="Git.Settings">
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/rpc/protobuf" />
   </component>
   <component name="GoLibraries">
     <option name="indexEntireGoPath" value="false" />
@@ -101,7 +78,7 @@
       <recent name="$PROJECT_DIR$/internal/app/app1/repository" />
     </key>
   </component>
-  <component name="RunManager" selected="Go Test.TestNewSpaces2 in github.com/pepeunlimited/images/spaces">
+  <component name="RunManager" selected="Go Test.TestSpacesCreateDeleteBucketAndObject in github.com/pepeunlimited/images/spaces">
     <configuration default="true" type="GoApplicationRunConfiguration" factoryName="Go Application">
       <module name="microservices" />
       <working_directory value="$PROJECT_DIR$/" />
@@ -109,15 +86,6 @@
       <kind value="FILE" />
       <filePath value="$PROJECT_DIR$/" />
       <package value="github.com/pepeunlimited/grpc-starter-kit" />
-      <directory value="$PROJECT_DIR$/" />
-      <method v="2" />
-    </configuration>
-    <configuration name="go build main.go" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
-      <module name="microservices" />
-      <working_directory value="$PROJECT_DIR$/" />
-      <kind value="FILE" />
-      <filePath value="$PROJECT_DIR$/cmd/app1/main.go" />
-      <package value="bitbucket.com/siimooo/go-starter-kit" />
       <directory value="$PROJECT_DIR$/" />
       <method v="2" />
     </configuration>
@@ -130,6 +98,17 @@
       <directory value="$PROJECT_DIR$/" />
       <filePath value="$PROJECT_DIR$/" />
       <pattern value="^TestNewSpaces2$" />
+      <method v="2" />
+    </configuration>
+    <configuration name="TestSpacesCreateDeleteBucketAndObject in github.com/pepeunlimited/images/spaces" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+      <module name="microservices" />
+      <working_directory value="$PROJECT_DIR$/spaces" />
+      <framework value="gotest" />
+      <kind value="PACKAGE" />
+      <package value="github.com/pepeunlimited/images/spaces" />
+      <directory value="$PROJECT_DIR$/" />
+      <filePath value="$PROJECT_DIR$/" />
+      <pattern value="^TestSpacesCreateDeleteBucketAndObject$" />
       <method v="2" />
     </configuration>
     <configuration name="TestSpaces_CreateBucket in github.com/pepeunlimited/images/spaces" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
@@ -178,11 +157,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Go Test.TestSpacesCreateDeleteBucketAndObject in github.com/pepeunlimited/images/spaces" />
         <item itemvalue="Go Test.TestNewSpaces2 in github.com/pepeunlimited/images/spaces" />
         <item itemvalue="Go Test.TestSpaces_CreateObject in github.com/pepeunlimited/images/spaces" />
         <item itemvalue="Go Test.TestSpaces_CreateBucketAndDelete in github.com/pepeunlimited/images/spaces" />
         <item itemvalue="Go Test.TestSpaces_CreateBucket in github.com/pepeunlimited/images/spaces" />
-        <item itemvalue="Go Build.go build main.go" />
       </list>
     </recent_temporary>
   </component>
@@ -263,25 +242,25 @@
       <screen x="0" y="0" width="1680" height="1050" />
     </state>
     <state x="619" y="241" key="#com.intellij.ide.util.MemberChooser/0.0.1680.1050@0.0.1680.1050" timestamp="1578078506581" />
-    <state width="1638" height="487" key="GridCell.Tab.0.bottom" timestamp="1578089437572">
+    <state width="1638" height="487" key="GridCell.Tab.0.bottom" timestamp="1578090234708">
       <screen x="0" y="0" width="1680" height="1050" />
     </state>
-    <state width="1638" height="487" key="GridCell.Tab.0.bottom/0.0.1680.1050@0.0.1680.1050" timestamp="1578089437572" />
+    <state width="1638" height="487" key="GridCell.Tab.0.bottom/0.0.1680.1050@0.0.1680.1050" timestamp="1578090234708" />
     <state width="1638" height="487" key="GridCell.Tab.0.bottom/0.23.1680.984@0.23.1680.984" timestamp="1578079945059" />
-    <state width="1638" height="487" key="GridCell.Tab.0.center" timestamp="1578089437570">
+    <state width="1638" height="487" key="GridCell.Tab.0.center" timestamp="1578090234706">
       <screen x="0" y="0" width="1680" height="1050" />
     </state>
-    <state width="1638" height="487" key="GridCell.Tab.0.center/0.0.1680.1050@0.0.1680.1050" timestamp="1578089437570" />
+    <state width="1638" height="487" key="GridCell.Tab.0.center/0.0.1680.1050@0.0.1680.1050" timestamp="1578090234706" />
     <state width="1638" height="487" key="GridCell.Tab.0.center/0.23.1680.984@0.23.1680.984" timestamp="1578079945056" />
-    <state width="1638" height="487" key="GridCell.Tab.0.left" timestamp="1578089437568">
+    <state width="1638" height="487" key="GridCell.Tab.0.left" timestamp="1578090234705">
       <screen x="0" y="0" width="1680" height="1050" />
     </state>
-    <state width="1638" height="487" key="GridCell.Tab.0.left/0.0.1680.1050@0.0.1680.1050" timestamp="1578089437568" />
+    <state width="1638" height="487" key="GridCell.Tab.0.left/0.0.1680.1050@0.0.1680.1050" timestamp="1578090234705" />
     <state width="1638" height="487" key="GridCell.Tab.0.left/0.23.1680.984@0.23.1680.984" timestamp="1578079945054" />
-    <state width="1638" height="487" key="GridCell.Tab.0.right" timestamp="1578089437571">
+    <state width="1638" height="487" key="GridCell.Tab.0.right" timestamp="1578090234707">
       <screen x="0" y="0" width="1680" height="1050" />
     </state>
-    <state width="1638" height="487" key="GridCell.Tab.0.right/0.0.1680.1050@0.0.1680.1050" timestamp="1578089437571" />
+    <state width="1638" height="487" key="GridCell.Tab.0.right/0.0.1680.1050@0.0.1680.1050" timestamp="1578090234707" />
     <state width="1638" height="487" key="GridCell.Tab.0.right/0.23.1680.984@0.23.1680.984" timestamp="1578079945057" />
     <state width="1638" height="363" key="GridCell.Tab.1.bottom" timestamp="1578086272707">
       <screen x="0" y="0" width="1680" height="1050" />
