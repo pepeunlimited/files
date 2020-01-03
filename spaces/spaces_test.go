@@ -6,6 +6,14 @@ import (
 	"testing"
 )
 
+// NOTE: requires to fill these constants:
+const (
+	//endpoint	 	string = "{ENDPOINT}"
+	//accessKey 	string = "{ACCESS_KEY}"
+	//secretKey    	string = "{SECRET_KEY}"
+	//bucketName   	string = "{BUCKET_NAME}"
+)
+
 func TestSpacesCreateDeleteBucketAndObject(t *testing.T) {
 	spaces := NewSpaces(endpoint, accessKey, secretKey)
 	if err := spaces.
