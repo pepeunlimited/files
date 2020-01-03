@@ -97,7 +97,7 @@ func (f *files) Execute() error {
 			if crt.fileMetaData.isPublic {
 				options.UserMetadata["x-amz-acl"] = "public-read"
 			}
-			if _, err := f.bucket.spaces.client.PutObject(f.bucket.name, crt.fileMetaData.fileName, crt.file.body, crt.file.fileSize, options); err != nil {
+			if _, err := f.bucket.spaces.client.PutObject(f.bucket.name, crt.fileMetaData.filename, crt.file.body, crt.file.fileSize, options); err != nil {
 				return err
 			}
 		case update:
