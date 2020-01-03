@@ -1,9 +1,7 @@
 package server
 
-import (
-	"testing"
-)
+import "testing"
 
-func TestTodoServer_CreateTodo(t *testing.T) {
+func TestImageServer_CreateImage(t *testing.T) {
 
 }

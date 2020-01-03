@@ -11,8 +11,6 @@ type ImageServer struct {
 }
 
 func (server ImageServer) CreateImage(ctx context.Context, params *rpc.CreateImageParams) (*rpc.Image, error) {
-
-
 	return nil, nil
 }
 

@@ -1,10 +1,10 @@
 package main
 
 import (
+	"github.com/pepeunlimited/images/internal/app/app1/server"
+	"github.com/pepeunlimited/images/rpc"
 	"github.com/pepeunlimited/microservice-kit/headers"
 	"github.com/pepeunlimited/microservice-kit/middleware"
-	"github.com/pepeunlimited/rpc-starter-kit/internal/app/app1/server"
-	"github.com/pepeunlimited/rpc-starter-kit/rpc"
 	"log"
 	"net/http"
 )
@@ -16,10 +16,10 @@ const (
 func main() {
 	log.Printf("Starting the TodoServer... version=[%v]", Version)
 
-	ts := rpc.NewTodoServiceServer(server.NewTodoServer(), nil)
+	is := rpc.NewImageServiceServer(server.NewImageServer(), nil)
 
 	mux := http.NewServeMux()
-	mux.Handle(ts.PathPrefix(), middleware.Adapt(ts, headers.Username()))
+	mux.Handle(is.PathPrefix(), middleware.Adapt(is, headers.Username()))
 
 	if err := http.ListenAndServe(":8080", mux); err != nil {
 		log.Panic(err)

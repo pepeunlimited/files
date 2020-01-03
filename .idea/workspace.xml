@@ -2,15 +2,30 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="a1e4a88c-dc40-49e6-b550-c4f666b3c047" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/go-starter-kit.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/microservices.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/package/app1/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/build/package/app1/Dockerfile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/app1/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/app1/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/deployments/dev/starter-kit-deployment.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/deployments/dev/images-deployment.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/deployments/dev/starter-kit-ingress.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/deployments/dev/images-ingress.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/deployments/dev/starter-kit-service.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/deployments/dev/images-service.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/deployments/production/starter-kit-deployment.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/deployments/production/images-deployment.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/deployments/production/starter-kit-ingress.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/deployments/production/images-ingress.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/deployments/production/starter-kit-service.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/deployments/production/images-service.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/deployments/staging/starter-kit-deployment.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/deployments/staging/images-deployment.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/deployments/staging/starter-kit-ingress.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/deployments/staging/images-ingress.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/deployments/staging/starter-kit-service.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/deployments/staging/images-service.yaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/app/app1/server/todo_server.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/app/app1/server/image_server.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/app/app1/server/todo_server_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/app/app1/server/image_server_test.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/app/app1/server/todo_service_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/app/app1/server/image_service_test.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/app/app1/validator/todo.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/app/app1/validator/image.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/rpc/todo.pb.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/rpc/todo.proto" beforeDir="false" afterPath="$PROJECT_DIR$/rpc/image.proto" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/rpc/todo.twirp.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/go.sum" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/app/app1/server/image_server.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/app/app1/server/image_server.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/app/app1/server/image_service_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/app/app1/server/image_service_test.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/app/app1/server/image_upload_server.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/app/app1/server/image_upload_server.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/release/build.sh" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/release/build.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/release/push.sh" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/release/push.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/release/tag.sh" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/release/tag.sh" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -71,13 +86,6 @@
     <property name="settings.editor.selected.configurable" value="reference.settingsdialog.IDE.editor.colors.Color Scheme Font" />
   </component>
   <component name="RecentsManager">
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/deployments" />
-      <recent name="$PROJECT_DIR$/rpc" />
-      <recent name="$PROJECT_DIR$/deployments/staging" />
-      <recent name="$PROJECT_DIR$/internal/app/app1/repository" />
-      <recent name="$PROJECT_DIR$" />
-    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/deployments/production" />
@@ -85,10 +93,17 @@
       <recent name="$PROJECT_DIR$/build/package/app1" />
       <recent name="$PROJECT_DIR$/build/package/app1/wait-for-it" />
     </key>
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/rpc/protobuf" />
+      <recent name="$PROJECT_DIR$/deployments" />
+      <recent name="$PROJECT_DIR$/rpc" />
+      <recent name="$PROJECT_DIR$/deployments/staging" />
+      <recent name="$PROJECT_DIR$/internal/app/app1/repository" />
+    </key>
   </component>
-  <component name="RunManager" selected="Go Build.go build main.go">
+  <component name="RunManager" selected="Go Test.TestNewSpaces2 in github.com/pepeunlimited/images/spaces">
     <configuration default="true" type="GoApplicationRunConfiguration" factoryName="Go Application">
-      <module name="go-starter-kit" />
+      <module name="microservices" />
       <working_directory value="$PROJECT_DIR$/" />
       <go_parameters value="-i" />
       <kind value="FILE" />
@@ -98,7 +113,7 @@
       <method v="2" />
     </configuration>
     <configuration name="go build main.go" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
-      <module name="go-starter-kit" />
+      <module name="microservices" />
       <working_directory value="$PROJECT_DIR$/" />
       <kind value="FILE" />
       <filePath value="$PROJECT_DIR$/cmd/app1/main.go" />
@@ -106,41 +121,52 @@
       <directory value="$PROJECT_DIR$/" />
       <method v="2" />
     </configuration>
-    <configuration name="TestShoppingListService_CreateListRoot in bitbucket.com/siimooo/go-starter-kit-k8/internal/app/app1/server" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
-      <module name="go-starter-kit" />
-      <working_directory value="$PROJECT_DIR$/internal/app/app1/server" />
+    <configuration name="TestNewSpaces2 in github.com/pepeunlimited/images/spaces" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+      <module name="microservices" />
+      <working_directory value="$PROJECT_DIR$/spaces" />
       <framework value="gotest" />
       <kind value="PACKAGE" />
-      <package value="bitbucket.com/siimooo/go-starter-kit-k8/internal/app/app1/server" />
+      <package value="github.com/pepeunlimited/images/spaces" />
       <directory value="$PROJECT_DIR$/" />
       <filePath value="$PROJECT_DIR$/" />
-      <pattern value="^TestShoppingListService_CreateListRoot$" />
+      <pattern value="^TestNewSpaces2$" />
       <method v="2" />
     </configuration>
-    <configuration name="TestShoppingListService_CreateListRootNatsMock in bitbucket.com/siimooo/go-starter-kit-k8/internal/app/app1/server" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
-      <module name="go-starter-kit" />
-      <working_directory value="$PROJECT_DIR$/internal/app/app1/server" />
+    <configuration name="TestSpaces_CreateBucket in github.com/pepeunlimited/images/spaces" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+      <module name="microservices" />
+      <working_directory value="$PROJECT_DIR$/spaces" />
       <framework value="gotest" />
       <kind value="PACKAGE" />
-      <package value="bitbucket.com/siimooo/go-starter-kit-k8/internal/app/app1/server" />
+      <package value="github.com/pepeunlimited/images/spaces" />
       <directory value="$PROJECT_DIR$/" />
       <filePath value="$PROJECT_DIR$/" />
-      <pattern value="^TestShoppingListService_CreateListRootNatsMock$" />
+      <pattern value="^TestSpaces_CreateBucket$" />
       <method v="2" />
     </configuration>
-    <configuration name="TestTodoServer_CreateTodo in bitbucket.com/siimooo/go-starter-kit-k8/internal/app/app1/server" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
-      <module name="go-starter-kit" />
-      <working_directory value="$PROJECT_DIR$/internal/app/app1/server" />
+    <configuration name="TestSpaces_CreateBucketAndDelete in github.com/pepeunlimited/images/spaces" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+      <module name="microservices" />
+      <working_directory value="$PROJECT_DIR$/spaces" />
       <framework value="gotest" />
       <kind value="PACKAGE" />
-      <package value="bitbucket.com/siimooo/go-starter-kit-k8/internal/app/app1/server" />
+      <package value="github.com/pepeunlimited/images/spaces" />
       <directory value="$PROJECT_DIR$/" />
       <filePath value="$PROJECT_DIR$/" />
-      <pattern value="^TestTodoServer_CreateTodo$" />
+      <pattern value="^TestSpaces_CreateBucketAndDelete$" />
+      <method v="2" />
+    </configuration>
+    <configuration name="TestSpaces_CreateObject in github.com/pepeunlimited/images/spaces" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+      <module name="microservices" />
+      <working_directory value="$PROJECT_DIR$/spaces" />
+      <framework value="gotest" />
+      <kind value="PACKAGE" />
+      <package value="github.com/pepeunlimited/images/spaces" />
+      <directory value="$PROJECT_DIR$/" />
+      <filePath value="$PROJECT_DIR$/" />
+      <pattern value="^TestSpaces_CreateObject$" />
       <method v="2" />
     </configuration>
     <configuration default="true" type="GoTestRunConfiguration" factoryName="Go Test">
-      <module name="go-starter-kit" />
+      <module name="microservices" />
       <working_directory value="$PROJECT_DIR$/" />
       <go_parameters value="-i" />
       <framework value="gotest" />
@@ -150,23 +176,13 @@
       <filePath value="$PROJECT_DIR$/" />
       <method v="2" />
     </configuration>
-    <configuration name="srv_test.go" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
-      <module name="go-starter-kit" />
-      <working_directory value="$PROJECT_DIR$/internal/app/app1/server" />
-      <framework value="gotest" />
-      <kind value="FILE" />
-      <package value="bitbucket.com/siimooo/go-starter-kit-k8" />
-      <directory value="$PROJECT_DIR$/" />
-      <filePath value="$PROJECT_DIR$/internal/app/app1/server/srv_test.go" />
-      <method v="2" />
-    </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Go Test.TestNewSpaces2 in github.com/pepeunlimited/images/spaces" />
+        <item itemvalue="Go Test.TestSpaces_CreateObject in github.com/pepeunlimited/images/spaces" />
+        <item itemvalue="Go Test.TestSpaces_CreateBucketAndDelete in github.com/pepeunlimited/images/spaces" />
+        <item itemvalue="Go Test.TestSpaces_CreateBucket in github.com/pepeunlimited/images/spaces" />
         <item itemvalue="Go Build.go build main.go" />
-        <item itemvalue="Go Test.TestTodoServer_CreateTodo in bitbucket.com/siimooo/go-starter-kit-k8/internal/app/app1/server" />
-        <item itemvalue="Go Test.TestShoppingListService_CreateListRootNatsMock in bitbucket.com/siimooo/go-starter-kit-k8/internal/app/app1/server" />
-        <item itemvalue="Go Test.srv_test.go" />
-        <item itemvalue="Go Test.TestShoppingListService_CreateListRoot in bitbucket.com/siimooo/go-starter-kit-k8/internal/app/app1/server" />
       </list>
     </recent_temporary>
   </component>
@@ -239,38 +255,70 @@
       <screen x="0" y="0" width="1680" height="1050" />
     </state>
     <state x="519" y="153" key="#TestTodoServer_CreateTodo_in_bitbucket.com/siimooo/go-starter-kit-k8/internal/app/app1/server/0.0.1680.1050@0.0.1680.1050" timestamp="1576350803089" />
-    <state width="1638" height="487" key="GridCell.Tab.0.bottom" timestamp="1576575609947">
+    <state x="579" y="335" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1577986526367">
       <screen x="0" y="0" width="1680" height="1050" />
     </state>
-    <state width="1638" height="487" key="GridCell.Tab.0.bottom/0.0.1680.1050@0.0.1680.1050" timestamp="1576575609947" />
-    <state width="1638" height="487" key="GridCell.Tab.0.center" timestamp="1576575609944">
+    <state x="579" y="335" key="#com.intellij.fileTypes.FileTypeChooser/0.0.1680.1050@0.0.1680.1050" timestamp="1577986526367" />
+    <state x="619" y="241" key="#com.intellij.ide.util.MemberChooser" timestamp="1578078506581">
       <screen x="0" y="0" width="1680" height="1050" />
     </state>
-    <state width="1638" height="487" key="GridCell.Tab.0.center/0.0.1680.1050@0.0.1680.1050" timestamp="1576575609944" />
-    <state width="1638" height="487" key="GridCell.Tab.0.left" timestamp="1576575609943">
+    <state x="619" y="241" key="#com.intellij.ide.util.MemberChooser/0.0.1680.1050@0.0.1680.1050" timestamp="1578078506581" />
+    <state width="1638" height="487" key="GridCell.Tab.0.bottom" timestamp="1578089437572">
       <screen x="0" y="0" width="1680" height="1050" />
     </state>
-    <state width="1638" height="487" key="GridCell.Tab.0.left/0.0.1680.1050@0.0.1680.1050" timestamp="1576575609943" />
-    <state width="1638" height="487" key="GridCell.Tab.0.right" timestamp="1576575609945">
+    <state width="1638" height="487" key="GridCell.Tab.0.bottom/0.0.1680.1050@0.0.1680.1050" timestamp="1578089437572" />
+    <state width="1638" height="487" key="GridCell.Tab.0.bottom/0.23.1680.984@0.23.1680.984" timestamp="1578079945059" />
+    <state width="1638" height="487" key="GridCell.Tab.0.center" timestamp="1578089437570">
       <screen x="0" y="0" width="1680" height="1050" />
     </state>
-    <state width="1638" height="487" key="GridCell.Tab.0.right/0.0.1680.1050@0.0.1680.1050" timestamp="1576575609945" />
+    <state width="1638" height="487" key="GridCell.Tab.0.center/0.0.1680.1050@0.0.1680.1050" timestamp="1578089437570" />
+    <state width="1638" height="487" key="GridCell.Tab.0.center/0.23.1680.984@0.23.1680.984" timestamp="1578079945056" />
+    <state width="1638" height="487" key="GridCell.Tab.0.left" timestamp="1578089437568">
+      <screen x="0" y="0" width="1680" height="1050" />
+    </state>
+    <state width="1638" height="487" key="GridCell.Tab.0.left/0.0.1680.1050@0.0.1680.1050" timestamp="1578089437568" />
+    <state width="1638" height="487" key="GridCell.Tab.0.left/0.23.1680.984@0.23.1680.984" timestamp="1578079945054" />
+    <state width="1638" height="487" key="GridCell.Tab.0.right" timestamp="1578089437571">
+      <screen x="0" y="0" width="1680" height="1050" />
+    </state>
+    <state width="1638" height="487" key="GridCell.Tab.0.right/0.0.1680.1050@0.0.1680.1050" timestamp="1578089437571" />
+    <state width="1638" height="487" key="GridCell.Tab.0.right/0.23.1680.984@0.23.1680.984" timestamp="1578079945057" />
+    <state width="1638" height="363" key="GridCell.Tab.1.bottom" timestamp="1578086272707">
+      <screen x="0" y="0" width="1680" height="1050" />
+    </state>
+    <state width="1638" height="363" key="GridCell.Tab.1.bottom/0.0.1680.1050@0.0.1680.1050" timestamp="1578086272707" />
+    <state width="1638" height="363" key="GridCell.Tab.1.center" timestamp="1578086272706">
+      <screen x="0" y="0" width="1680" height="1050" />
+    </state>
+    <state width="1638" height="363" key="GridCell.Tab.1.center/0.0.1680.1050@0.0.1680.1050" timestamp="1578086272706" />
+    <state width="1638" height="363" key="GridCell.Tab.1.left" timestamp="1578086272705">
+      <screen x="0" y="0" width="1680" height="1050" />
+    </state>
+    <state width="1638" height="363" key="GridCell.Tab.1.left/0.0.1680.1050@0.0.1680.1050" timestamp="1578086272705" />
+    <state width="1638" height="363" key="GridCell.Tab.1.right" timestamp="1578086272706">
+      <screen x="0" y="0" width="1680" height="1050" />
+    </state>
+    <state width="1638" height="363" key="GridCell.Tab.1.right/0.0.1680.1050@0.0.1680.1050" timestamp="1578086272706" />
     <state x="349" y="164" key="SettingsEditor" timestamp="1577399323117">
       <screen x="0" y="0" width="1680" height="1050" />
     </state>
     <state x="349" y="164" key="SettingsEditor/0.0.1680.1050@0.0.1680.1050" timestamp="1577399323117" />
-    <state width="500" height="445" key="SwitcherDM" timestamp="1575968899242">
+    <state width="500" height="445" key="SwitcherDM" timestamp="1578086544861">
       <screen x="0" y="0" width="1680" height="1050" />
     </state>
-    <state width="500" height="445" key="SwitcherDM/0.0.1680.1050@0.0.1680.1050" timestamp="1575968899242" />
+    <state width="500" height="445" key="SwitcherDM/0.0.1680.1050@0.0.1680.1050" timestamp="1578086544861" />
     <state x="100" y="100" width="1480" height="850" key="com.intellij.history.integration.ui.views.FileHistoryDialog" timestamp="1576581191498">
       <screen x="0" y="23" width="1680" height="984" />
     </state>
     <state x="100" y="100" width="1480" height="850" key="com.intellij.history.integration.ui.views.FileHistoryDialog/0.23.1680.984@0.23.1680.984" timestamp="1576581191498" />
-    <state x="505" y="233" width="670" height="676" key="search.everywhere.popup" timestamp="1575967112580">
+    <state x="505" y="233" width="670" height="676" key="search.everywhere.popup" timestamp="1578062832912">
       <screen x="0" y="0" width="1680" height="1050" />
     </state>
-    <state x="505" y="233" width="670" height="676" key="search.everywhere.popup/0.0.1680.1050@0.0.1680.1050" timestamp="1575967112580" />
+    <state x="505" y="233" width="670" height="676" key="search.everywhere.popup/0.0.1680.1050@0.0.1680.1050" timestamp="1578062832912" />
+    <state x="570" y="444" key="vcs.readOnlyHandler.ReadOnlyStatusDialog" timestamp="1578043665457">
+      <screen x="0" y="0" width="1680" height="1050" />
+    </state>
+    <state x="570" y="444" key="vcs.readOnlyHandler.ReadOnlyStatusDialog/0.0.1680.1050@0.0.1680.1050" timestamp="1578043665457" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
