@@ -45,5 +45,6 @@ func TestSpacesCreateDeleteBucketAndObject(t *testing.T) {
 	if len(bytes) != int(body.Size()) {
 		t.FailNow()
 	}
+	spaces.Info(bucketName)
 	t.Log(string(bytes))
 }

@@ -16,7 +16,7 @@ const (
 func main() {
 	log.Printf("Starting the TodoServer... version=[%v]", Version)
 
-	is := rpc.NewImageServiceServer(server.NewImageServer(), nil)
+	is := rpc.NewFileServiceServer(server.NewFileServer(), nil)
 
 	mux := http.NewServeMux()
 	mux.Handle(is.PathPrefix(), middleware.Adapt(is, headers.Username()))

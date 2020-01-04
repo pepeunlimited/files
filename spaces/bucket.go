@@ -4,6 +4,7 @@ type Bucket interface {
 	Delete(bucketName string) error
 	Files(bucketName string)  Files
 	Create(bucketName string) Files
+	Info(bucketName string)
 }
 
 type bucket struct {
@@ -11,6 +12,10 @@ type bucket struct {
 	isCreate 	bool
 	isFiles    	bool
 	spaces 		spaces
+}
+
+func (b *bucket) Info(bucketName string) {
+
 }
 
 func (b *bucket) Delete(bucketName string) error {
@@ -32,3 +37,4 @@ func (b *bucket) Create(bucketName string) Files {
 	b.name = bucketName
 	return &files{bucket:*b, executor:executor, order: 0}
 }
+
