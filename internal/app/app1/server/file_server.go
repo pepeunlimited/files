@@ -2,8 +2,8 @@ package server
 
 import (
 	"context"
-	"github.com/pepeunlimited/images/internal/app/app1/validator"
-	"github.com/pepeunlimited/images/rpc"
+	"github.com/pepeunlimited/files/internal/app/app1/validator"
+	"github.com/pepeunlimited/files/rpc"
 )
 
 type FileServer struct {

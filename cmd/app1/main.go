@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/pepeunlimited/images/internal/app/app1/server"
-	"github.com/pepeunlimited/images/rpc"
+	"github.com/pepeunlimited/files/internal/app/app1/server"
+	"github.com/pepeunlimited/files/rpc"
 	"github.com/pepeunlimited/microservice-kit/headers"
 	"github.com/pepeunlimited/microservice-kit/middleware"
 	"log"

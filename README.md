@@ -1,6 +1,6 @@
-# images
+# files
 
-A starting point project to create `image`-service
+A starting point project to create `files`-service
 
 ## Go Directories
 
@@ -26,7 +26,7 @@ Speed up implementing the database access using [`ent`](https://github.com/faceb
 ### `/rpc`
 
 #### [`twirp`](https://github.com/twitchtv/twirp)
--  `$ protoc --proto_path=$GOPATH/src:. --twirp_out=. --go_out=. image.proto`
+-  `$ protoc --proto_path=$GOPATH/src:. --twirp_out=. --go_out=. files.proto`
 
 
 ### `/scripts`

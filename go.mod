@@ -1,4 +1,4 @@
-module github.com/pepeunlimited/images
+module github.com/pepeunlimited/files
 
 go 1.13
 
