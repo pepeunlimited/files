@@ -17,3 +17,6 @@
 .glide/
 
 spaces/space_test_const.go
+
+# IDEA config files
+.idea/
