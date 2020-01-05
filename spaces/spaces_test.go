@@ -1,43 +1,47 @@
 package spaces
 
 import (
+	"context"
+	"github.com/digitalocean/godo"
+	"github.com/pepeunlimited/files/do"
 	"strings"
 	"testing"
 )
 
 // NOTE: requires to fill these constants:
 const (
-	//endpoint	 	string = "{ENDPOINT}"
-	//accessKey 	string = "{ACCESS_KEY}"
-	//secretKey    	string = "{SECRET_KEY}"
-	//bucketName   	string = "{BUCKET_NAME}"
+	//Endpoint	 	  string = "{ENDPOINT}"
+	//AccessKey 	  string = "{ACCESS_KEY}"
+	//SecretKey    	  string = "{SECRET_KEY}"
+	//BucketName   	  string = "{BUCKET_NAME}"
+	//DoAccessToken   string = "{DO_ACCESS_TOKEN}"
 )
 
 func TestSpacesCreateDeleteBucketAndObject(t *testing.T) {
-	spaces := NewSpaces(endpoint, accessKey, secretKey)
+	spaces := NewSpaces(Endpoint, AccessKey, SecretKey)
 	if err := spaces.
-		Files(bucketName).
+		Files(BucketName).
 		Delete("simo.txt").
 		Delete("piia.txt").
 		Execute(); err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
-	if err := spaces.Delete(bucketName); err != nil {
+	if err := spaces.Delete(BucketName); err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
 	body := strings.NewReader("hello-world!")
 	file := File{mimeType:"plain/text", fileSize: int64(body.Len()), body:body}
 	if err := spaces.
-		Create(bucketName).
+		Create(BucketName).
 		Create(file, FileMetaData{filename:"simo.txt", isPublic:true}).
 		Create(file, FileMetaData{filename:"piia.txt", isPublic:true}). // throw error if file exist?
 		Execute(); err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
-	bytes, err := spaces.Files(bucketName).Get("simo.txt")
+	bytes, err := spaces.Files(BucketName).Get("simo.txt")
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -45,6 +49,29 @@ func TestSpacesCreateDeleteBucketAndObject(t *testing.T) {
 	if len(bytes) != int(body.Size()) {
 		t.FailNow()
 	}
-	spaces.Info(bucketName)
+	_, _, err = do.NewDoClient(DoAccessToken).CDNs.Create(context.Background(), &godo.CDNCreateRequest{
+		Origin: BucketName+"."+Endpoint,
+		TTL:    3600,
+	})
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
 	t.Log(string(bytes))
+	exist, err := spaces.Exist(BucketName)
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+	if !*exist {
+		t.FailNow()
+	}
+	exist, err = spaces.Exist("asdasasaaaa")
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+	if *exist {
+		t.FailNow()
+	}
 }

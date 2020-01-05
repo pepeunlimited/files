@@ -7,10 +7,10 @@ import (
 
 
 const (
-	SpacesEndpoint 	= "SPACES_ENDPOINT"
-	SpacesAccessKey = "SPACES_ACCESS_KEY"
-	SpacesSecretKey = "SPACES_SECRET_KEY"
-	SpacesBucket    = "SPACES_BUCKET"
+	SpacesEndpoint 		= "SPACES_ENDPOINT"
+	SpacesAccessKey 	= "SPACES_ACCESS_KEY"
+	SpacesSecretKey 	= "SPACES_SECRET_KEY"
+	SpacesBucketName    = "SPACES_BUCKET_NAME"
 )
 
 type spaces struct {
@@ -27,5 +27,6 @@ func NewSpaces(endpoint string, accessKey string, secretKey string) Bucket {
 	if err != nil {
 		log.Panic(err)
 	}
+
 	return &bucket{spaces:spaces{endpoint:endpoint, accessKey:accessKey, secretKey:secretKey, client:client}}
 }
