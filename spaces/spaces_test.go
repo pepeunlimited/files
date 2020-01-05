@@ -10,11 +10,11 @@ import (
 
 // NOTE: requires to fill these constants:
 const (
-	//Endpoint	 	  string = "{ENDPOINT}"
-	//AccessKey 	  string = "{ACCESS_KEY}"
-	//SecretKey    	  string = "{SECRET_KEY}"
-	//BucketName   	  string = "{BUCKET_NAME}"
-	//DoAccessToken   string = "{DO_ACCESS_TOKEN}"
+	//SpacesEndpoint		 string = "-"
+	//SpacesAccessKey 	   	 string = "-"
+	//SpacesSecretKey        string = "-"
+	//SpacesBucketName       string = "-"
+	//DoAccessToken          string = "-"
 )
 
 func TestSpacesCreateDeleteBucketAndObject(t *testing.T) {
@@ -50,7 +50,7 @@ func TestSpacesCreateDeleteBucketAndObject(t *testing.T) {
 		t.FailNow()
 	}
 	_, _, err = do.NewDoClient(DoAccessToken).CDNs.Create(context.Background(), &godo.CDNCreateRequest{
-		Origin: BucketName+"."+Endpoint,
+		Origin: CDNOrgin,
 		TTL:    3600,
 	})
 	if err != nil {

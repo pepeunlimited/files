@@ -3,7 +3,6 @@ package server
 import (
 	"context"
 	"github.com/pepeunlimited/files/do"
-	"github.com/pepeunlimited/files/rpc"
 	"github.com/pepeunlimited/files/spaces"
 	"testing"
 )
@@ -18,10 +17,14 @@ func TestFileServer_CreateBucket(t *testing.T) {
 	bucket := spaces.NewSpaces(spaces.Endpoint, spaces.AccessKey, spaces.SecretKey)
 
 	server := NewFileServer(bucket, *doClient)
-	server.CreateBucket(context.TODO(), &rpc.CreateBucketParams{
+
+	err := server.CreateDOBucket(context.TODO(), CreateDOBucket{
 		BucketName: spaces.BucketName,
-		Region:     "fra1",
-		Endpoint:   "digitaloceanspaces.com",
-		IsCdn:      true,
+		Endpoint:   spaces.Endpoint,
+		CDNOrigin:  &spaces.CDNOrgin,
 	})
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
 }

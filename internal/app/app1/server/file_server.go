@@ -16,35 +16,42 @@ type FileServer struct {
 	doClient    godo.Client
 }
 
-func (server FileServer) CreateBucket(ctx context.Context, params *rpc.CreateBucketParams) (*rpc.CreateBucketResponse, error) {
-	log.Print("files-server: creating bucket..")
+
+type CreateDOBucket struct {
+	BucketName  string
+	Endpoint    string
+	CDNOrigin   *string
+}
+
+// only access point is from the server code. not provided any API's for it
+func (server FileServer) CreateDOBucket(ctx context.Context, params CreateDOBucket) error {
+	log.Print("files-server: creating DigitalOcean bucket..")
 	exist, err := server.bucket.Exist(params.BucketName)
 	if err != nil {
-		return nil, twirp.InternalErrorWith(err)
+		return twirp.InternalErrorWith(err)
 	}
 	if *exist {
-		log.Printf("files-server: the bucket=%v already exist..", params.BucketName)
-		return &rpc.CreateBucketResponse{}, nil
+		log.Printf("files-server: the bucket=%v already exist in DigitalOcean's server..", params.BucketName)
+		return nil
 	}
+	log.Printf("files-server: create new bucket=%v..",params.BucketName)
 	// create the bucket
 	if err := server.bucket.Create(params.BucketName).Execute(); err != nil {
-		return nil, twirp.InternalErrorWith(err)
+		return twirp.InternalErrorWith(err)
 	}
 
-	if !params.IsCdn {
-		return &rpc.CreateBucketResponse{}, nil
+	if params.CDNOrigin == nil {
+		return nil
 	}
-	// create cdn for the bucket
-	origin := params.BucketName+"."+params.Region+"."+params.Endpoint
+	// create the CDN's for bucket
 	_, _, err = server.doClient.CDNs.Create(ctx, &godo.CDNCreateRequest{
-		Origin: origin,
+		Origin: *params.CDNOrigin,
 		TTL:    3600,
 	})
 	if err != nil {
-		return nil, twirp.InternalErrorWith(err)
+		return twirp.InternalErrorWith(err)
 	}
-
-	return &rpc.CreateBucketResponse{}, nil
+	return nil
 }
 
 func (server FileServer) CreateFile(ctx context.Context, params *rpc.CreateFileParams) (*rpc.File, error) {
@@ -52,8 +59,6 @@ func (server FileServer) CreateFile(ctx context.Context, params *rpc.CreateFileP
 	//https://test-bucket-666.fra1.digitaloceanspaces.com/piia.txt
 	return nil, nil
 }
-
-
 
 func NewFileServer(bucket spaces.Bucket, doClient godo.Client) FileServer {
 	return FileServer{

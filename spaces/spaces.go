@@ -7,14 +7,14 @@ import (
 
 
 const (
-	SpacesEndpoint 		= "SPACES_ENDPOINT"
-	SpacesAccessKey 	= "SPACES_ACCESS_KEY"
-	SpacesSecretKey 	= "SPACES_SECRET_KEY"
-	SpacesBucketName    = "SPACES_BUCKET_NAME"
+	SpacesBucketEndpoint 	= "SPACES_BUCKET_ENDPOINT"
+	SpacesCDNOrigin 		= "SPACES_CDN_ORIGIN"
+	SpacesBucketName        = "SPACES_BUCKET_NAME"
+	SpacesAccessKey 		= "SPACES_ACCESS_KEY"
+	SpacesSecretKey 		= "SPACES_SECRET_KEY"
 )
 
 type spaces struct {
-	//	region	 		string
 	endpoint	 	string
 	accessKey		string
 	secretKey		string
@@ -22,7 +22,6 @@ type spaces struct {
 }
 
 func NewSpaces(endpoint string, accessKey string, secretKey string) Bucket {
-	// Initiate a client using DigitalOcean Spaces.
 	client, err := minio.New(endpoint, accessKey, secretKey, true)
 	if err != nil {
 		log.Panic(err)
