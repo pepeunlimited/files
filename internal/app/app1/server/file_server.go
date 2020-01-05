@@ -44,8 +44,8 @@ func (server FileServer) CreateDOBucket(ctx context.Context, params CreateDOBuck
 	}
 	cdnOrigin := params.BucketName+"."+params.Endpoint
 	// create the CDN's for bucket
-	log.Print("files-server: create cdn for the buckect..")
-	_, _, err = server.doClient.CDNs.Create(ctx, &godo.CDNCreateRequest{
+	log.Print("files-server: create cdn for the bucket..")
+	cdn,_, err := server.doClient.CDNs.Create(ctx, &godo.CDNCreateRequest{
 		Origin: cdnOrigin,
 		TTL:    3600,
 	})
@@ -54,6 +54,8 @@ func (server FileServer) CreateDOBucket(ctx context.Context, params CreateDOBuck
 	}
 	log.Print("files-server: ..cdn created")
 	// TODO: save to DB
+	cdnEndpoint := cdn.Endpoint
+	log.Print(cdnEndpoint)
 	return nil
 }
 

@@ -17,7 +17,8 @@ CREATE TABLE files (
     mime_type      VARCHAR(255) NOT NULL,
     file_size       int(10)      NOT NULL,
     do_bucket_id   int(10)      NULL,
-    is_public      BOOLEAN      DEFAULT false,
+    is_draft       BOOLEAN      DEFAULT false,
+    is_deleted     BOOLEAN      DEFAULT false,
     FOREIGN KEY (do_bucket_id)  REFERENCES do_buckets (id),
     PRIMARY KEY (id)
 );
