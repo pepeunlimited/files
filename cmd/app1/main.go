@@ -25,7 +25,6 @@ func main() {
 	spacesSecretKey    := misc.GetEnv(spaces.SpacesSecretKey, "")
 	spacesEndpoint     := misc.GetEnv(spaces.SpacesBucketEndpoint, "")
 	spacesBucketName   := misc.GetEnv(spaces.SpacesBucketName, "")
-	spacesCDNOrigin    := misc.GetEnv(spaces.SpacesCDNOrigin, "")
 	bucket := spaces.NewSpaces(spacesEndpoint, spacesAccessKey, spacesSecretKey)
 
 	// DOs APIClient
@@ -33,11 +32,17 @@ func main() {
 	doClient 		 := do.NewDoClient(doAccessToken)
 
 	fileServer := server.NewFileServer(bucket, *doClient)
-	fileServer.CreateDOBucket(context.Background(), server.CreateDOBucket{
+
+	// Create the Bucket if not exist...
+	err := fileServer.CreateDOBucket(context.Background(), server.CreateDOBucket{
 		BucketName: spacesBucketName,
 		Endpoint:   spacesEndpoint,
-		CDNOrigin:  &spacesCDNOrigin,
+		IsCDN:  	true,
 	})
+
+	if err != nil {
+		log.Panic("files-server: interrupt server startup: "+err.Error())
+	}
 
 	is := rpc.NewFileServiceServer(fileServer, nil)
 	mux := http.NewServeMux()

@@ -49,8 +49,9 @@ func TestSpacesCreateDeleteBucketAndObject(t *testing.T) {
 	if len(bytes) != int(body.Size()) {
 		t.FailNow()
 	}
+	cdnOrigin := BucketName+"."+Endpoint
 	_, _, err = do.NewDoClient(DoAccessToken).CDNs.Create(context.Background(), &godo.CDNCreateRequest{
-		Origin: CDNOrgin,
+		Origin: cdnOrigin,
 		TTL:    3600,
 	})
 	if err != nil {
@@ -63,7 +64,7 @@ func TestSpacesCreateDeleteBucketAndObject(t *testing.T) {
 		t.Error(err)
 		t.FailNow()
 	}
-	if !*exist {
+	if !exist {
 		t.FailNow()
 	}
 	exist, err = spaces.Exist("asdasasaaaa")
@@ -71,7 +72,8 @@ func TestSpacesCreateDeleteBucketAndObject(t *testing.T) {
 		t.Error(err)
 		t.FailNow()
 	}
-	if *exist {
+	if exist {
 		t.FailNow()
 	}
+	spaces.Files(BucketName).Delete("simo.txt").Delete("piia.txt").Execute()
 }

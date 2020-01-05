@@ -6,7 +6,6 @@ import (
 	"github.com/pepeunlimited/files/internal/app/app1/validator"
 	"github.com/pepeunlimited/files/rpc"
 	"github.com/pepeunlimited/files/spaces"
-	"github.com/twitchtv/twirp"
 	"log"
 )
 
@@ -20,37 +19,41 @@ type FileServer struct {
 type CreateDOBucket struct {
 	BucketName  string
 	Endpoint    string
-	CDNOrigin   *string
+	IsCDN   	bool
 }
 
 // only access point is from the server code. not provided any API's for it
 func (server FileServer) CreateDOBucket(ctx context.Context, params CreateDOBucket) error {
-	log.Print("files-server: creating DigitalOcean bucket..")
+	log.Print("files-server: try to create DigitalOcean bucket..")
 	exist, err := server.bucket.Exist(params.BucketName)
 	if err != nil {
-		return twirp.InternalErrorWith(err)
+		return err
 	}
-	if *exist {
+	if exist {
 		log.Printf("files-server: the bucket=%v already exist in DigitalOcean's server..", params.BucketName)
 		return nil
 	}
 	log.Printf("files-server: create new bucket=%v..",params.BucketName)
 	// create the bucket
 	if err := server.bucket.Create(params.BucketName).Execute(); err != nil {
-		return twirp.InternalErrorWith(err)
+		return err
 	}
-
-	if params.CDNOrigin == nil {
+	log.Print("files-server: ..bucket created")
+	if !params.IsCDN {
 		return nil
 	}
+	cdnOrigin := params.BucketName+"."+params.Endpoint
 	// create the CDN's for bucket
+	log.Print("files-server: create cdn for the buckect..")
 	_, _, err = server.doClient.CDNs.Create(ctx, &godo.CDNCreateRequest{
-		Origin: *params.CDNOrigin,
+		Origin: cdnOrigin,
 		TTL:    3600,
 	})
 	if err != nil {
-		return twirp.InternalErrorWith(err)
+		return err
 	}
+	log.Print("files-server: ..cdn created")
+	// TODO: save to DB
 	return nil
 }
 

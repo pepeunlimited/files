@@ -16,12 +16,18 @@ func TestFileServer_CreateBucket(t *testing.T) {
 	doClient := do.NewDoClient(spaces.DoAccessToken)
 	bucket := spaces.NewSpaces(spaces.Endpoint, spaces.AccessKey, spaces.SecretKey)
 
+	if err := bucket.Delete(spaces.BucketName); err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+
+
 	server := NewFileServer(bucket, *doClient)
 
 	err := server.CreateDOBucket(context.TODO(), CreateDOBucket{
 		BucketName: spaces.BucketName,
 		Endpoint:   spaces.Endpoint,
-		CDNOrigin:  &spaces.CDNOrgin,
+		IsCDN:		true,
 	})
 	if err != nil {
 		t.Error(err)

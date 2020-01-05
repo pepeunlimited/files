@@ -8,7 +8,6 @@ import (
 
 const (
 	SpacesBucketEndpoint 	= "SPACES_BUCKET_ENDPOINT"
-	SpacesCDNOrigin 		= "SPACES_CDN_ORIGIN"
 	SpacesBucketName        = "SPACES_BUCKET_NAME"
 	SpacesAccessKey 		= "SPACES_ACCESS_KEY"
 	SpacesSecretKey 		= "SPACES_SECRET_KEY"
@@ -26,6 +25,5 @@ func NewSpaces(endpoint string, accessKey string, secretKey string) Bucket {
 	if err != nil {
 		log.Panic(err)
 	}
-
 	return &bucket{spaces:spaces{endpoint:endpoint, accessKey:accessKey, secretKey:secretKey, client:client}}
 }

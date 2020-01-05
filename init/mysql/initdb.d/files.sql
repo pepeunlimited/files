@@ -4,9 +4,10 @@ USE files;
 
 CREATE TABLE do_buckets (
     id                  int(10)      NOT NULL AUTO_INCREMENT, -- ent requires..
-    bucket_name         VARCHAR(63)  UNIQUE NOT NULL,         -- xxx
+    bucket_name         VARCHAR(63)  UNIQUE NOT NULL,         -- unique name for the bucket
     endpoint            VARCHAR(35)  NOT NULL,                -- fra1.digitaloceanspaces.com
-    cdn_endpoint        VARCHAR(40)  NULL,                    -- fra1.cdn.digitaloceanspaces.com
+    cdn_endpoint        VARCHAR(100) NULL,                    -- {bucket_name}.{region}.cdn.digitaloceanspaces.com
+    created_at          DATETIME(3)  NOT NULL,
     PRIMARY KEY (id)
 );
 
