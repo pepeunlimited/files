@@ -3,7 +3,7 @@ package repository
 import (
 	"github.com/facebookincubator/ent/dialect"
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/pepeunlimited/files/internal/app/ent"
+	"github.com/pepeunlimited/files/internal/app/app1/ent"
 	"github.com/pepeunlimited/microservice-kit/misc"
 	"github.com/pepeunlimited/microservice-kit/sqlz"
 	"log"

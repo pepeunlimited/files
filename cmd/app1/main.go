@@ -1,11 +1,11 @@
 package main
 
 import (
-	"context"
-	"github.com/pepeunlimited/files/do"
+	rpc2 "github.com/pepeunlimited/authorization-twirp/rpc"
+	"github.com/pepeunlimited/files/internal/app/app1/repository"
 	"github.com/pepeunlimited/files/internal/app/app1/server"
+	"github.com/pepeunlimited/files/internal/app/app1/upload"
 	"github.com/pepeunlimited/files/rpc"
-	"github.com/pepeunlimited/files/spaces"
 	"github.com/pepeunlimited/microservice-kit/headers"
 	"github.com/pepeunlimited/microservice-kit/middleware"
 	"github.com/pepeunlimited/microservice-kit/misc"
@@ -17,36 +17,25 @@ const (
 	Version = "0.1"
 )
 
+
 func main() {
 	log.Printf("Starting the FilesServer... version=[%v]", Version)
 
-	// DOs Spaces
-	spacesAccessKey    := misc.GetEnv(spaces.SpacesAccessKey, "")
-	spacesSecretKey    := misc.GetEnv(spaces.SpacesSecretKey, "")
-	spacesEndpoint     := misc.GetEnv(spaces.SpacesBucketEndpoint, "")
-	spacesBucketName   := misc.GetEnv(spaces.SpacesBucketName, "")
-	bucket := spaces.NewSpaces(spacesEndpoint, spacesAccessKey, spacesSecretKey)
 
-	// DOs APIClient
-	doAccessToken    := misc.GetEnv(do.DoAccessToken, "")
-	doClient 		 := do.NewDoClient(doAccessToken)
+	authorizationAddress := misc.GetEnv(rpc2.RpcAuthorizationHost, "http://api.dev.pepeunlimited.com")
+	// ent
+	ent 	 	 	 := repository.NewEntClient()
 
-	fileServer := server.NewFileServer(bucket, *doClient)
+	// DOsUpload
+	dos				 := upload.NewDos()
 
-	// Create the Bucket if not exist...
-	err := fileServer.CreateDOBucket(context.Background(), server.CreateDOBucket{
-		BucketName: spacesBucketName,
-		Endpoint:   spacesEndpoint,
-		IsCDN:  	true,
-	})
+	// DOs
+	dfs := rpc.NewDOFileServiceServer(server.NewDOFileServer(dos, ent), nil)
+	dus := server.NewDOFileUploadServer(dos, ent, rpc2.NewAuthorizationServiceProtobufClient(authorizationAddress, http.DefaultClient))
 
-	if err != nil {
-		log.Panic("files-server: interrupt server startup: "+err.Error())
-	}
-
-	is := rpc.NewFileServiceServer(fileServer, nil)
 	mux := http.NewServeMux()
-	mux.Handle(is.PathPrefix(), middleware.Adapt(is, headers.Username()))
+	mux.Handle(dfs.PathPrefix(), middleware.Adapt(dfs, headers.Username()))
+	mux.Handle(server.UploadDOV1Files, dus.UploadDOV1Files())
 
 	if err := http.ListenAndServe(":8080", mux); err != nil {
 		log.Panic(err)

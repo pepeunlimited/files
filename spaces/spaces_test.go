@@ -1,9 +1,7 @@
 package spaces
 
 import (
-	"context"
-	"github.com/digitalocean/godo"
-	"github.com/pepeunlimited/files/do"
+	"github.com/pepeunlimited/files/storage"
 	"strings"
 	"testing"
 )
@@ -14,34 +12,24 @@ const (
 	//SpacesAccessKey 	   	 string = "-"
 	//SpacesSecretKey        string = "-"
 	//SpacesBucketName       string = "-"
-	//DoAccessToken          string = "-"
+	//AccessToken            string = "-"
 )
 
 func TestSpacesCreateDeleteBucketAndObject(t *testing.T) {
-	spaces := NewSpaces(Endpoint, AccessKey, SecretKey)
-	if err := spaces.
-		Files(BucketName).
-		Delete("simo.txt").
-		Delete("piia.txt").
-		Execute(); err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
-	if err := spaces.Delete(BucketName); err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
+	spaces := NewBucketCDN(Endpoint, AccessKey, SecretKey, BucketName, &AccessToken)
+	spaces.Files().Delete("simo.txt").Delete("piia.txt").Execute()
+	spaces.Delete()
 	body := strings.NewReader("hello-world!")
-	file := File{mimeType:"plain/text", fileSize: int64(body.Len()), body:body}
+	file := storage.File{MimeType:"plain/text", FileSize: int64(body.Len()), Body:body}
 	if err := spaces.
-		Create(BucketName).
-		Create(file, FileMetaData{filename:"simo.txt", isPublic:true}).
-		Create(file, FileMetaData{filename:"piia.txt", isPublic:true}). // throw error if file exist?
+		Create().
+		Create(file, storage.FileMetaData{Filename:"simo.txt", IsPublic:true}).
+		Create(file, storage.FileMetaData{Filename:"piia.txt", IsPublic:true}). // throw error if file exist?
 		Execute(); err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
-	bytes, err := spaces.Files(BucketName).Get("simo.txt")
+	bytes, err := spaces.Files().Get("simo.txt")
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -49,17 +37,8 @@ func TestSpacesCreateDeleteBucketAndObject(t *testing.T) {
 	if len(bytes) != int(body.Size()) {
 		t.FailNow()
 	}
-	cdnOrigin := BucketName+"."+Endpoint
-	_, _, err = do.NewDoClient(DoAccessToken).CDNs.Create(context.Background(), &godo.CDNCreateRequest{
-		Origin: cdnOrigin,
-		TTL:    3600,
-	})
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
 	t.Log(string(bytes))
-	exist, err := spaces.Exist(BucketName)
+	exist, err := spaces.Exist()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -67,7 +46,7 @@ func TestSpacesCreateDeleteBucketAndObject(t *testing.T) {
 	if !exist {
 		t.FailNow()
 	}
-	exist, err = spaces.Exist("asdasasaaaa")
+	exist, err = NewBucketCDN(Endpoint, AccessKey, SecretKey,"addsadsss", &AccessToken).Exist()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -75,5 +54,19 @@ func TestSpacesCreateDeleteBucketAndObject(t *testing.T) {
 	if exist {
 		t.FailNow()
 	}
-	spaces.Files(BucketName).Delete("simo.txt").Delete("piia.txt").Execute()
+	_, err = spaces.Files().GetMetadata("simo.txt")
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+
+	spaces.Files().Delete("simo.txt").Delete("piia.txt").Execute()
+}
+
+func TestBucket_Delete(t *testing.T) {
+	spaces := NewBucket(Endpoint, AccessKey, SecretKey, BucketName)
+	if err := spaces.Delete(); err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
 }
