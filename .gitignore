@@ -17,6 +17,7 @@
 .glide/
 
 spaces/space_test_const.go
-
+deployments/dev/files-deployment-secret.yaml
 # IDEA config files
 .idea/
+
