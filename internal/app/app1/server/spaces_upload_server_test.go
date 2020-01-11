@@ -18,12 +18,12 @@ func TestDOFileUploadServer_UploadDOV1FilesSuccess(t *testing.T) {
 	authClient := rpc2.NewAuthorizationMock(nil)
 	mock := upload.NewDosMock(nil)
 
-	server := NewDOFileUploadServer(mock, repository.NewEntClient(), authClient)
-	server.bucketRepository.Wipe(ctx)
+	server := NewSpacesUploadServer(mock, repository.NewEntClient(), authClient)
+	server.spacesRepo.Wipe(ctx)
 
-	fileServer := NewDOFileServer(mock, repository.NewEntClient())
-	fileServer.CreateBucket(ctx, &rpc.CreateBucketParams{
-		BucketName: "bucket",
+	fileServer := NewSpacesServer(mock, repository.NewEntClient())
+	fileServer.CreateSpaces(ctx, &rpc.CreateSpacesParams{
+		Name: "bucket",
 		Endpoint:   "fra1.mock.com",
 	})
 
@@ -34,7 +34,7 @@ func TestDOFileUploadServer_UploadDOV1FilesSuccess(t *testing.T) {
 	authorization := "Bearer A"
 
 	// request
-	req,_ := http.NewRequest(http.MethodPost, UploadDOV1Files, body)
+	req,_ := http.NewRequest(http.MethodPost, UploadSpacesV1Files, body)
 	req.Header.Add("Content-Type", contentType)
 	req.Header.Add("Content-Length", contentLength)
 	req.Header.Add("Authorization", authorization)
@@ -42,7 +42,7 @@ func TestDOFileUploadServer_UploadDOV1FilesSuccess(t *testing.T) {
 
 	// recorder
 	recorder := httptest.NewRecorder()
-	server.UploadDOV1Files().ServeHTTP(recorder, req)
+	server.UploadSpacesV1Files().ServeHTTP(recorder, req)
 
 	if recorder.Code != 200 {
 		t.Log(recorder.Code)

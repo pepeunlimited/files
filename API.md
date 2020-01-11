@@ -4,31 +4,37 @@
 ```
 $ curl -X POST \
 -H "Content-Type: application/json" \
-"api.dev.pepeunlimited.com/twirp/pepeunlimited.files.DOFileService/GetFile" \
+"api.dev.pepeunlimited.com/twirp/pepeunlimited.files.SpacesService/GetFile" \
 -d '{"file_id": 58}'
 ```
 #### GetFileByFilename
 ```
 $ curl -X POST \
 -H "Content-Type: application/json" \
-"api.dev.pepeunlimited.com/twirp/pepeunlimited.files.DOFileService/GetFile" \
+"api.dev.pepeunlimited.com/twirp/pepeunlimited.files.SpacesService/GetFile" \
 -d '{"file_id": 58}' \
 -d '{"filename": { "name": "filename.txt", "bucket_name": "bucketName", "bucket_id": 1 }}'
 ```
-#### Delete
+#### DeleteByFileID
 ```
 $ curl -X POST \
 -H "Content-Type: application/json" \
-"api.dev.pepeunlimited.com/twirp/pepeunlimited.files.DOFileService/Delete" \
--d '{"file_id": 58, "is_permanent": false}' \
+"api.dev.pepeunlimited.com/twirp/pepeunlimited.files.SpacesService/Delete" \
+-d '{"file_id": 58, "is_permanent": false}'
+```
+#### DeleteByFilename
+```
+$ curl -X POST \
+-H "Content-Type: application/json" \
+"api.dev.pepeunlimited.com/twirp/pepeunlimited.files.SpacesService/Delete" \
 -d '{"filename": { "name": "filename.txt", "bucket_name": "bucketName", "bucket_id": 1 }, "is_permanent": false}'
 ```
-#### CreateBucket
+#### CreateSpaces
 ```
 $ curl -X POST \
 -H "Content-Type: application/json" \
-"api.dev.pepeunlimited.com/twirp/pepeunlimited.files.DOFileService/CreateBucket" \
--d '{"bucket_name": "test0r-666", "endpoint": "fra1.digitaloceanspaces.com"}'
+"api.dev.pepeunlimited.com/twirp/pepeunlimited.files.SpacesService/CreateSpaces" \
+-d '{"name": "test0r-666", "endpoint": "fra1.digitaloceanspaces.com"}'
 ```
 #### Content-Length
 ```
@@ -41,7 +47,7 @@ curl -X POST \
 -H "Content-Type: plain/text" \
 -H "Content-Length: 50" \
 -H "Meta-API-Args: {\"filename\": \"trolli.txt\"}" \
-localhost:8080/upload/do/v1/files \
+localhost:8080/upload/spaces/v1/files \
 --data-binary @const.go
 ```
 #### UploadFile
@@ -51,6 +57,6 @@ curl -X POST \
 -H "Content-Type: plain/text" \
 -H "Content-Length: 50" \
 -H "Meta-API-Args: {\"filename\": \"trolli.txt\"}" \
-api.dev.pepeunlimited.com/upload/do/v1/files \
+api.dev.pepeunlimited.com/upload/spaces/v1/files \
 --data-binary @const.go
 ```

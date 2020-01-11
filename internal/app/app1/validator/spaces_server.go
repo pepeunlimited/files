@@ -6,13 +6,13 @@ import (
 	"github.com/twitchtv/twirp"
 )
 
-type FileServerValidator struct {}
+type SpacesServerValidator struct {}
 
-func NewFileServerValidator() FileServerValidator {
-	return FileServerValidator{}
+func NewSpacesServerValidator() SpacesServerValidator {
+	return SpacesServerValidator{}
 }
 
-func (valid FileServerValidator) GetFile(params *rpc.GetFileParams) error {
+func (valid SpacesServerValidator) GetFile(params *rpc.GetFileParams) error {
 	if  params.Filename == nil && params.FileId == nil {
 		return twirp.RequiredArgumentError("filename_or_fileId")
 	}
@@ -23,7 +23,7 @@ func (valid FileServerValidator) GetFile(params *rpc.GetFileParams) error {
 	return nil
 }
 
-func (valid FileServerValidator) Delete(params *rpc.DeleteParams) error {
+func (valid SpacesServerValidator) Delete(params *rpc.DeleteParams) error {
 	if  params.Filename == nil && params.FileId == nil {
 		return twirp.RequiredArgumentError("filename_or_fileId")
 	}
@@ -34,14 +34,14 @@ func (valid FileServerValidator) Delete(params *rpc.DeleteParams) error {
 	return nil
 }
 
-func (FileServerValidator) filename(params *rpc.Filename) bool {
+func (SpacesServerValidator) filename(params *rpc.Filename) bool {
 	isFilename := params != nil && !validator.IsEmpty(params.Name)
-	isBucketName := params.SpacesName != nil && !validator.IsEmpty(params.SpacesName.Value)
-	isBucketId   := params.SpacesId != nil && params.SpacesId.Value != 0
+	isBucketName := params.BucketName != nil && !validator.IsEmpty(params.BucketName.Value)
+	isBucketId   := params.BucketId != nil && params.BucketId.Value != 0
 	return !isFilename || !isBucketName && !isBucketId
 }
 
-func (valid FileServerValidator) CreateBucket(params *rpc.CreateSpacesParams) error {
+func (valid SpacesServerValidator) CreateBucket(params *rpc.CreateSpacesParams) error {
 	if validator.IsEmpty(params.Endpoint) {
 		return twirp.RequiredArgumentError("endpoint")
 	}

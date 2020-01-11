@@ -14,6 +14,7 @@ type DosMock struct {
 	Errors  		errorz.Stack
 	File     		storage.File
 	Metadata 		storage.FileMetaData
+	To 				storage.Buckets
 }
 
 func (d *DosMock) DeleteBucket(bucket storage.Buckets) error {
@@ -39,7 +40,8 @@ func (d *DosMock) Upload(file storage.File, meta storage.FileMetaData, buckets s
 	d.IsUpload = true
 	d.File = file
 	d.Metadata = meta
-	log.Print(file)
+	d.To = buckets
+	log.Printf("File=%v, Meta=%v, To=%v",file, meta, buckets)
 	return d.Errors.Pop()
 }
 

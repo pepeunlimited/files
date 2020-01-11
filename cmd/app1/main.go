@@ -30,12 +30,12 @@ func main() {
 	dos				 := upload.NewDos()
 
 	// DOs
-	dfs := rpc.NewDOFileServiceServer(server.NewDOFileServer(dos, ent), nil)
-	dus := server.NewDOFileUploadServer(dos, ent, rpc2.NewAuthorizationServiceProtobufClient(authorizationAddress, http.DefaultClient))
+	sss := rpc.NewSpacesServiceServer(server.NewSpacesServer(dos, ent), nil)
+	sus := server.NewSpacesUploadServer(dos, ent, rpc2.NewAuthorizationServiceProtobufClient(authorizationAddress, http.DefaultClient))
 
 	mux := http.NewServeMux()
-	mux.Handle(dfs.PathPrefix(), middleware.Adapt(dfs, headers.Username()))
-	mux.Handle(server.UploadDOV1Files, dus.UploadDOV1Files())
+	mux.Handle(sss.PathPrefix(), middleware.Adapt(sss, headers.Username()))
+	mux.Handle(server.UploadSpacesV1Files, sus.UploadSpacesV1Files())
 
 	if err := http.ListenAndServe(":8080", mux); err != nil {
 		log.Panic(err)

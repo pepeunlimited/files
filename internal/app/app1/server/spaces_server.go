@@ -15,7 +15,7 @@ import (
 )
 
 type SpacesServer struct {
-	validator 		validator.FileServerValidator
+	validator 		validator.SpacesServerValidator
 	spacesRepo 		repository.SpacesRepository
 	filesRepo        repository.FileRepository
 	actions         storage.Actions // storage actions..
@@ -56,12 +56,11 @@ func (server SpacesServer) CreateSpaces(ctx context.Context, params *rpc.CreateS
 }
 
 func (server SpacesServer) fileByFilename(ctx context.Context, params *rpc.Filename) (*ent.Files, *ent.Spaces, error) {
-	isDraft := false
 	isDeleted := false
-	if params.SpacesName != nil && !validator2.IsEmpty(params.SpacesName.Value) {
-		return server.filesRepo.GetFileByFilenameSpacesName(ctx, params.Name, params.SpacesName.Value, &isDraft, &isDeleted)
+	if params.BucketName != nil && !validator2.IsEmpty(params.BucketName.Value) {
+		return server.filesRepo.GetFileByFilenameSpacesName(ctx, params.Name, params.BucketName.Value, nil, &isDeleted)
 	}
-	return server.filesRepo.GetFileByFilenameSpacesID(ctx, params.Name, int(params.SpacesId.Value), &isDeleted, &isDeleted)
+	return server.filesRepo.GetFileByFilenameSpacesID(ctx, params.Name, int(params.BucketId.Value), nil, &isDeleted)
 }
 
 func (server SpacesServer) GetFile(ctx context.Context, params *rpc.GetFileParams) (*rpc.File, error) {
@@ -91,10 +90,10 @@ func (server SpacesServer) isFileError(err error) error {
 	case repository.ErrFileNotExist:
 		return twirp.NotFoundError("file not exist").WithMeta(rpcz.Reason, rpc.FileNotFound)
 	case repository.ErrSpacesNotExist:
-		return twirp.NotFoundError("buckets not exist").WithMeta(rpcz.Reason, rpc.SpacesNotFound)
+		return twirp.NotFoundError("spaces not exist").WithMeta(rpcz.Reason, rpc.SpacesNotFound)
 	}
-	log.Print("spaces-service: unknown isFile: "+err.Error())
-	return twirp.NewError(twirp.Internal ,"unknown error: "+err.Error())
+	log.Print("spaces-service: unknown: "+err.Error())
+	return twirp.NewError(twirp.Internal ,"unknown: "+err.Error())
 }
 
 func (server SpacesServer) Delete(ctx context.Context, params *rpc.DeleteParams) (*rpc.DeleteResponse, error) {
@@ -111,7 +110,13 @@ func (server SpacesServer) Delete(ctx context.Context, params *rpc.DeleteParams)
 	} else {
 		fileID = int(params.FileId.Value)
 	}
-	// TODO: throw error if already marked as delete!
+	isDeleted := false
+	if !params.IsPermanent {
+		_, err := server.filesRepo.GetFileByID(ctx, fileID, nil, &isDeleted)
+		if err != nil {
+			return nil, server.isFileError(err)
+		}
+	}
 	_, err := server.filesRepo.MarkAsDeletedByID(ctx, fileID)
 	if err != nil {
 		return nil, server.isFileError(err)
@@ -145,10 +150,10 @@ func (server SpacesServer) Cut(ctx context.Context, params *rpc.CutParams) (*rpc
 	panic("implement me")
 }
 
-func NewDOFileServer(actions storage.Actions, client *ent.Client) SpacesServer {
+func NewSpacesServer(actions storage.Actions, client *ent.Client) SpacesServer {
 	return SpacesServer{
 		actions:		 actions,
-		validator: 		 validator.NewFileServerValidator(),
+		validator: 		 validator.NewSpacesServerValidator(),
 		spacesRepo: 	 repository.NewSpacesRepository(client),
 		filesRepo:  		 repository.NewFileRepository(client),
 	}

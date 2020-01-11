@@ -11,13 +11,13 @@ import (
 	"strconv"
 )
 
-type FileUploadServerValidator struct {}
+type SpacesUploadServerValidator struct {}
 
-func NewDOFileUploadServerValidator() FileUploadServerValidator {
-	return FileUploadServerValidator{}
+func NewSpacesUploadServerValidator() SpacesUploadServerValidator {
+	return SpacesUploadServerValidator{}
 }
 
-func (FileUploadServerValidator) UploadDOV1Files(header http.Header, body io.ReadCloser) (*upload.UploadHeaders, *upload.MetaAPIArgs, error) {
+func (SpacesUploadServerValidator) UploadSpacesV1Files(header http.Header, body io.ReadCloser) (*upload.UploadHeaders, *upload.MetaAPIArgs, error) {
 	if body == nil {
 		return nil, nil, httpz.NewMsgError("body", http.StatusBadRequest)
 	}

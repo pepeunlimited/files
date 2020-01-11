@@ -8,8 +8,8 @@ import (
 )
 
 var (
-	ErrBucketExist 		= errors.New("Spaces: bucket exist")
-	ErrBucketNotExist 	= errors.New("Spaces: bucket not found")
+	ErrBucketExist 		= errors.New("spaces: bucket exist")
+	ErrBucketNotExist 	= errors.New("spaces: bucket not found")
 )
 
 // DigitalOceanSpaces

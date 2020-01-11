@@ -15,7 +15,7 @@ func TestFileServerValidator_GetFileByFileIDOk(t *testing.T) {
 		},
 		Filename: nil,
 	}
-	err := NewFileServerValidator().GetFile(params)
+	err := NewSpacesServerValidator().GetFile(params)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -27,10 +27,10 @@ func TestFileServerValidator_GetFileByFileFilename(t *testing.T) {
 		FileId:   nil,
 		Filename: &rpc.Filename{
 			Name:     "a",
-			SpacesId: &wrappers.Int64Value{Value: 1},
+			BucketId: &wrappers.Int64Value{Value: 1},
 		},
 	}
-	err := NewFileServerValidator().GetFile(params)
+	err := NewSpacesServerValidator().GetFile(params)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()

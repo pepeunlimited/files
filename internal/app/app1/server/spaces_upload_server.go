@@ -17,24 +17,24 @@ import (
 
 const (
 	// DigitalOcean's
-	DoPath      = "/do"
-	// do version
-	DoVersionV1   = "/v1"
-	UploadDOV1Files string = UploadPath+DoPath+DoVersionV1+FilesPath
+	SpacesPath 				   = "/spaces"
+	// version
+	SpacesVersionV1            = "/v1"
+	UploadSpacesV1Files string = UploadPath+ SpacesPath + SpacesVersionV1 +FilesPath
 )
 
-type DOFileUploadServer struct {
-	validator 			validator.FileUploadServerValidator
+type SpacesUploadServer struct {
+	validator 			validator.SpacesUploadServerValidator
 	actions 			storage.Actions
-	filesRepository  	repository.FileRepository
-	bucketRepository 	repository.DOBucketRepository
+	filesRepo  			repository.FileRepository
+	spacesRepo 			repository.SpacesRepository
 	authService 		rpc2.AuthorizationService
 }
 
 // https://phil.tech/api/2016/01/04/http-rest-api-file-uploads/
-func (server DOFileUploadServer) UploadDOV1Files() http.Handler {
+func (server SpacesUploadServer) UploadSpacesV1Files() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		header, args, err := server.validator.UploadDOV1Files(r.Header, r.Body)
+		header, args, err := server.validator.UploadSpacesV1Files(r.Header, r.Body)
 		if err != nil {
 			httpz.WriteError(w, err)
 			return
@@ -51,21 +51,21 @@ func (server DOFileUploadServer) UploadDOV1Files() http.Handler {
 			} else if rpc.IsReason(err.(twirp.Error), rpc2.AccessTokenUnknownError) {
 				httpz.WriteError(w,httpz.NewMsgError(rpc2.AccessTokenUnknownError, http.StatusInternalServerError))
 			} else {
-				log.Print("do-file-upload: failed: "+err.Error())
+				log.Print("spaces-upload: failed: "+err.Error())
 				httpz.WriteError(w,httpz.NewMsgError(rpc.FileUploadFailed, http.StatusInternalServerError))
 			}
 			return
 		}
 		userId := user.UserId
 
-		buckets,_, err := server.bucketRepository.GetBuckets(r.Context(), 0, 20)
+		buckets,_, err := server.spacesRepo.GetSpaces(r.Context(), 0, 20)
 		if err != nil {
-			log.Print("do-file-upload: failed: "+err.Error())
+			log.Print("spaces-upload: failed: "+err.Error())
 			httpz.WriteError(w, httpz.NewMsgError(rpc.FileUploadFailed, http.StatusInternalServerError))
 			return
 		}
 		if len(buckets) == 0 {
-			log.Print("do-file-upload: missing buckets!")
+			log.Print("spaces-upload: missing buckets!")
 			httpz.WriteError(w, httpz.NewMsgError(rpc.FileUploadFailed, http.StatusInternalServerError))
 			return
 		}
@@ -75,9 +75,9 @@ func (server DOFileUploadServer) UploadDOV1Files() http.Handler {
 		random := rand.Intn(max - min) + min
 		bucket := buckets[random]
 
-		exist, err := server.filesRepository.Exist(r.Context(), args.Filename, bucket.ID)
+		exist, err := server.filesRepo.ExistInSpaces(r.Context(), args.Filename, bucket.ID)
 		if err != nil {
-			log.Print("do-file-upload: failed: "+err.Error())
+			log.Print("spaces-upload: failed: "+err.Error())
 			httpz.WriteError(w, httpz.NewMsgError(rpc.FileUploadFailed, http.StatusInternalServerError))
 			return
 		}
@@ -87,7 +87,7 @@ func (server DOFileUploadServer) UploadDOV1Files() http.Handler {
 			return
 		}
 
-		// upload to the bucket..
+		// upload to the spaces..
 		err = server.actions.Upload(storage.File{
 			MimeType: header.ContentType,
 			Body:     r.Body,
@@ -98,22 +98,22 @@ func (server DOFileUploadServer) UploadDOV1Files() http.Handler {
 			IsPublic: true,
 		},
 		storage.Buckets{
-			BucketName: bucket.BucketName,
+			BucketName: bucket.Name,
 			Endpoint:   bucket.Endpoint,
 		})
 		if err != nil {
-			log.Print("do-file-upload: failed: " + err.Error())
+			log.Print("spaces-upload: failed: " + err.Error())
 			httpz.WriteError(w, httpz.NewMsgError(rpc.FileUploadFailed, http.StatusInternalServerError))
 			return
 		}
 
 		// save to the DB
-		file, err := server.filesRepository.CreateSpacesFile(r.Context(), args.Filename, header.ContentLength, header.ContentType, false, false, userId, bucket.ID)
+		file, err := server.filesRepo.CreateSpacesFile(r.Context(), args.Filename, header.ContentLength, header.ContentType, false, false, userId, bucket.ID)
 		if err != nil {
-			log.Print("do-file-upload: failed: " + err.Error())
+			log.Print("spaces-upload: failed: " + err.Error())
 			// rollback
 			server.actions.Delete(storage.Buckets{
-				BucketName: bucket.BucketName,
+				BucketName: bucket.Name,
 				Endpoint:   bucket.Endpoint,
 			},
 			args.Filename)
@@ -130,12 +130,12 @@ func (server DOFileUploadServer) UploadDOV1Files() http.Handler {
 	})
 }
 
-func NewDOFileUploadServer(actions storage.Actions, client *ent.Client, authService rpc2.AuthorizationService) DOFileUploadServer {
-	return DOFileUploadServer{
+func NewSpacesUploadServer(actions storage.Actions, client *ent.Client, authService rpc2.AuthorizationService) SpacesUploadServer {
+	return SpacesUploadServer{
 		actions:		  actions,
 		authService:      authService,
-		validator:        validator.NewDOFileUploadServerValidator(),
-		filesRepository:   repository.NewFileRepository(client),
-		bucketRepository: repository.NewDOBucketRepository(client),
+		validator:        validator.NewSpacesUploadServerValidator(),
+		filesRepo:   	  repository.NewFileRepository(client),
+		spacesRepo: 	  repository.NewSpacesRepository(client),
 	}
 }
