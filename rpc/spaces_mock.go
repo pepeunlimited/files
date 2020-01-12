@@ -2,7 +2,6 @@ package rpc
 
 import (
 	"context"
-	"github.com/pepeunlimited/files/rpc"
 	"github.com/pepeunlimited/microservice-kit/errorz"
 )
 
@@ -12,7 +11,7 @@ type SpacesMock struct {
 
 func (s *SpacesMock) GetFile(context.Context, *GetFileParams) (*File, error) {
 	if s.Errors.IsEmpty() {
-		return &rpc.File{}, nil
+		return &File{}, nil
 	}
 	return nil, s.Errors.Pop()
 }
