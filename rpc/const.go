@@ -1,3 +1,3 @@
 package rpc
 
-const RpcImageHost = "RPC_IMAGE_HOST"
+const RpcFilesHost = "RPC_FILES_HOST"
