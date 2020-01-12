@@ -35,7 +35,10 @@ func (valid SpacesServerValidator) Delete(params *rpc.DeleteParams) error {
 }
 
 func (SpacesServerValidator) filename(params *rpc.Filename) bool {
-	isFilename := params != nil && !validator.IsEmpty(params.Name)
+	if params == nil {
+		return false
+	}
+	isFilename := !validator.IsEmpty(params.Name)
 	isBucketName := params.BucketName != nil && !validator.IsEmpty(params.BucketName.Value)
 	isBucketId   := params.BucketId != nil && params.BucketId.Value != 0
 	return !isFilename || !isBucketName && !isBucketId

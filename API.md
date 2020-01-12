@@ -40,20 +40,10 @@ $ curl -X POST \
 ```
 stat -f%z ${filename}
 ```
-
-```
-curl -X POST \
--H "Authorization: Bearer aa" \
--H "Content-Type: plain/text" \
--H "Content-Length: 50" \
--H "Meta-API-Args: {\"filename\": \"trolli.txt\"}" \
-localhost:8080/upload/spaces/v1/files \
---data-binary @const.go
-```
 #### UploadFile
 ```
 curl -X POST \
--H "Authorization: Bearer aa" \
+-H "Authorization: Bearer ${TOKEN}" \
 -H "Content-Type: plain/text" \
 -H "Content-Length: 50" \
 -H "Meta-API-Args: {\"filename\": \"trolli.txt\"}" \
