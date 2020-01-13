@@ -2,14 +2,14 @@ package validator
 
 import (
 	"github.com/golang/protobuf/ptypes/wrappers"
-	"github.com/pepeunlimited/files/rpc"
+	"github.com/pepeunlimited/files/rpcspaces"
 	"log"
 	"strings"
 	"testing"
 )
 
 func TestFileServerValidator_GetFileByFileIDOk(t *testing.T) {
-	params := &rpc.GetFileParams{
+	params := &rpcspaces.GetFileParams{
 		FileId:   &wrappers.Int64Value{
 			Value: 2,
 		},
@@ -23,9 +23,9 @@ func TestFileServerValidator_GetFileByFileIDOk(t *testing.T) {
 }
 
 func TestFileServerValidator_GetFileByFileFilename(t *testing.T) {
-	params := &rpc.GetFileParams{
+	params := &rpcspaces.GetFileParams{
 		FileId:   nil,
-		Filename: &rpc.Filename{
+		Filename: &rpcspaces.Filename{
 			Name:     "a",
 			BucketId: &wrappers.Int64Value{Value: 1},
 		},

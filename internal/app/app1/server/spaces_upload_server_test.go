@@ -3,9 +3,9 @@ package server
 import (
 	"context"
 	rpc2 "github.com/pepeunlimited/authorization-twirp/rpc"
-	"github.com/pepeunlimited/files/internal/app/app1/repository"
+	"github.com/pepeunlimited/files/internal/app/app1/mysql"
 	"github.com/pepeunlimited/files/internal/app/app1/upload"
-	"github.com/pepeunlimited/files/rpc"
+	"github.com/pepeunlimited/files/rpcspaces"
 	"net/http"
 	"net/http/httptest"
 	"strconv"
@@ -18,11 +18,11 @@ func TestDOFileUploadServer_UploadDOV1FilesSuccess(t *testing.T) {
 	authClient := rpc2.NewAuthorizationMock(nil)
 	mock := upload.NewDosMock(nil)
 
-	server := NewSpacesUploadServer(mock, repository.NewEntClient(), authClient)
+	server := NewSpacesUploadServer(mock, mysql.NewEntClient(), authClient)
 	server.spacesRepo.Wipe(ctx)
 
-	fileServer := NewSpacesServer(mock, repository.NewEntClient())
-	fileServer.CreateSpaces(ctx, &rpc.CreateSpacesParams{
+	fileServer := NewSpacesServer(mock, mysql.NewEntClient())
+	fileServer.CreateSpaces(ctx, &rpcspaces.CreateSpacesParams{
 		Name: "bucket",
 		Endpoint:   "fra1.mock.com",
 	})

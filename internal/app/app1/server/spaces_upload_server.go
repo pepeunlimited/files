@@ -3,10 +3,11 @@ package server
 import (
 	rpc2 "github.com/pepeunlimited/authorization-twirp/rpc"
 	"github.com/pepeunlimited/files/internal/app/app1/ent"
-	"github.com/pepeunlimited/files/internal/app/app1/repository"
+	"github.com/pepeunlimited/files/internal/app/app1/filerepo"
+	"github.com/pepeunlimited/files/internal/app/app1/spacesrepo"
 	"github.com/pepeunlimited/files/internal/app/app1/upload"
 	"github.com/pepeunlimited/files/internal/app/app1/validator"
-	"github.com/pepeunlimited/files/rpc"
+	"github.com/pepeunlimited/files/rpcspaces"
 	"github.com/pepeunlimited/files/storage"
 	"github.com/pepeunlimited/microservice-kit/httpz"
 	"github.com/twitchtv/twirp"
@@ -24,11 +25,11 @@ const (
 )
 
 type SpacesUploadServer struct {
-	validator 			validator.SpacesUploadServerValidator
-	actions 			storage.Actions
-	filesRepo  			repository.FileRepository
-	spacesRepo 			repository.SpacesRepository
-	authService 		rpc2.AuthorizationService
+	validator   validator.SpacesUploadServerValidator
+	actions     storage.Actions
+	filesRepo   filerepo.FileRepository
+	spacesRepo  spacesrepo.SpacesRepository
+	authService rpc2.AuthorizationService
 }
 
 // https://phil.tech/api/2016/01/04/http-rest-api-file-uploads/
@@ -44,15 +45,15 @@ func (server SpacesUploadServer) UploadSpacesV1Files() http.Handler {
 			AccessToken: header.Authorization,
 		})
 		if err != nil {
-			if rpc.IsReason(err.(twirp.Error), rpc2.AccessTokenExpired) {
+			if rpcspaces.IsReason(err.(twirp.Error), rpc2.AccessTokenExpired) {
 				httpz.WriteError(w,httpz.NewMsgError(rpc2.AccessTokenExpired, http.StatusUnauthorized))
-			} else if rpc.IsReason(err.(twirp.Error), rpc2.AccessTokenMalformed) {
+			} else if rpcspaces.IsReason(err.(twirp.Error), rpc2.AccessTokenMalformed) {
 				httpz.WriteError(w,httpz.NewMsgError(rpc2.AccessTokenMalformed, http.StatusBadRequest))
-			} else if rpc.IsReason(err.(twirp.Error), rpc2.AccessTokenUnknownError) {
+			} else if rpcspaces.IsReason(err.(twirp.Error), rpc2.AccessTokenUnknownError) {
 				httpz.WriteError(w,httpz.NewMsgError(rpc2.AccessTokenUnknownError, http.StatusInternalServerError))
 			} else {
 				log.Print("spaces-upload: failed: "+err.Error())
-				httpz.WriteError(w,httpz.NewMsgError(rpc.FileUploadFailed, http.StatusInternalServerError))
+				httpz.WriteError(w,httpz.NewMsgError(rpcspaces.FileUploadFailed, http.StatusInternalServerError))
 			}
 			return
 		}
@@ -61,12 +62,12 @@ func (server SpacesUploadServer) UploadSpacesV1Files() http.Handler {
 		buckets,_, err := server.spacesRepo.GetSpaces(r.Context(), 0, 20)
 		if err != nil {
 			log.Print("spaces-upload: failed: "+err.Error())
-			httpz.WriteError(w, httpz.NewMsgError(rpc.FileUploadFailed, http.StatusInternalServerError))
+			httpz.WriteError(w, httpz.NewMsgError(rpcspaces.FileUploadFailed, http.StatusInternalServerError))
 			return
 		}
 		if len(buckets) == 0 {
 			log.Print("spaces-upload: missing buckets!")
-			httpz.WriteError(w, httpz.NewMsgError(rpc.FileUploadFailed, http.StatusInternalServerError))
+			httpz.WriteError(w, httpz.NewMsgError(rpcspaces.FileUploadFailed, http.StatusInternalServerError))
 			return
 		}
 
@@ -78,12 +79,12 @@ func (server SpacesUploadServer) UploadSpacesV1Files() http.Handler {
 		exist, err := server.filesRepo.ExistInSpaces(r.Context(), args.Filename, bucket.ID)
 		if err != nil {
 			log.Print("spaces-upload: failed: "+err.Error())
-			httpz.WriteError(w, httpz.NewMsgError(rpc.FileUploadFailed, http.StatusInternalServerError))
+			httpz.WriteError(w, httpz.NewMsgError(rpcspaces.FileUploadFailed, http.StatusInternalServerError))
 			return
 		}
 
 		if *exist {
-			httpz.WriteError(w, httpz.NewMsgError(rpc.FileExist, http.StatusBadRequest))
+			httpz.WriteError(w, httpz.NewMsgError(rpcspaces.FileExist, http.StatusBadRequest))
 			return
 		}
 
@@ -103,7 +104,7 @@ func (server SpacesUploadServer) UploadSpacesV1Files() http.Handler {
 		})
 		if err != nil {
 			log.Print("spaces-upload: failed: " + err.Error())
-			httpz.WriteError(w, httpz.NewMsgError(rpc.FileUploadFailed, http.StatusInternalServerError))
+			httpz.WriteError(w, httpz.NewMsgError(rpcspaces.FileUploadFailed, http.StatusInternalServerError))
 			return
 		}
 
@@ -117,7 +118,7 @@ func (server SpacesUploadServer) UploadSpacesV1Files() http.Handler {
 				Endpoint:   bucket.Endpoint,
 			},
 			args.Filename)
-			httpz.WriteError(w, httpz.NewMsgError(rpc.FileUploadFailed, http.StatusInternalServerError))
+			httpz.WriteError(w, httpz.NewMsgError(rpcspaces.FileUploadFailed, http.StatusInternalServerError))
 			return
 		}
 		httpz.WriteOk(w, upload.UploadDOV1Files{
@@ -132,10 +133,10 @@ func (server SpacesUploadServer) UploadSpacesV1Files() http.Handler {
 
 func NewSpacesUploadServer(actions storage.Actions, client *ent.Client, authService rpc2.AuthorizationService) SpacesUploadServer {
 	return SpacesUploadServer{
-		actions:		  actions,
-		authService:      authService,
-		validator:        validator.NewSpacesUploadServerValidator(),
-		filesRepo:   	  repository.NewFileRepository(client),
-		spacesRepo: 	  repository.NewSpacesRepository(client),
+		actions:     actions,
+		authService: authService,
+		validator:   validator.NewSpacesUploadServerValidator(),
+		filesRepo:   filerepo.NewFileRepository(client),
+		spacesRepo:  spacesrepo.NewSpacesRepository(client),
 	}
 }

@@ -1,4 +1,4 @@
-package rpc
+package rpcspaces
 
 import (
 	"github.com/pepeunlimited/microservice-kit/rpcz"

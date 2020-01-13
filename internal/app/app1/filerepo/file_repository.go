@@ -1,4 +1,4 @@
-package repository
+package filerepo
 
 import (
 	"context"
@@ -6,6 +6,7 @@ import (
 	"github.com/pepeunlimited/files/internal/app/app1/ent"
 	"github.com/pepeunlimited/files/internal/app/app1/ent/files"
 	"github.com/pepeunlimited/files/internal/app/app1/ent/spaces"
+	"github.com/pepeunlimited/files/internal/app/app1/spacesrepo"
 	"time"
 )
 
@@ -165,7 +166,7 @@ func (f filesMySQL) isFilesError(err error) error {
 
 func (f filesMySQL) isSpacesError(err error) error {
 	if ent.IsNotFound(err) {
-		return ErrSpacesNotExist
+		return spacesrepo.ErrSpacesNotExist
 	}
 	return err
 }

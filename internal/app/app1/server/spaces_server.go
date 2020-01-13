@@ -3,9 +3,10 @@ package server
 import (
 	"context"
 	"github.com/pepeunlimited/files/internal/app/app1/ent"
-	"github.com/pepeunlimited/files/internal/app/app1/repository"
+	"github.com/pepeunlimited/files/internal/app/app1/filerepo"
+	"github.com/pepeunlimited/files/internal/app/app1/spacesrepo"
 	"github.com/pepeunlimited/files/internal/app/app1/validator"
-	"github.com/pepeunlimited/files/rpc"
+	"github.com/pepeunlimited/files/rpcspaces"
 	"github.com/pepeunlimited/files/storage"
 	"github.com/pepeunlimited/microservice-kit/rpcz"
 	validator2 "github.com/pepeunlimited/microservice-kit/validator"
@@ -15,13 +16,13 @@ import (
 )
 
 type SpacesServer struct {
-	validator 		validator.SpacesServerValidator
-	spacesRepo 		repository.SpacesRepository
-	filesRepo        repository.FileRepository
-	actions         storage.Actions // storage actions..
+	validator validator.SpacesServerValidator
+	spaces    spacesrepo.SpacesRepository
+	files      filerepo.FileRepository
+	actions   storage.Actions // storage actions..
 }
 
-func (server SpacesServer) CreateSpaces(ctx context.Context, params *rpc.CreateSpacesParams) (*rpc.CreateSpacesResponse, error) {
+func (server SpacesServer) CreateSpaces(ctx context.Context, params *rpcspaces.CreateSpacesParams) (*rpcspaces.CreateSpacesResponse, error) {
 	if err := server.validator.CreateBucket(params); err != nil {
 		return nil, err
 	}
@@ -39,7 +40,7 @@ func (server SpacesServer) CreateSpaces(ctx context.Context, params *rpc.CreateS
 	if err != nil {
 		return nil, twirp.InternalErrorWith(err)
 	}
-	spaces, err := server.spacesRepo.Create(ctx, params.Name, params.Endpoint, &cdn)
+	spaces, err := server.spaces.Create(ctx, params.Name, params.Endpoint, &cdn)
 	if err != nil {
 		server.actions.DeleteBucket(storage.Buckets{
 			BucketName: params.Name,
@@ -47,7 +48,7 @@ func (server SpacesServer) CreateSpaces(ctx context.Context, params *rpc.CreateS
 		})
 		return nil, twirp.InternalErrorWith(err)
 	}
-	return &rpc.CreateSpacesResponse{
+	return &rpcspaces.CreateSpacesResponse{
 		Endpoint:    spaces.Endpoint,
 		CdnEndpoint: *spaces.CdnEndpoint,
 		Name:        spaces.Name,
@@ -55,15 +56,15 @@ func (server SpacesServer) CreateSpaces(ctx context.Context, params *rpc.CreateS
 	}, nil
 }
 
-func (server SpacesServer) fileByFilename(ctx context.Context, params *rpc.Filename) (*ent.Files, *ent.Spaces, error) {
+func (server SpacesServer) fileByFilename(ctx context.Context, params *rpcspaces.Filename) (*ent.Files, *ent.Spaces, error) {
 	isDeleted := false
 	if params.BucketName != nil && !validator2.IsEmpty(params.BucketName.Value) {
-		return server.filesRepo.GetFileByFilenameSpacesName(ctx, params.Name, params.BucketName.Value, nil, &isDeleted)
+		return server.files.GetFileByFilenameSpacesName(ctx, params.Name, params.BucketName.Value, nil, &isDeleted)
 	}
-	return server.filesRepo.GetFileByFilenameSpacesID(ctx, params.Name, int(params.BucketId.Value), nil, &isDeleted)
+	return server.files.GetFileByFilenameSpacesID(ctx, params.Name, int(params.BucketId.Value), nil, &isDeleted)
 }
 
-func (server SpacesServer) GetFile(ctx context.Context, params *rpc.GetFileParams) (*rpc.File, error) {
+func (server SpacesServer) GetFile(ctx context.Context, params *rpcspaces.GetFileParams) (*rpcspaces.File, error) {
 	if err := server.validator.GetFile(params); err != nil {
 		return nil, err
 	}
@@ -73,7 +74,7 @@ func (server SpacesServer) GetFile(ctx context.Context, params *rpc.GetFileParam
 	isDraft := false
 	isDeleted := false
 	if params.Filename == nil {
-		file, spaces, err = server.filesRepo.GetFilesSpacesByID(ctx, int(params.FileId.Value), &isDraft, &isDeleted)
+		file, spaces, err = server.files.GetFilesSpacesByID(ctx, int(params.FileId.Value), &isDraft, &isDeleted)
 	} else {
 		file, spaces, err = server.fileByFilename(ctx, params.Filename)
 	}
@@ -87,16 +88,16 @@ func (server SpacesServer) GetFile(ctx context.Context, params *rpc.GetFileParam
 
 func (server SpacesServer) isFileError(err error) error {
 	switch err {
-	case repository.ErrFileNotExist:
-		return twirp.NotFoundError("file not exist").WithMeta(rpcz.Reason, rpc.FileNotFound)
-	case repository.ErrSpacesNotExist:
-		return twirp.NotFoundError("spaces not exist").WithMeta(rpcz.Reason, rpc.SpacesNotFound)
+	case filerepo.ErrFileNotExist:
+		return twirp.NotFoundError("file not exist").WithMeta(rpcz.Reason, rpcspaces.FileNotFound)
+	case spacesrepo.ErrSpacesNotExist:
+		return twirp.NotFoundError("spaces not exist").WithMeta(rpcz.Reason, rpcspaces.SpacesNotFound)
 	}
 	log.Print("spaces-service: unknown: "+err.Error())
 	return twirp.NewError(twirp.Internal ,"unknown: "+err.Error())
 }
 
-func (server SpacesServer) Delete(ctx context.Context, params *rpc.DeleteParams) (*rpc.DeleteResponse, error) {
+func (server SpacesServer) Delete(ctx context.Context, params *rpcspaces.DeleteParams) (*rpcspaces.DeleteResponse, error) {
 	if err := server.validator.Delete(params); err != nil {
 		return nil, err
 	}
@@ -112,49 +113,49 @@ func (server SpacesServer) Delete(ctx context.Context, params *rpc.DeleteParams)
 	}
 	isDeleted := false
 	if !params.IsPermanent {
-		_, err := server.filesRepo.GetFileByID(ctx, fileID, nil, &isDeleted)
+		_, err := server.files.GetFileByID(ctx, fileID, nil, &isDeleted)
 		if err != nil {
 			return nil, server.isFileError(err)
 		}
 	}
-	_, err := server.filesRepo.MarkAsDeletedByID(ctx, fileID)
+	_, err := server.files.MarkAsDeletedByID(ctx, fileID)
 	if err != nil {
 		return nil, server.isFileError(err)
 	}
-	file, buckets, err := server.filesRepo.GetFilesSpacesByID(ctx, fileID, nil, nil)
+	file, buckets, err := server.files.GetFilesSpacesByID(ctx, fileID, nil, nil)
 	if err != nil {
 		return nil, server.isFileError(err)
 	}
 	if params.IsPermanent {
 		// call the actions for object delete..
 		if err := server.actions.Delete(storage.Buckets{BucketName: buckets.Name, Endpoint:buckets.Endpoint}, file.Filename); err == nil {
-			server.filesRepo.DeleteFileByID(ctx, fileID)
+			server.files.DeleteFileByID(ctx, fileID)
 		}
 	}
-	return &rpc.DeleteResponse{}, nil
+	return &rpcspaces.DeleteResponse{}, nil
 }
 
-func (server SpacesServer) GetSpaces(context.Context, *rpc.GetSpacesParams) (*rpc.GetSpacesResponse, error) {
+func (server SpacesServer) GetSpaces(context.Context, *rpcspaces.GetSpacesParams) (*rpcspaces.GetSpacesResponse, error) {
 	panic("implement me")
 }
 
-func (server SpacesServer) Wipe(ctx context.Context, params *rpc.WipeParams) (*rpc.WipeParamsResponse, error) {
+func (server SpacesServer) Wipe(ctx context.Context, params *rpcspaces.WipeParams) (*rpcspaces.WipeParamsResponse, error) {
 	panic("implement me")
 }
 
-func (server SpacesServer) GetFiles(ctx context.Context, params *rpc.GetFilesParams) (*rpc.GetFilesResponse, error) {
+func (server SpacesServer) GetFiles(ctx context.Context, params *rpcspaces.GetFilesParams) (*rpcspaces.GetFilesResponse, error) {
 	panic("implement me")
 }
 
-func (server SpacesServer) Cut(ctx context.Context, params *rpc.CutParams) (*rpc.CutResponse, error) {
+func (server SpacesServer) Cut(ctx context.Context, params *rpcspaces.CutParams) (*rpcspaces.CutResponse, error) {
 	panic("implement me")
 }
 
 func NewSpacesServer(actions storage.Actions, client *ent.Client) SpacesServer {
 	return SpacesServer{
-		actions:		 actions,
-		validator: 		 validator.NewSpacesServerValidator(),
-		spacesRepo: 	 repository.NewSpacesRepository(client),
-		filesRepo:  		 repository.NewFileRepository(client),
+		actions:   actions,
+		validator: validator.NewSpacesServerValidator(),
+		spaces:    spacesrepo.NewSpacesRepository(client),
+		files:     filerepo.NewFileRepository(client),
 	}
 }

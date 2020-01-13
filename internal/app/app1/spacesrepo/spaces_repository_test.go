@@ -1,13 +1,14 @@
-package repository
+package spacesrepo
 
 import (
 	"context"
+	"github.com/pepeunlimited/files/internal/app/app1/mysql"
 	"testing"
 )
 
 func TestDOBucketMySQL_CreateBucketAndDelete(t *testing.T) {
 	ctx := context.TODO()
-	spaces := NewSpacesRepository(NewEntClient())
+	spaces := NewSpacesRepository(mysql.NewEntClient())
 	spaces.Wipe(ctx)
 
 	bucketName := "bucket-666"
@@ -53,7 +54,7 @@ func TestDOBucketMySQL_CreateBucketAndDelete(t *testing.T) {
 
 func TestDobucketMySQL_GetBucketByID(t *testing.T) {
 	ctx := context.TODO()
-	bucketRepo := NewSpacesRepository(NewEntClient())
+	bucketRepo := NewSpacesRepository(mysql.NewEntClient())
 	bucketRepo.Wipe(ctx)
 
 	bucketName := "bucket-666"
@@ -79,7 +80,7 @@ func TestDobucketMySQL_GetBucketByID(t *testing.T) {
 
 func TestDobucketsMySQL_GetBuckets(t *testing.T) {
 	ctx := context.TODO()
-	bucketRepo := NewSpacesRepository(NewEntClient())
+	bucketRepo := NewSpacesRepository(mysql.NewEntClient())
 	bucketRepo.Wipe(ctx)
 
 	bucketName := "bucket-666"

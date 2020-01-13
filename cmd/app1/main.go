@@ -2,10 +2,10 @@ package main
 
 import (
 	rpc2 "github.com/pepeunlimited/authorization-twirp/rpc"
-	"github.com/pepeunlimited/files/internal/app/app1/repository"
+	"github.com/pepeunlimited/files/internal/app/app1/mysql"
 	"github.com/pepeunlimited/files/internal/app/app1/server"
 	"github.com/pepeunlimited/files/internal/app/app1/upload"
-	"github.com/pepeunlimited/files/rpc"
+	"github.com/pepeunlimited/files/rpcspaces"
 	"github.com/pepeunlimited/microservice-kit/headers"
 	"github.com/pepeunlimited/microservice-kit/middleware"
 	"github.com/pepeunlimited/microservice-kit/misc"
@@ -24,13 +24,13 @@ func main() {
 
 	authorizationAddress := misc.GetEnv(rpc2.RpcAuthorizationHost, "http://api.dev.pepeunlimited.com")
 	// ent
-	ent 	 	 	 := repository.NewEntClient()
+	ent 	 	 	 := mysql.NewEntClient()
 
 	// DOsUpload
 	dos				 := upload.NewDos()
 
 	// DOs
-	sss := rpc.NewSpacesServiceServer(server.NewSpacesServer(dos, ent), nil)
+	sss := rpcspaces.NewSpacesServiceServer(server.NewSpacesServer(dos, ent), nil)
 	sus := server.NewSpacesUploadServer(dos, ent, rpc2.NewAuthorizationServiceProtobufClient(authorizationAddress, http.DefaultClient))
 
 	mux := http.NewServeMux()

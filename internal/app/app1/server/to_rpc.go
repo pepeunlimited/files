@@ -2,12 +2,12 @@ package server
 
 import (
 	"github.com/pepeunlimited/files/internal/app/app1/ent"
-	"github.com/pepeunlimited/files/rpc"
+	"github.com/pepeunlimited/files/rpcspaces"
 	"time"
 )
 
-func toFile(files *ent.Files, spaces *ent.Spaces) *rpc.File {
-	file := &rpc.File{
+func toFile(files *ent.Files, spaces *ent.Spaces) *rpcspaces.File {
+	file := &rpcspaces.File{
 		Id:        int64(files.ID),
 		Filename:  files.Filename,
 		CreatedAt: files.CreatedAt.Format(time.RFC3339),
