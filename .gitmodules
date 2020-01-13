@@ -1,0 +1,3 @@
+[submodule "rpcspaces/protobuf"]
+	path = rpcspaces/protobuf
+	url = git@github.com:pepeunlimited/protobuf.git
