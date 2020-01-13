@@ -34,7 +34,7 @@ spec:
               value: $SPACES_SECRET_KEY
             - name: DO_ACCESS_TOKEN
               value: $DO_ACCESS_TOKEN
-          image: pepeunlimited/files:0.1.1
+          image: pepeunlimited/files:0.1.2
           name: files
           ports:
             - containerPort: 8080
