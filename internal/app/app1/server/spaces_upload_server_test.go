@@ -19,7 +19,7 @@ func TestDOFileUploadServer_UploadDOV1FilesSuccess(t *testing.T) {
 	mock := upload.NewDosMock(nil)
 
 	server := NewSpacesUploadServer(mock, mysql.NewEntClient(), authClient)
-	server.spacesRepo.Wipe(ctx)
+	server.spaces.Wipe(ctx)
 
 	fileServer := NewSpacesServer(mock, mysql.NewEntClient())
 	fileServer.CreateSpaces(ctx, &rpcspaces.CreateSpacesParams{

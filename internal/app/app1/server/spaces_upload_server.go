@@ -27,8 +27,8 @@ const (
 type SpacesUploadServer struct {
 	validator   validator.SpacesUploadServerValidator
 	actions     storage.Actions
-	filesRepo   filerepo.FileRepository
-	spacesRepo  spacesrepo.SpacesRepository
+	files        filerepo.FileRepository
+	spaces      spacesrepo.SpacesRepository
 	authService rpc2.AuthorizationService
 }
 
@@ -59,7 +59,7 @@ func (server SpacesUploadServer) UploadSpacesV1Files() http.Handler {
 		}
 		userId := user.UserId
 
-		buckets,_, err := server.spacesRepo.GetSpaces(r.Context(), 0, 20)
+		buckets,_, err := server.spaces.GetSpaces(r.Context(), 0, 20)
 		if err != nil {
 			log.Print("spaces-upload: failed: "+err.Error())
 			httpz.WriteError(w, httpz.NewMsgError(rpcspaces.FileUploadFailed, http.StatusInternalServerError))
@@ -76,7 +76,7 @@ func (server SpacesUploadServer) UploadSpacesV1Files() http.Handler {
 		random := rand.Intn(max - min) + min
 		bucket := buckets[random]
 
-		exist, err := server.filesRepo.ExistInSpaces(r.Context(), args.Filename, bucket.ID)
+		exist, err := server.files.ExistInSpaces(r.Context(), args.Filename, bucket.ID)
 		if err != nil {
 			log.Print("spaces-upload: failed: "+err.Error())
 			httpz.WriteError(w, httpz.NewMsgError(rpcspaces.FileUploadFailed, http.StatusInternalServerError))
@@ -109,7 +109,7 @@ func (server SpacesUploadServer) UploadSpacesV1Files() http.Handler {
 		}
 
 		// save to the DB
-		file, err := server.filesRepo.CreateSpacesFile(r.Context(), args.Filename, header.ContentLength, header.ContentType, false, false, userId, bucket.ID)
+		file, err := server.files.CreateSpacesFile(r.Context(), args.Filename, header.ContentLength, header.ContentType, false, false, userId, bucket.ID)
 		if err != nil {
 			log.Print("spaces-upload: failed: " + err.Error())
 			// rollback
@@ -136,7 +136,7 @@ func NewSpacesUploadServer(actions storage.Actions, client *ent.Client, authServ
 		actions:     actions,
 		authService: authService,
 		validator:   validator.NewSpacesUploadServerValidator(),
-		filesRepo:   filerepo.NewFileRepository(client),
-		spacesRepo:  spacesrepo.NewSpacesRepository(client),
+		files:       filerepo.NewFileRepository(client),
+		spaces:      spacesrepo.NewSpacesRepository(client),
 	}
 }
