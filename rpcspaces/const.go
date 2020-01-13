@@ -1,3 +1,3 @@
 package rpcspaces
 
-const RpcFilesHost = "RPC_FILES_HOST"
+const RpcSpacesHost = "RPC_SPACES_HOST"
