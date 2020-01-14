@@ -1,7 +1,7 @@
 package main
 
 import (
-	rpc2 "github.com/pepeunlimited/authorization-twirp/rpc"
+	"github.com/pepeunlimited/authentication-twirp/rpcauth"
 	"github.com/pepeunlimited/files/internal/app/app1/mysql"
 	"github.com/pepeunlimited/files/internal/app/app1/server"
 	"github.com/pepeunlimited/files/internal/app/app1/upload"
@@ -14,15 +14,14 @@ import (
 )
 
 const (
-	Version = "0.1.2"
+	Version = "0.1.4"
 )
 
 
 func main() {
 	log.Printf("Starting the FilesServer... version=[%v]", Version)
 
-
-	authorizationAddress := misc.GetEnv(rpc2.RpcAuthorizationHost, "http://api.dev.pepeunlimited.com")
+	authenticationAddress := misc.GetEnv(rpcauth.RpcAuthenticationHost, "http://api.dev.pepeunlimited.com")
 	// ent
 	ent 	 	 	 := mysql.NewEntClient()
 
@@ -31,7 +30,7 @@ func main() {
 
 	// DOs
 	sss := rpcspaces.NewSpacesServiceServer(server.NewSpacesServer(dos, ent), nil)
-	sus := server.NewSpacesUploadServer(dos, ent, rpc2.NewAuthorizationServiceProtobufClient(authorizationAddress, http.DefaultClient))
+	sus := server.NewSpacesUploadServer(dos, ent, rpcauth.NewAuthenticationServiceProtobufClient(authenticationAddress, http.DefaultClient))
 
 	mux := http.NewServeMux()
 	mux.Handle(sss.PathPrefix(), middleware.Adapt(sss, headers.Username()))

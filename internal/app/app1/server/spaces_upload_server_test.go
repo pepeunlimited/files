@@ -2,7 +2,7 @@ package server
 
 import (
 	"context"
-	rpc2 "github.com/pepeunlimited/authorization-twirp/rpc"
+	"github.com/pepeunlimited/authentication-twirp/rpcauth"
 	"github.com/pepeunlimited/files/internal/app/app1/mysql"
 	"github.com/pepeunlimited/files/internal/app/app1/upload"
 	"github.com/pepeunlimited/files/rpcspaces"
@@ -15,7 +15,7 @@ import (
 
 func TestDOFileUploadServer_UploadDOV1FilesSuccess(t *testing.T) {
 	ctx := context.TODO()
-	authClient := rpc2.NewAuthorizationMock(nil)
+	authClient := rpcauth.NewAuthenticationMock(nil)
 	mock := upload.NewDosMock(nil)
 
 	server := NewSpacesUploadServer(mock, mysql.NewEntClient(), authClient)

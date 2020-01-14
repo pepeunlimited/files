@@ -1,7 +1,7 @@
 package server
 
 import (
-	rpc2 "github.com/pepeunlimited/authorization-twirp/rpc"
+	"github.com/pepeunlimited/authentication-twirp/rpcauth"
 	"github.com/pepeunlimited/files/internal/app/app1/ent"
 	"github.com/pepeunlimited/files/internal/app/app1/filerepo"
 	"github.com/pepeunlimited/files/internal/app/app1/spacesrepo"
@@ -25,11 +25,11 @@ const (
 )
 
 type SpacesUploadServer struct {
-	validator   validator.SpacesUploadServerValidator
-	actions     storage.Actions
-	files        filerepo.FileRepository
-	spaces      spacesrepo.SpacesRepository
-	authService rpc2.AuthorizationService
+	validator   	validator.SpacesUploadServerValidator
+	actions     	storage.Actions
+	files        	filerepo.FileRepository
+	spaces      	spacesrepo.SpacesRepository
+	authentication  rpcauth.AuthenticationService
 }
 
 // https://phil.tech/api/2016/01/04/http-rest-api-file-uploads/
@@ -41,16 +41,16 @@ func (server SpacesUploadServer) UploadSpacesV1Files() http.Handler {
 			return
 		}
 		// validate the access token..
-		user, err := server.authService.VerifyAccessToken(r.Context(), &rpc2.VerifyAccessTokenParams{
+		user, err := server.authentication.VerifyAccessToken(r.Context(), &rpcauth.VerifyAccessTokenParams{
 			AccessToken: header.Authorization,
 		})
 		if err != nil {
-			if rpcspaces.IsReason(err.(twirp.Error), rpc2.AccessTokenExpired) {
-				httpz.WriteError(w,httpz.NewMsgError(rpc2.AccessTokenExpired, http.StatusUnauthorized))
-			} else if rpcspaces.IsReason(err.(twirp.Error), rpc2.AccessTokenMalformed) {
-				httpz.WriteError(w,httpz.NewMsgError(rpc2.AccessTokenMalformed, http.StatusBadRequest))
-			} else if rpcspaces.IsReason(err.(twirp.Error), rpc2.AccessTokenUnknownError) {
-				httpz.WriteError(w,httpz.NewMsgError(rpc2.AccessTokenUnknownError, http.StatusInternalServerError))
+			if rpcspaces.IsReason(err.(twirp.Error), rpcauth.AccessTokenExpired) {
+				httpz.WriteError(w,httpz.NewMsgError(rpcauth.AccessTokenExpired, http.StatusUnauthorized))
+			} else if rpcspaces.IsReason(err.(twirp.Error), rpcauth.AccessTokenMalformed) {
+				httpz.WriteError(w,httpz.NewMsgError(rpcauth.AccessTokenMalformed, http.StatusBadRequest))
+			} else if rpcspaces.IsReason(err.(twirp.Error), rpcauth.AccessTokenUnknownError) {
+				httpz.WriteError(w,httpz.NewMsgError(rpcauth.AccessTokenUnknownError, http.StatusInternalServerError))
 			} else {
 				log.Print("spaces-upload: failed: "+err.Error())
 				httpz.WriteError(w,httpz.NewMsgError(rpcspaces.FileUploadFailed, http.StatusInternalServerError))
@@ -131,12 +131,12 @@ func (server SpacesUploadServer) UploadSpacesV1Files() http.Handler {
 	})
 }
 
-func NewSpacesUploadServer(actions storage.Actions, client *ent.Client, authService rpc2.AuthorizationService) SpacesUploadServer {
+func NewSpacesUploadServer(actions storage.Actions, client *ent.Client, authentication rpcauth.AuthenticationService) SpacesUploadServer {
 	return SpacesUploadServer{
-		actions:     actions,
-		authService: authService,
-		validator:   validator.NewSpacesUploadServerValidator(),
-		files:       filerepo.NewFileRepository(client),
-		spaces:      spacesrepo.NewSpacesRepository(client),
+		actions:    	 	actions,
+		authentication: 	authentication,
+		validator:   		validator.NewSpacesUploadServerValidator(),
+		files:       		filerepo.NewFileRepository(client),
+		spaces:      		spacesrepo.NewSpacesRepository(client),
 	}
 }
