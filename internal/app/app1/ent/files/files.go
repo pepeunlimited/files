@@ -39,7 +39,7 @@ const (
 	SpacesColumn = "spaces_id"
 )
 
-// Columns holds all SQL columns are files fields.
+// Columns holds all SQL columns for files fields.
 var Columns = []string{
 	FieldID,
 	FieldFilename,
@@ -50,6 +50,11 @@ var Columns = []string{
 	FieldUserID,
 	FieldCreatedAt,
 	FieldUpdatedAt,
+}
+
+// ForeignKeys holds the SQL foreign-keys that are owned by the Files type.
+var ForeignKeys = []string{
+	"spaces_id",
 }
 
 var (

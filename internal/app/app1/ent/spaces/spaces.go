@@ -31,7 +31,7 @@ const (
 	FilesColumn = "spaces_id"
 )
 
-// Columns holds all SQL columns are spaces fields.
+// Columns holds all SQL columns for spaces fields.
 var Columns = []string{
 	FieldID,
 	FieldName,

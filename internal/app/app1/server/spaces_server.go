@@ -6,7 +6,7 @@ import (
 	"github.com/pepeunlimited/files/internal/app/app1/filerepo"
 	"github.com/pepeunlimited/files/internal/app/app1/spacesrepo"
 	"github.com/pepeunlimited/files/internal/app/app1/validator"
-	"github.com/pepeunlimited/files/rpcspaces"
+	"github.com/pepeunlimited/files/spacesrpc"
 	"github.com/pepeunlimited/files/storage"
 	"github.com/pepeunlimited/microservice-kit/rpcz"
 	validator2 "github.com/pepeunlimited/microservice-kit/validator"
@@ -22,7 +22,7 @@ type SpacesServer struct {
 	actions   storage.Actions // storage actions..
 }
 
-func (server SpacesServer) CreateSpaces(ctx context.Context, params *rpcspaces.CreateSpacesParams) (*rpcspaces.CreateSpacesResponse, error) {
+func (server SpacesServer) CreateSpaces(ctx context.Context, params *spacesrpc.CreateSpacesParams) (*spacesrpc.CreateSpacesResponse, error) {
 	if err := server.validator.CreateBucket(params); err != nil {
 		return nil, err
 	}
@@ -48,7 +48,7 @@ func (server SpacesServer) CreateSpaces(ctx context.Context, params *rpcspaces.C
 		})
 		return nil, twirp.InternalErrorWith(err)
 	}
-	return &rpcspaces.CreateSpacesResponse{
+	return &spacesrpc.CreateSpacesResponse{
 		Endpoint:    spaces.Endpoint,
 		CdnEndpoint: *spaces.CdnEndpoint,
 		Name:        spaces.Name,
@@ -56,7 +56,7 @@ func (server SpacesServer) CreateSpaces(ctx context.Context, params *rpcspaces.C
 	}, nil
 }
 
-func (server SpacesServer) fileByFilename(ctx context.Context, params *rpcspaces.Filename) (*ent.Files, *ent.Spaces, error) {
+func (server SpacesServer) fileByFilename(ctx context.Context, params *spacesrpc.Filename) (*ent.Files, *ent.Spaces, error) {
 	isDeleted := false
 	if params.BucketName != nil && !validator2.IsEmpty(params.BucketName.Value) {
 		return server.files.GetFileByFilenameSpacesName(ctx, params.Name, params.BucketName.Value, nil, &isDeleted)
@@ -64,7 +64,7 @@ func (server SpacesServer) fileByFilename(ctx context.Context, params *rpcspaces
 	return server.files.GetFileByFilenameSpacesID(ctx, params.Name, int(params.BucketId.Value), nil, &isDeleted)
 }
 
-func (server SpacesServer) GetFile(ctx context.Context, params *rpcspaces.GetFileParams) (*rpcspaces.File, error) {
+func (server SpacesServer) GetFile(ctx context.Context, params *spacesrpc.GetFileParams) (*spacesrpc.File, error) {
 	if err := server.validator.GetFile(params); err != nil {
 		return nil, err
 	}
@@ -89,15 +89,15 @@ func (server SpacesServer) GetFile(ctx context.Context, params *rpcspaces.GetFil
 func (server SpacesServer) isFileError(err error) error {
 	switch err {
 	case filerepo.ErrFileNotExist:
-		return twirp.NotFoundError("file not exist").WithMeta(rpcz.Reason, rpcspaces.FileNotFound)
+		return twirp.NotFoundError("file not exist").WithMeta(rpcz.Reason, spacesrpc.FileNotFound)
 	case spacesrepo.ErrSpacesNotExist:
-		return twirp.NotFoundError("spaces not exist").WithMeta(rpcz.Reason, rpcspaces.SpacesNotFound)
+		return twirp.NotFoundError("spaces not exist").WithMeta(rpcz.Reason, spacesrpc.SpacesNotFound)
 	}
 	log.Print("spaces-service: unknown: "+err.Error())
 	return twirp.NewError(twirp.Internal ,"unknown: "+err.Error())
 }
 
-func (server SpacesServer) Delete(ctx context.Context, params *rpcspaces.DeleteParams) (*rpcspaces.DeleteResponse, error) {
+func (server SpacesServer) Delete(ctx context.Context, params *spacesrpc.DeleteParams) (*spacesrpc.DeleteResponse, error) {
 	if err := server.validator.Delete(params); err != nil {
 		return nil, err
 	}
@@ -132,22 +132,22 @@ func (server SpacesServer) Delete(ctx context.Context, params *rpcspaces.DeleteP
 			server.files.DeleteFileByID(ctx, fileID)
 		}
 	}
-	return &rpcspaces.DeleteResponse{}, nil
+	return &spacesrpc.DeleteResponse{}, nil
 }
 
-func (server SpacesServer) GetSpaces(context.Context, *rpcspaces.GetSpacesParams) (*rpcspaces.GetSpacesResponse, error) {
+func (server SpacesServer) GetSpaces(context.Context, *spacesrpc.GetSpacesParams) (*spacesrpc.GetSpacesResponse, error) {
 	panic("implement me")
 }
 
-func (server SpacesServer) Wipe(ctx context.Context, params *rpcspaces.WipeParams) (*rpcspaces.WipeParamsResponse, error) {
+func (server SpacesServer) Wipe(ctx context.Context, params *spacesrpc.WipeParams) (*spacesrpc.WipeParamsResponse, error) {
 	panic("implement me")
 }
 
-func (server SpacesServer) GetFiles(ctx context.Context, params *rpcspaces.GetFilesParams) (*rpcspaces.GetFilesResponse, error) {
+func (server SpacesServer) GetFiles(ctx context.Context, params *spacesrpc.GetFilesParams) (*spacesrpc.GetFilesResponse, error) {
 	panic("implement me")
 }
 
-func (server SpacesServer) Cut(ctx context.Context, params *rpcspaces.CutParams) (*rpcspaces.CutResponse, error) {
+func (server SpacesServer) Cut(ctx context.Context, params *spacesrpc.CutParams) (*spacesrpc.CutResponse, error) {
 	panic("implement me")
 }
 

@@ -5,7 +5,7 @@ import (
 	"github.com/golang/protobuf/ptypes/wrappers"
 	"github.com/pepeunlimited/files/internal/app/app1/mysql"
 	"github.com/pepeunlimited/files/internal/app/app1/upload"
-	"github.com/pepeunlimited/files/rpcspaces"
+	"github.com/pepeunlimited/files/spacesrpc"
 	"testing"
 )
 
@@ -18,7 +18,7 @@ func TestDOFileServer_GetFileByID(t *testing.T) {
 	doBucket,_ := server.spaces.Create(ctx, "lol", "aaaa", nil)
 	created,_ := server.files.CreateSpacesFile(ctx, "filename", 1, "mimetype", false, false, 1, doBucket.ID)
 
-	resp0, err := server.GetFile(ctx, &rpcspaces.GetFileParams{
+	resp0, err := server.GetFile(ctx, &spacesrpc.GetFileParams{
 		FileId: &wrappers.Int64Value{
 			Value: int64(created.ID),
 		},
@@ -50,11 +50,11 @@ func TestDOFileServer_GetFileByFilename(t *testing.T) {
 	server    := NewSpacesServer(mock, mysql.NewEntClient())
 	server.spaces.Wipe(ctx)
 
-	bucket0,_ := server.CreateSpaces(ctx, &rpcspaces.CreateSpacesParams{
+	bucket0,_ := server.CreateSpaces(ctx, &spacesrpc.CreateSpacesParams{
 		Name: "lol-1",
 		Endpoint:   "endpoint1.aa.com",
 	})
-	bucket1,_ := server.CreateSpaces(ctx, &rpcspaces.CreateSpacesParams{
+	bucket1,_ := server.CreateSpaces(ctx, &spacesrpc.CreateSpacesParams{
 		Name: "lol-2",
 		Endpoint:   "endpoint2.aa.com",
 	})
@@ -69,8 +69,8 @@ func TestDOFileServer_GetFileByFilename(t *testing.T) {
 		t.Error(err)
 		t.FailNow()
 	}
-	resp0, err := server.GetFile(ctx, &rpcspaces.GetFileParams{
-		Filename: &rpcspaces.Filename{
+	resp0, err := server.GetFile(ctx, &spacesrpc.GetFileParams{
+		Filename: &spacesrpc.Filename{
 			Name:       "filename",
 			BucketId:   &wrappers.Int64Value{
 				Value: bucket0.SpacesId,
@@ -97,8 +97,8 @@ func TestDOFileServer_GetFileByFilename(t *testing.T) {
 	if resp0.Filename != file0.Filename {
 		t.FailNow()
 	}
-	resp0, err = server.GetFile(ctx, &rpcspaces.GetFileParams{
-		Filename: &rpcspaces.Filename{
+	resp0, err = server.GetFile(ctx, &spacesrpc.GetFileParams{
+		Filename: &spacesrpc.Filename{
 			Name:       "filename",
 			BucketName: &wrappers.StringValue{
 				Value: "lol-1",
@@ -131,7 +131,7 @@ func TestDOFileServer_CreateBucket(t *testing.T) {
 	mock      := upload.NewDosMock(nil)
 	server    := NewSpacesServer(mock, mysql.NewEntClient())
 	server.spaces.Wipe(ctx)
-	bucket, err := server.CreateSpaces(ctx, &rpcspaces.CreateSpacesParams{
+	bucket, err := server.CreateSpaces(ctx, &spacesrpc.CreateSpacesParams{
 		Name:  "bucket-test",
 		Endpoint:    "fra.endpoint.com",
 	})
@@ -165,8 +165,8 @@ func TestDOFileServer_Delete(t *testing.T) {
 	doBucket,_ := server.spaces.Create(ctx, "bucket", "endpoint", nil)
 	server.files.CreateSpacesFile(ctx, "filename.txt", 15, "plain/text", false, false, 1, doBucket.ID)
 	file1,_ := server.files.CreateSpacesFile(ctx, "filename2.txt", 15, "plain/text", false, false, 1, doBucket.ID)
-	_, err := server.Delete(ctx, &rpcspaces.DeleteParams{
-		Filename: &rpcspaces.Filename{
+	_, err := server.Delete(ctx, &spacesrpc.DeleteParams{
+		Filename: &spacesrpc.Filename{
 			Name: "filename.txt",
 			BucketName: &wrappers.StringValue{
 				Value: "bucket",
@@ -189,7 +189,7 @@ func TestDOFileServer_Delete(t *testing.T) {
 	if !query0.IsDeleted {
 		t.FailNow()
 	}
-	_, err = server.Delete(ctx, &rpcspaces.DeleteParams{
+	_, err = server.Delete(ctx, &spacesrpc.DeleteParams{
 		FileId:      &wrappers.Int64Value{
 			Value: int64(file1.ID),
 		},

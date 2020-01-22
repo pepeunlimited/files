@@ -1,4 +1,4 @@
-package rpcspaces
+package spacesrpc
 
 import (
 	"context"

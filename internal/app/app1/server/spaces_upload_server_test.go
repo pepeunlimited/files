@@ -5,7 +5,7 @@ import (
 	"github.com/pepeunlimited/authentication-twirp/rpcauth"
 	"github.com/pepeunlimited/files/internal/app/app1/mysql"
 	"github.com/pepeunlimited/files/internal/app/app1/upload"
-	"github.com/pepeunlimited/files/rpcspaces"
+	"github.com/pepeunlimited/files/spacesrpc"
 	"net/http"
 	"net/http/httptest"
 	"strconv"
@@ -22,7 +22,7 @@ func TestDOFileUploadServer_UploadDOV1FilesSuccess(t *testing.T) {
 	server.spaces.Wipe(ctx)
 
 	fileServer := NewSpacesServer(mock, mysql.NewEntClient())
-	fileServer.CreateSpaces(ctx, &rpcspaces.CreateSpacesParams{
+	fileServer.CreateSpaces(ctx, &spacesrpc.CreateSpacesParams{
 		Name: "bucket",
 		Endpoint:   "fra1.mock.com",
 	})

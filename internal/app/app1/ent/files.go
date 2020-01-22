@@ -32,27 +32,41 @@ type Files struct {
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
+	// Edges holds the relations/edges for other nodes in the graph.
+	// The values are being populated by the FilesQuery when eager-loading is set.
+	Edges struct {
+		// Spaces holds the value of the spaces edge.
+		Spaces *Spaces
+	}
+	spaces_id *int
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
 func (*Files) scanValues() []interface{} {
 	return []interface{}{
-		&sql.NullInt64{},
-		&sql.NullString{},
-		&sql.NullString{},
-		&sql.NullInt64{},
-		&sql.NullBool{},
-		&sql.NullBool{},
-		&sql.NullInt64{},
-		&sql.NullTime{},
-		&sql.NullTime{},
+		&sql.NullInt64{},  // id
+		&sql.NullString{}, // filename
+		&sql.NullString{}, // mime_type
+		&sql.NullInt64{},  // file_size
+		&sql.NullBool{},   // is_draft
+		&sql.NullBool{},   // is_deleted
+		&sql.NullInt64{},  // user_id
+		&sql.NullTime{},   // created_at
+		&sql.NullTime{},   // updated_at
+	}
+}
+
+// fkValues returns the types for scanning foreign-keys values from sql.Rows.
+func (*Files) fkValues() []interface{} {
+	return []interface{}{
+		&sql.NullInt64{}, // spaces_id
 	}
 }
 
 // assignValues assigns the values that were returned from sql.Rows (after scanning)
 // to the Files fields.
 func (f *Files) assignValues(values ...interface{}) error {
-	if m, n := len(values), len(files.Columns); m != n {
+	if m, n := len(values), len(files.Columns); m < n {
 		return fmt.Errorf("mismatch number of scan values: %d != %d", m, n)
 	}
 	value, ok := values[0].(*sql.NullInt64)
@@ -100,6 +114,15 @@ func (f *Files) assignValues(values ...interface{}) error {
 		return fmt.Errorf("unexpected type %T for field updated_at", values[7])
 	} else if value.Valid {
 		f.UpdatedAt = value.Time
+	}
+	values = values[8:]
+	if len(values) == len(files.ForeignKeys) {
+		if value, ok := values[0].(*sql.NullInt64); !ok {
+			return fmt.Errorf("unexpected type %T for edge-field spaces_id", value)
+		} else if value.Valid {
+			f.spaces_id = new(int)
+			*f.spaces_id = int(value.Int64)
+		}
 	}
 	return nil
 }

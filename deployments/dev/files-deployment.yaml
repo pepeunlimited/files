@@ -27,14 +27,14 @@ spec:
             - name: MYSQL_USER
               value: root
             - name: RPC_AUTHENTICATION_HOST
-              value: http://authentication-twirp.default.svc.cluster.local
+              value: authentication-twirp
             - name: SPACES_ACCESS_KEY
               value: $SPACES_ACCESS_KEY
             - name: SPACES_SECRET_KEY
               value: $SPACES_SECRET_KEY
             - name: DO_ACCESS_TOKEN
               value: $DO_ACCESS_TOKEN
-          image: pepeunlimited/files:0.1.4
+          image: pepeunlimited/files:0.1.5
           name: files
           ports:
             - containerPort: 8080

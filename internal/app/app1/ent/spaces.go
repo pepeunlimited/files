@@ -24,23 +24,29 @@ type Spaces struct {
 	CdnEndpoint *string `json:"cdn_endpoint,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
+	// Edges holds the relations/edges for other nodes in the graph.
+	// The values are being populated by the SpacesQuery when eager-loading is set.
+	Edges struct {
+		// Files holds the value of the files edge.
+		Files []*Files
+	}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
 func (*Spaces) scanValues() []interface{} {
 	return []interface{}{
-		&sql.NullInt64{},
-		&sql.NullString{},
-		&sql.NullString{},
-		&sql.NullString{},
-		&sql.NullTime{},
+		&sql.NullInt64{},  // id
+		&sql.NullString{}, // name
+		&sql.NullString{}, // endpoint
+		&sql.NullString{}, // cdn_endpoint
+		&sql.NullTime{},   // created_at
 	}
 }
 
 // assignValues assigns the values that were returned from sql.Rows (after scanning)
 // to the Spaces fields.
 func (s *Spaces) assignValues(values ...interface{}) error {
-	if m, n := len(values), len(spaces.Columns); m != n {
+	if m, n := len(values), len(spaces.Columns); m < n {
 		return fmt.Errorf("mismatch number of scan values: %d != %d", m, n)
 	}
 	value, ok := values[0].(*sql.NullInt64)
