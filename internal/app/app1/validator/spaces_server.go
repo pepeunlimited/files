@@ -1,7 +1,7 @@
 package validator
 
 import (
-	"github.com/pepeunlimited/files/spacesrpc"
+	"github.com/pepeunlimited/files/filesrpc"
 	"github.com/pepeunlimited/microservice-kit/validator"
 	"github.com/twitchtv/twirp"
 )
@@ -12,7 +12,7 @@ func NewSpacesServerValidator() SpacesServerValidator {
 	return SpacesServerValidator{}
 }
 
-func (valid SpacesServerValidator) GetFile(params *spacesrpc.GetFileParams) error {
+func (valid SpacesServerValidator) GetFile(params *filesrpc.GetFileParams) error {
 	if  params.Filename == nil && params.FileId == nil {
 		return twirp.RequiredArgumentError("filename_or_fileId")
 	}
@@ -23,7 +23,7 @@ func (valid SpacesServerValidator) GetFile(params *spacesrpc.GetFileParams) erro
 	return nil
 }
 
-func (valid SpacesServerValidator) Delete(params *spacesrpc.DeleteParams) error {
+func (valid SpacesServerValidator) Delete(params *filesrpc.DeleteParams) error {
 	if  params.Filename == nil && params.FileId == nil {
 		return twirp.RequiredArgumentError("filename_or_fileId")
 	}
@@ -34,7 +34,7 @@ func (valid SpacesServerValidator) Delete(params *spacesrpc.DeleteParams) error 
 	return nil
 }
 
-func (SpacesServerValidator) filename(params *spacesrpc.Filename) bool {
+func (SpacesServerValidator) filename(params *filesrpc.Filename) bool {
 	if params == nil {
 		return false
 	}
@@ -44,7 +44,7 @@ func (SpacesServerValidator) filename(params *spacesrpc.Filename) bool {
 	return !isFilename || !isBucketName && !isBucketId
 }
 
-func (valid SpacesServerValidator) CreateBucket(params *spacesrpc.CreateSpacesParams) error {
+func (valid SpacesServerValidator) CreateBucket(params *filesrpc.CreateBucketParams) error {
 	if validator.IsEmpty(params.Endpoint) {
 		return twirp.RequiredArgumentError("endpoint")
 	}

@@ -35,10 +35,10 @@ type Files struct {
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the FilesQuery when eager-loading is set.
 	Edges struct {
-		// Spaces holds the value of the spaces edge.
-		Spaces *Spaces
-	}
-	spaces_id *int
+		// Buckets holds the value of the buckets edge.
+		Buckets *Buckets
+	} `json:"edges"`
+	buckets_id *int
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -59,7 +59,7 @@ func (*Files) scanValues() []interface{} {
 // fkValues returns the types for scanning foreign-keys values from sql.Rows.
 func (*Files) fkValues() []interface{} {
 	return []interface{}{
-		&sql.NullInt64{}, // spaces_id
+		&sql.NullInt64{}, // buckets_id
 	}
 }
 
@@ -118,18 +118,18 @@ func (f *Files) assignValues(values ...interface{}) error {
 	values = values[8:]
 	if len(values) == len(files.ForeignKeys) {
 		if value, ok := values[0].(*sql.NullInt64); !ok {
-			return fmt.Errorf("unexpected type %T for edge-field spaces_id", value)
+			return fmt.Errorf("unexpected type %T for edge-field buckets_id", value)
 		} else if value.Valid {
-			f.spaces_id = new(int)
-			*f.spaces_id = int(value.Int64)
+			f.buckets_id = new(int)
+			*f.buckets_id = int(value.Int64)
 		}
 	}
 	return nil
 }
 
-// QuerySpaces queries the spaces edge of the Files.
-func (f *Files) QuerySpaces() *SpacesQuery {
-	return (&FilesClient{f.config}).QuerySpaces(f)
+// QueryBuckets queries the buckets edge of the Files.
+func (f *Files) QueryBuckets() *BucketsQuery {
+	return (&FilesClient{f.config}).QueryBuckets(f)
 }
 
 // Update returns a builder for updating this Files.

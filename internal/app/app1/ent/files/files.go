@@ -30,13 +30,13 @@ const (
 
 	// Table holds the table name of the files in the database.
 	Table = "files"
-	// SpacesTable is the table the holds the spaces relation/edge.
-	SpacesTable = "files"
-	// SpacesInverseTable is the table name for the Spaces entity.
-	// It exists in this package in order to avoid circular dependency with the "spaces" package.
-	SpacesInverseTable = "spaces"
-	// SpacesColumn is the table column denoting the spaces relation/edge.
-	SpacesColumn = "spaces_id"
+	// BucketsTable is the table the holds the buckets relation/edge.
+	BucketsTable = "files"
+	// BucketsInverseTable is the table name for the Buckets entity.
+	// It exists in this package in order to avoid circular dependency with the "buckets" package.
+	BucketsInverseTable = "buckets"
+	// BucketsColumn is the table column denoting the buckets relation/edge.
+	BucketsColumn = "buckets_id"
 )
 
 // Columns holds all SQL columns for files fields.
@@ -54,7 +54,7 @@ var Columns = []string{
 
 // ForeignKeys holds the SQL foreign-keys that are owned by the Files type.
 var ForeignKeys = []string{
-	"spaces_id",
+	"buckets_id",
 }
 
 var (

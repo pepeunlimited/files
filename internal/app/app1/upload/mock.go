@@ -1,12 +1,13 @@
 package upload
 
 import (
+	"context"
 	"github.com/pepeunlimited/files/storage"
 	"github.com/pepeunlimited/microservice-kit/errorz"
 	"log"
 )
 
-type DosMock struct {
+type ActionsMock struct {
 	IsUpload 		bool
 	IsDelete 		bool
 	IsCreateBucket 	bool
@@ -17,25 +18,25 @@ type DosMock struct {
 	To 				storage.Buckets
 }
 
-func (d *DosMock) DeleteBucket(bucket storage.Buckets) error {
+func (d *ActionsMock) DeleteBucket(bucket storage.Buckets) error {
 	log.Print("StorageActions: DeleteBucket..")
 	d.IsDeleteBucket = true
 	return d.Errors.Pop()
 }
 
-func (d *DosMock) CreateBucket(bucket storage.Buckets) error {
+func (d *ActionsMock) CreateBucket(ctx context.Context, bucket storage.Buckets) error {
 	log.Print("StorageActions: CreateBucket..")
 	d.IsCreateBucket = true
 	return d.Errors.Pop()
 }
 
-func (d *DosMock) Delete(bucket storage.Buckets, filename string) error {
+func (d *ActionsMock) Delete(ctx context.Context, bucket storage.Buckets, filename string) error {
 	log.Print("StorageActions: Delete..")
 	d.IsDelete = true
 	return d.Errors.Pop()
 }
 
-func (d *DosMock) Upload(file storage.File, meta storage.FileMetaData, buckets storage.Buckets) error {
+func (d *ActionsMock) Upload(ctx context.Context, file storage.File, meta storage.FileMetaData, buckets storage.Buckets) error {
 	log.Print("StorageActions: Upload..")
 	d.IsUpload = true
 	d.File = file
@@ -45,6 +46,6 @@ func (d *DosMock) Upload(file storage.File, meta storage.FileMetaData, buckets s
 	return d.Errors.Pop()
 }
 
-func NewDosMock(errors []error) storage.Actions {
-	return &DosMock{Errors:errorz.NewErrorStack(errors)}
+func NewActionsMock(errors []error) storage.Actions {
+	return &ActionsMock{Errors: errorz.NewErrorStack(errors)}
 }

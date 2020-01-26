@@ -10,8 +10,8 @@ import (
 
 	"github.com/facebookincubator/ent/dialect/sql/sqlgraph"
 	"github.com/facebookincubator/ent/schema/field"
+	"github.com/pepeunlimited/files/internal/app/app1/ent/buckets"
 	"github.com/pepeunlimited/files/internal/app/app1/ent/files"
-	"github.com/pepeunlimited/files/internal/app/app1/ent/spaces"
 )
 
 // FilesCreate is the builder for creating a Files entity.
@@ -25,7 +25,7 @@ type FilesCreate struct {
 	user_id    *int64
 	created_at *time.Time
 	updated_at *time.Time
-	spaces     map[int]struct{}
+	buckets    map[int]struct{}
 }
 
 // SetFilename sets the filename field.
@@ -92,26 +92,26 @@ func (fc *FilesCreate) SetUpdatedAt(t time.Time) *FilesCreate {
 	return fc
 }
 
-// SetSpacesID sets the spaces edge to Spaces by id.
-func (fc *FilesCreate) SetSpacesID(id int) *FilesCreate {
-	if fc.spaces == nil {
-		fc.spaces = make(map[int]struct{})
+// SetBucketsID sets the buckets edge to Buckets by id.
+func (fc *FilesCreate) SetBucketsID(id int) *FilesCreate {
+	if fc.buckets == nil {
+		fc.buckets = make(map[int]struct{})
 	}
-	fc.spaces[id] = struct{}{}
+	fc.buckets[id] = struct{}{}
 	return fc
 }
 
-// SetNillableSpacesID sets the spaces edge to Spaces by id if the given value is not nil.
-func (fc *FilesCreate) SetNillableSpacesID(id *int) *FilesCreate {
+// SetNillableBucketsID sets the buckets edge to Buckets by id if the given value is not nil.
+func (fc *FilesCreate) SetNillableBucketsID(id *int) *FilesCreate {
 	if id != nil {
-		fc = fc.SetSpacesID(*id)
+		fc = fc.SetBucketsID(*id)
 	}
 	return fc
 }
 
-// SetSpaces sets the spaces edge to Spaces.
-func (fc *FilesCreate) SetSpaces(s *Spaces) *FilesCreate {
-	return fc.SetSpacesID(s.ID)
+// SetBuckets sets the buckets edge to Buckets.
+func (fc *FilesCreate) SetBuckets(b *Buckets) *FilesCreate {
+	return fc.SetBucketsID(b.ID)
 }
 
 // Save creates the Files in the database.
@@ -148,8 +148,8 @@ func (fc *FilesCreate) Save(ctx context.Context) (*Files, error) {
 	if fc.updated_at == nil {
 		return nil, errors.New("ent: missing required field \"updated_at\"")
 	}
-	if len(fc.spaces) > 1 {
-		return nil, errors.New("ent: multiple assignments on a unique edge \"spaces\"")
+	if len(fc.buckets) > 1 {
+		return nil, errors.New("ent: multiple assignments on a unique edge \"buckets\"")
 	}
 	return fc.sqlSave(ctx)
 }
@@ -165,8 +165,8 @@ func (fc *FilesCreate) SaveX(ctx context.Context) *Files {
 
 func (fc *FilesCreate) sqlSave(ctx context.Context) (*Files, error) {
 	var (
-		f    = &Files{config: fc.config}
-		spec = &sqlgraph.CreateSpec{
+		f     = &Files{config: fc.config}
+		_spec = &sqlgraph.CreateSpec{
 			Table: files.Table,
 			ID: &sqlgraph.FieldSpec{
 				Type:   field.TypeInt,
@@ -175,7 +175,7 @@ func (fc *FilesCreate) sqlSave(ctx context.Context) (*Files, error) {
 		}
 	)
 	if value := fc.filename; value != nil {
-		spec.Fields = append(spec.Fields, &sqlgraph.FieldSpec{
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  *value,
 			Column: files.FieldFilename,
@@ -183,7 +183,7 @@ func (fc *FilesCreate) sqlSave(ctx context.Context) (*Files, error) {
 		f.Filename = *value
 	}
 	if value := fc.mime_type; value != nil {
-		spec.Fields = append(spec.Fields, &sqlgraph.FieldSpec{
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  *value,
 			Column: files.FieldMimeType,
@@ -191,7 +191,7 @@ func (fc *FilesCreate) sqlSave(ctx context.Context) (*Files, error) {
 		f.MimeType = *value
 	}
 	if value := fc.file_size; value != nil {
-		spec.Fields = append(spec.Fields, &sqlgraph.FieldSpec{
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeInt64,
 			Value:  *value,
 			Column: files.FieldFileSize,
@@ -199,7 +199,7 @@ func (fc *FilesCreate) sqlSave(ctx context.Context) (*Files, error) {
 		f.FileSize = *value
 	}
 	if value := fc.is_draft; value != nil {
-		spec.Fields = append(spec.Fields, &sqlgraph.FieldSpec{
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeBool,
 			Value:  *value,
 			Column: files.FieldIsDraft,
@@ -207,7 +207,7 @@ func (fc *FilesCreate) sqlSave(ctx context.Context) (*Files, error) {
 		f.IsDraft = *value
 	}
 	if value := fc.is_deleted; value != nil {
-		spec.Fields = append(spec.Fields, &sqlgraph.FieldSpec{
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeBool,
 			Value:  *value,
 			Column: files.FieldIsDeleted,
@@ -215,7 +215,7 @@ func (fc *FilesCreate) sqlSave(ctx context.Context) (*Files, error) {
 		f.IsDeleted = *value
 	}
 	if value := fc.user_id; value != nil {
-		spec.Fields = append(spec.Fields, &sqlgraph.FieldSpec{
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeInt64,
 			Value:  *value,
 			Column: files.FieldUserID,
@@ -223,7 +223,7 @@ func (fc *FilesCreate) sqlSave(ctx context.Context) (*Files, error) {
 		f.UserID = *value
 	}
 	if value := fc.created_at; value != nil {
-		spec.Fields = append(spec.Fields, &sqlgraph.FieldSpec{
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Value:  *value,
 			Column: files.FieldCreatedAt,
@@ -231,39 +231,39 @@ func (fc *FilesCreate) sqlSave(ctx context.Context) (*Files, error) {
 		f.CreatedAt = *value
 	}
 	if value := fc.updated_at; value != nil {
-		spec.Fields = append(spec.Fields, &sqlgraph.FieldSpec{
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Value:  *value,
 			Column: files.FieldUpdatedAt,
 		})
 		f.UpdatedAt = *value
 	}
-	if nodes := fc.spaces; len(nodes) > 0 {
+	if nodes := fc.buckets; len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   files.SpacesTable,
-			Columns: []string{files.SpacesColumn},
+			Table:   files.BucketsTable,
+			Columns: []string{files.BucketsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: spaces.FieldID,
+					Column: buckets.FieldID,
 				},
 			},
 		}
 		for k, _ := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		spec.Edges = append(spec.Edges, edge)
+		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if err := sqlgraph.CreateNode(ctx, fc.driver, spec); err != nil {
+	if err := sqlgraph.CreateNode(ctx, fc.driver, _spec); err != nil {
 		if cerr, ok := isSQLConstraintError(err); ok {
 			err = cerr
 		}
 		return nil, err
 	}
-	id := spec.ID.Value.(int64)
+	id := _spec.ID.Value.(int64)
 	f.ID = int(id)
 	return f, nil
 }

@@ -16,6 +16,51 @@ import (
 //
 var dsn string
 
+func ExampleBuckets() {
+	if dsn == "" {
+		return
+	}
+	ctx := context.Background()
+	drv, err := sql.Open("mysql", dsn)
+	if err != nil {
+		log.Fatalf("failed creating database client: %v", err)
+	}
+	defer drv.Close()
+	client := NewClient(Driver(drv))
+	// creating vertices for the buckets's edges.
+	f0 := client.Files.
+		Create().
+		SetFilename("string").
+		SetMimeType("string").
+		SetFileSize(1).
+		SetIsDraft(true).
+		SetIsDeleted(true).
+		SetUserID(1).
+		SetCreatedAt(time.Now()).
+		SetUpdatedAt(time.Now()).
+		SaveX(ctx)
+	log.Println("files created:", f0)
+
+	// create buckets vertex with its edges.
+	b := client.Buckets.
+		Create().
+		SetName("string").
+		SetEndpoint("string").
+		SetCdnEndpoint("string").
+		SetCreatedAt(time.Now()).
+		AddFiles(f0).
+		SaveX(ctx)
+	log.Println("buckets created:", b)
+
+	// query edges.
+	f0, err = b.QueryFiles().First(ctx)
+	if err != nil {
+		log.Fatalf("failed querying files: %v", err)
+	}
+	log.Println("files found:", f0)
+
+	// Output:
+}
 func ExampleFiles() {
 	if dsn == "" {
 		return
@@ -44,51 +89,6 @@ func ExampleFiles() {
 	log.Println("files created:", f)
 
 	// query edges.
-
-	// Output:
-}
-func ExampleSpaces() {
-	if dsn == "" {
-		return
-	}
-	ctx := context.Background()
-	drv, err := sql.Open("mysql", dsn)
-	if err != nil {
-		log.Fatalf("failed creating database client: %v", err)
-	}
-	defer drv.Close()
-	client := NewClient(Driver(drv))
-	// creating vertices for the spaces's edges.
-	f0 := client.Files.
-		Create().
-		SetFilename("string").
-		SetMimeType("string").
-		SetFileSize(1).
-		SetIsDraft(true).
-		SetIsDeleted(true).
-		SetUserID(1).
-		SetCreatedAt(time.Now()).
-		SetUpdatedAt(time.Now()).
-		SaveX(ctx)
-	log.Println("files created:", f0)
-
-	// create spaces vertex with its edges.
-	s := client.Spaces.
-		Create().
-		SetName("string").
-		SetEndpoint("string").
-		SetCdnEndpoint("string").
-		SetCreatedAt(time.Now()).
-		AddFiles(f0).
-		SaveX(ctx)
-	log.Println("spaces created:", s)
-
-	// query edges.
-	f0, err = s.QueryFiles().First(ctx)
-	if err != nil {
-		log.Fatalf("failed querying files: %v", err)
-	}
-	log.Println("files found:", f0)
 
 	// Output:
 }

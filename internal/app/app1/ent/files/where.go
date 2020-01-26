@@ -783,26 +783,26 @@ func UpdatedAtLTE(v time.Time) predicate.Files {
 	)
 }
 
-// HasSpaces applies the HasEdge predicate on the "spaces" edge.
-func HasSpaces() predicate.Files {
+// HasBuckets applies the HasEdge predicate on the "buckets" edge.
+func HasBuckets() predicate.Files {
 	return predicate.Files(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(SpacesTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, SpacesTable, SpacesColumn),
+			sqlgraph.To(BucketsTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, BucketsTable, BucketsColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	},
 	)
 }
 
-// HasSpacesWith applies the HasEdge predicate on the "spaces" edge with a given conditions (other predicates).
-func HasSpacesWith(preds ...predicate.Spaces) predicate.Files {
+// HasBucketsWith applies the HasEdge predicate on the "buckets" edge with a given conditions (other predicates).
+func HasBucketsWith(preds ...predicate.Buckets) predicate.Files {
 	return predicate.Files(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(SpacesInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, SpacesTable, SpacesColumn),
+			sqlgraph.To(BucketsInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, BucketsTable, BucketsColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

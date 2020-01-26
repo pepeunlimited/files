@@ -11,9 +11,9 @@ import (
 	"github.com/facebookincubator/ent/dialect/sql"
 	"github.com/facebookincubator/ent/dialect/sql/sqlgraph"
 	"github.com/facebookincubator/ent/schema/field"
+	"github.com/pepeunlimited/files/internal/app/app1/ent/buckets"
 	"github.com/pepeunlimited/files/internal/app/app1/ent/files"
 	"github.com/pepeunlimited/files/internal/app/app1/ent/predicate"
-	"github.com/pepeunlimited/files/internal/app/app1/ent/spaces"
 )
 
 // FilesQuery is the builder for querying Files entities.
@@ -25,8 +25,8 @@ type FilesQuery struct {
 	unique     []string
 	predicates []predicate.Files
 	// eager-loading edges.
-	withSpaces *SpacesQuery
-	withFKs    bool
+	withBuckets *BucketsQuery
+	withFKs     bool
 	// intermediate query.
 	sql *sql.Selector
 }
@@ -55,13 +55,13 @@ func (fq *FilesQuery) Order(o ...Order) *FilesQuery {
 	return fq
 }
 
-// QuerySpaces chains the current query on the spaces edge.
-func (fq *FilesQuery) QuerySpaces() *SpacesQuery {
-	query := &SpacesQuery{config: fq.config}
+// QueryBuckets chains the current query on the buckets edge.
+func (fq *FilesQuery) QueryBuckets() *BucketsQuery {
+	query := &BucketsQuery{config: fq.config}
 	step := sqlgraph.NewStep(
 		sqlgraph.From(files.Table, files.FieldID, fq.sqlQuery()),
-		sqlgraph.To(spaces.Table, spaces.FieldID),
-		sqlgraph.Edge(sqlgraph.M2O, true, files.SpacesTable, files.SpacesColumn),
+		sqlgraph.To(buckets.Table, buckets.FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, true, files.BucketsTable, files.BucketsColumn),
 	)
 	query.sql = sqlgraph.SetNeighbors(fq.driver.Dialect(), step)
 	return query
@@ -236,14 +236,14 @@ func (fq *FilesQuery) Clone() *FilesQuery {
 	}
 }
 
-//  WithSpaces tells the query-builder to eager-loads the nodes that are connected to
-// the "spaces" edge. The optional arguments used to configure the query builder of the edge.
-func (fq *FilesQuery) WithSpaces(opts ...func(*SpacesQuery)) *FilesQuery {
-	query := &SpacesQuery{config: fq.config}
+//  WithBuckets tells the query-builder to eager-loads the nodes that are connected to
+// the "buckets" edge. The optional arguments used to configure the query builder of the edge.
+func (fq *FilesQuery) WithBuckets(opts ...func(*BucketsQuery)) *FilesQuery {
+	query := &BucketsQuery{config: fq.config}
 	for _, opt := range opts {
 		opt(query)
 	}
-	fq.withSpaces = query
+	fq.withBuckets = query
 	return fq
 }
 
@@ -292,15 +292,15 @@ func (fq *FilesQuery) sqlAll(ctx context.Context) ([]*Files, error) {
 	var (
 		nodes   []*Files
 		withFKs = fq.withFKs
-		spec    = fq.querySpec()
+		_spec   = fq.querySpec()
 	)
-	if fq.withSpaces != nil {
+	if fq.withBuckets != nil {
 		withFKs = true
 	}
 	if withFKs {
-		spec.Node.Columns = append(spec.Node.Columns, files.ForeignKeys...)
+		_spec.Node.Columns = append(_spec.Node.Columns, files.ForeignKeys...)
 	}
-	spec.ScanValues = func() []interface{} {
+	_spec.ScanValues = func() []interface{} {
 		node := &Files{config: fq.config}
 		nodes = append(nodes, node)
 		values := node.scanValues()
@@ -309,27 +309,30 @@ func (fq *FilesQuery) sqlAll(ctx context.Context) ([]*Files, error) {
 		}
 		return values
 	}
-	spec.Assign = func(values ...interface{}) error {
+	_spec.Assign = func(values ...interface{}) error {
 		if len(nodes) == 0 {
 			return fmt.Errorf("ent: Assign called without calling ScanValues")
 		}
 		node := nodes[len(nodes)-1]
 		return node.assignValues(values...)
 	}
-	if err := sqlgraph.QueryNodes(ctx, fq.driver, spec); err != nil {
+	if err := sqlgraph.QueryNodes(ctx, fq.driver, _spec); err != nil {
 		return nil, err
 	}
+	if len(nodes) == 0 {
+		return nodes, nil
+	}
 
-	if query := fq.withSpaces; query != nil {
+	if query := fq.withBuckets; query != nil {
 		ids := make([]int, 0, len(nodes))
 		nodeids := make(map[int][]*Files)
 		for i := range nodes {
-			if fk := nodes[i].spaces_id; fk != nil {
+			if fk := nodes[i].buckets_id; fk != nil {
 				ids = append(ids, *fk)
 				nodeids[*fk] = append(nodeids[*fk], nodes[i])
 			}
 		}
-		query.Where(spaces.IDIn(ids...))
+		query.Where(buckets.IDIn(ids...))
 		neighbors, err := query.All(ctx)
 		if err != nil {
 			return nil, err
@@ -337,10 +340,10 @@ func (fq *FilesQuery) sqlAll(ctx context.Context) ([]*Files, error) {
 		for _, n := range neighbors {
 			nodes, ok := nodeids[n.ID]
 			if !ok {
-				return nil, fmt.Errorf(`unexpected foreign-key "spaces_id" returned %v`, n.ID)
+				return nil, fmt.Errorf(`unexpected foreign-key "buckets_id" returned %v`, n.ID)
 			}
 			for i := range nodes {
-				nodes[i].Edges.Spaces = n
+				nodes[i].Edges.Buckets = n
 			}
 		}
 	}
@@ -349,8 +352,8 @@ func (fq *FilesQuery) sqlAll(ctx context.Context) ([]*Files, error) {
 }
 
 func (fq *FilesQuery) sqlCount(ctx context.Context) (int, error) {
-	spec := fq.querySpec()
-	return sqlgraph.CountNodes(ctx, fq.driver, spec)
+	_spec := fq.querySpec()
+	return sqlgraph.CountNodes(ctx, fq.driver, _spec)
 }
 
 func (fq *FilesQuery) sqlExist(ctx context.Context) (bool, error) {
@@ -362,7 +365,7 @@ func (fq *FilesQuery) sqlExist(ctx context.Context) (bool, error) {
 }
 
 func (fq *FilesQuery) querySpec() *sqlgraph.QuerySpec {
-	spec := &sqlgraph.QuerySpec{
+	_spec := &sqlgraph.QuerySpec{
 		Node: &sqlgraph.NodeSpec{
 			Table:   files.Table,
 			Columns: files.Columns,
@@ -375,26 +378,26 @@ func (fq *FilesQuery) querySpec() *sqlgraph.QuerySpec {
 		Unique: true,
 	}
 	if ps := fq.predicates; len(ps) > 0 {
-		spec.Predicate = func(selector *sql.Selector) {
+		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
 	if limit := fq.limit; limit != nil {
-		spec.Limit = *limit
+		_spec.Limit = *limit
 	}
 	if offset := fq.offset; offset != nil {
-		spec.Offset = *offset
+		_spec.Offset = *offset
 	}
 	if ps := fq.order; len(ps) > 0 {
-		spec.Order = func(selector *sql.Selector) {
+		_spec.Order = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	return spec
+	return _spec
 }
 
 func (fq *FilesQuery) sqlQuery() *sql.Selector {

@@ -29,6 +29,6 @@ func (Files) Fields() []ent.Field {
 
 func (Files) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.From("spaces", Spaces.Type).Ref("files").Unique(), // many-to-one
+		edge.From("buckets", Buckets.Type).Ref("files").Unique(), // many-to-one
 	}
 }

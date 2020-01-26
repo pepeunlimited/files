@@ -1,6 +1,7 @@
 package spaces
 
 import (
+	"context"
 	"github.com/pepeunlimited/files/storage"
 	"strings"
 	"testing"
@@ -16,8 +17,9 @@ const (
 )
 
 func TestSpacesCreateDeleteBucketAndObject(t *testing.T) {
-	spaces := NewBucketCDN(Endpoint, AccessKey, SecretKey, BucketName, &AccessToken)
-	spaces.Files().Delete("simo.txt").Delete("piia.txt").Execute()
+	ctx := context.TODO()
+	spaces := storage.NewSpacesBuilder(Endpoint, AccessKey, SecretKey, BucketName, &AccessToken)
+	spaces.Files().Delete("simo.txt").Delete("piia.txt").Execute(ctx)
 	spaces.Delete()
 	body := strings.NewReader("hello-world!")
 	file := storage.File{MimeType:"plain/text", FileSize: int64(body.Len()), Body:body}
@@ -25,7 +27,7 @@ func TestSpacesCreateDeleteBucketAndObject(t *testing.T) {
 		Create().
 		Create(file, storage.FileMetaData{Filename:"simo.txt", IsPublic:true}).
 		Create(file, storage.FileMetaData{Filename:"piia.txt", IsPublic:true}). // throw error if file exist?
-		Execute(); err != nil {
+		Execute(ctx); err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
@@ -46,7 +48,7 @@ func TestSpacesCreateDeleteBucketAndObject(t *testing.T) {
 	if !exist {
 		t.FailNow()
 	}
-	exist, err = NewBucketCDN(Endpoint, AccessKey, SecretKey,"addsadsss", &AccessToken).Exist()
+	exist, err = storage.NewSpacesBuilder(Endpoint, AccessKey, SecretKey,"addsadsss", &AccessToken).Exist()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -60,11 +62,11 @@ func TestSpacesCreateDeleteBucketAndObject(t *testing.T) {
 		t.FailNow()
 	}
 
-	spaces.Files().Delete("simo.txt").Delete("piia.txt").Execute()
+	spaces.Files().Delete("simo.txt").Delete("piia.txt").Execute(ctx)
 }
 
 func TestBucket_Delete(t *testing.T) {
-	spaces := NewBucket(Endpoint, AccessKey, SecretKey, BucketName)
+	spaces := storage.NewSpacesBuilder(Endpoint, AccessKey, SecretKey, BucketName, nil)
 	if err := spaces.Delete(); err != nil {
 		t.Error(err)
 		t.FailNow()

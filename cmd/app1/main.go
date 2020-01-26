@@ -5,7 +5,7 @@ import (
 	"github.com/pepeunlimited/files/internal/app/app1/mysql"
 	"github.com/pepeunlimited/files/internal/app/app1/server"
 	"github.com/pepeunlimited/files/internal/app/app1/upload"
-	"github.com/pepeunlimited/files/spacesrpc"
+	"github.com/pepeunlimited/files/filesrpc"
 	"github.com/pepeunlimited/microservice-kit/headers"
 	"github.com/pepeunlimited/microservice-kit/middleware"
 	"github.com/pepeunlimited/microservice-kit/misc"
@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	Version = "0.1.5"
+	Version = "0.1.6"
 )
 
 
@@ -25,16 +25,16 @@ func main() {
 	// ent
 	ent 	 	 	 := mysql.NewEntClient()
 
-	// DOsUpload
+	// StorageService
 	dos				 := upload.NewDos()
+	//gcs 			 := upload.NewGoogleCloudStorage()
 
-	// DOs
-	sss := spacesrpc.NewSpacesServiceServer(server.NewSpacesServer(dos, ent), nil)
-	sus := server.NewSpacesUploadServer(dos, ent, authrpc.NewAuthenticationServiceProtobufClient(authenticationAddress, http.DefaultClient))
+	sss := filesrpc.NewFilesServiceServer(server.NewFilesServer(dos, ent), nil)
+	sus := server.NewUploadServer(dos, ent, authrpc.NewAuthenticationServiceProtobufClient(authenticationAddress, http.DefaultClient))
 
 	mux := http.NewServeMux()
 	mux.Handle(sss.PathPrefix(), middleware.Adapt(sss, headers.Username()))
-	mux.Handle(server.UploadSpacesV1Files, sus.UploadSpacesV1Files())
+	mux.Handle(server.UploadV1Files, sus.UploadV1Files())
 
 	if err := http.ListenAndServe(":8080", mux); err != nil {
 		log.Panic(err)

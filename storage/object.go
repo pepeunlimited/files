@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"context"
 	"github.com/minio/minio-go"
 	"io"
 )
@@ -11,7 +12,7 @@ type Object interface {
 	Update()							 Object
 	Get(filename string)				 	 ([]byte, error)
 	GetMetadata(filename string)			 (*minio.ObjectInfo, error)
-	Execute()							 error
+	Execute(ctx context.Context)		 error
 }
 
 type FileMetaData struct {

@@ -10,6 +10,21 @@ import (
 )
 
 var (
+	// BucketsColumns holds the columns for the "buckets" table.
+	BucketsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "name", Type: field.TypeString, Unique: true, Size: 63},
+		{Name: "endpoint", Type: field.TypeString, Size: 35},
+		{Name: "cdn_endpoint", Type: field.TypeString, Nullable: true},
+		{Name: "created_at", Type: field.TypeTime},
+	}
+	// BucketsTable holds the schema information for the "buckets" table.
+	BucketsTable = &schema.Table{
+		Name:        "buckets",
+		Columns:     BucketsColumns,
+		PrimaryKey:  []*schema.Column{BucketsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{},
+	}
 	// FilesColumns holds the columns for the "files" table.
 	FilesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
@@ -21,7 +36,7 @@ var (
 		{Name: "user_id", Type: field.TypeInt64},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
-		{Name: "spaces_id", Type: field.TypeInt, Nullable: true},
+		{Name: "buckets_id", Type: field.TypeInt, Nullable: true},
 	}
 	// FilesTable holds the schema information for the "files" table.
 	FilesTable = &schema.Table{
@@ -30,36 +45,21 @@ var (
 		PrimaryKey: []*schema.Column{FilesColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:  "files_spaces_files",
+				Symbol:  "files_buckets_files",
 				Columns: []*schema.Column{FilesColumns[9]},
 
-				RefColumns: []*schema.Column{SpacesColumns[0]},
+				RefColumns: []*schema.Column{BucketsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 		},
 	}
-	// SpacesColumns holds the columns for the "spaces" table.
-	SpacesColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "name", Type: field.TypeString, Unique: true, Size: 63},
-		{Name: "endpoint", Type: field.TypeString, Size: 35},
-		{Name: "cdn_endpoint", Type: field.TypeString, Nullable: true},
-		{Name: "created_at", Type: field.TypeTime},
-	}
-	// SpacesTable holds the schema information for the "spaces" table.
-	SpacesTable = &schema.Table{
-		Name:        "spaces",
-		Columns:     SpacesColumns,
-		PrimaryKey:  []*schema.Column{SpacesColumns[0]},
-		ForeignKeys: []*schema.ForeignKey{},
-	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
+		BucketsTable,
 		FilesTable,
-		SpacesTable,
 	}
 )
 
 func init() {
-	FilesTable.ForeignKeys[0].RefTable = SpacesTable
+	FilesTable.ForeignKeys[0].RefTable = BucketsTable
 }

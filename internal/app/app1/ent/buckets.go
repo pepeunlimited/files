@@ -8,11 +8,11 @@ import (
 	"time"
 
 	"github.com/facebookincubator/ent/dialect/sql"
-	"github.com/pepeunlimited/files/internal/app/app1/ent/spaces"
+	"github.com/pepeunlimited/files/internal/app/app1/ent/buckets"
 )
 
-// Spaces is the model entity for the Spaces schema.
-type Spaces struct {
+// Buckets is the model entity for the Buckets schema.
+type Buckets struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID int `json:"id,omitempty"`
@@ -25,15 +25,15 @@ type Spaces struct {
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
-	// The values are being populated by the SpacesQuery when eager-loading is set.
+	// The values are being populated by the BucketsQuery when eager-loading is set.
 	Edges struct {
 		// Files holds the value of the files edge.
 		Files []*Files
-	}
+	} `json:"edges"`
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
-func (*Spaces) scanValues() []interface{} {
+func (*Buckets) scanValues() []interface{} {
 	return []interface{}{
 		&sql.NullInt64{},  // id
 		&sql.NullString{}, // name
@@ -44,88 +44,88 @@ func (*Spaces) scanValues() []interface{} {
 }
 
 // assignValues assigns the values that were returned from sql.Rows (after scanning)
-// to the Spaces fields.
-func (s *Spaces) assignValues(values ...interface{}) error {
-	if m, n := len(values), len(spaces.Columns); m < n {
+// to the Buckets fields.
+func (b *Buckets) assignValues(values ...interface{}) error {
+	if m, n := len(values), len(buckets.Columns); m < n {
 		return fmt.Errorf("mismatch number of scan values: %d != %d", m, n)
 	}
 	value, ok := values[0].(*sql.NullInt64)
 	if !ok {
 		return fmt.Errorf("unexpected type %T for field id", value)
 	}
-	s.ID = int(value.Int64)
+	b.ID = int(value.Int64)
 	values = values[1:]
 	if value, ok := values[0].(*sql.NullString); !ok {
 		return fmt.Errorf("unexpected type %T for field name", values[0])
 	} else if value.Valid {
-		s.Name = value.String
+		b.Name = value.String
 	}
 	if value, ok := values[1].(*sql.NullString); !ok {
 		return fmt.Errorf("unexpected type %T for field endpoint", values[1])
 	} else if value.Valid {
-		s.Endpoint = value.String
+		b.Endpoint = value.String
 	}
 	if value, ok := values[2].(*sql.NullString); !ok {
 		return fmt.Errorf("unexpected type %T for field cdn_endpoint", values[2])
 	} else if value.Valid {
-		s.CdnEndpoint = new(string)
-		*s.CdnEndpoint = value.String
+		b.CdnEndpoint = new(string)
+		*b.CdnEndpoint = value.String
 	}
 	if value, ok := values[3].(*sql.NullTime); !ok {
 		return fmt.Errorf("unexpected type %T for field created_at", values[3])
 	} else if value.Valid {
-		s.CreatedAt = value.Time
+		b.CreatedAt = value.Time
 	}
 	return nil
 }
 
-// QueryFiles queries the files edge of the Spaces.
-func (s *Spaces) QueryFiles() *FilesQuery {
-	return (&SpacesClient{s.config}).QueryFiles(s)
+// QueryFiles queries the files edge of the Buckets.
+func (b *Buckets) QueryFiles() *FilesQuery {
+	return (&BucketsClient{b.config}).QueryFiles(b)
 }
 
-// Update returns a builder for updating this Spaces.
-// Note that, you need to call Spaces.Unwrap() before calling this method, if this Spaces
+// Update returns a builder for updating this Buckets.
+// Note that, you need to call Buckets.Unwrap() before calling this method, if this Buckets
 // was returned from a transaction, and the transaction was committed or rolled back.
-func (s *Spaces) Update() *SpacesUpdateOne {
-	return (&SpacesClient{s.config}).UpdateOne(s)
+func (b *Buckets) Update() *BucketsUpdateOne {
+	return (&BucketsClient{b.config}).UpdateOne(b)
 }
 
 // Unwrap unwraps the entity that was returned from a transaction after it was closed,
 // so that all next queries will be executed through the driver which created the transaction.
-func (s *Spaces) Unwrap() *Spaces {
-	tx, ok := s.config.driver.(*txDriver)
+func (b *Buckets) Unwrap() *Buckets {
+	tx, ok := b.config.driver.(*txDriver)
 	if !ok {
-		panic("ent: Spaces is not a transactional entity")
+		panic("ent: Buckets is not a transactional entity")
 	}
-	s.config.driver = tx.drv
-	return s
+	b.config.driver = tx.drv
+	return b
 }
 
 // String implements the fmt.Stringer.
-func (s *Spaces) String() string {
+func (b *Buckets) String() string {
 	var builder strings.Builder
-	builder.WriteString("Spaces(")
-	builder.WriteString(fmt.Sprintf("id=%v", s.ID))
+	builder.WriteString("Buckets(")
+	builder.WriteString(fmt.Sprintf("id=%v", b.ID))
 	builder.WriteString(", name=")
-	builder.WriteString(s.Name)
+	builder.WriteString(b.Name)
 	builder.WriteString(", endpoint=")
-	builder.WriteString(s.Endpoint)
-	if v := s.CdnEndpoint; v != nil {
+	builder.WriteString(b.Endpoint)
+	if v := b.CdnEndpoint; v != nil {
 		builder.WriteString(", cdn_endpoint=")
 		builder.WriteString(*v)
 	}
 	builder.WriteString(", created_at=")
-	builder.WriteString(s.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(b.CreatedAt.Format(time.ANSIC))
 	builder.WriteByte(')')
 	return builder.String()
 }
 
-// SpacesSlice is a parsable slice of Spaces.
-type SpacesSlice []*Spaces
+// BucketsSlice is a parsable slice of Buckets.
+type BucketsSlice []*Buckets
 
-func (s SpacesSlice) config(cfg config) {
-	for _i := range s {
-		s[_i].config = cfg
+func (b BucketsSlice) config(cfg config) {
+	for _i := range b {
+		b[_i].config = cfg
 	}
 }

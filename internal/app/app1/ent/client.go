@@ -9,8 +9,8 @@ import (
 
 	"github.com/pepeunlimited/files/internal/app/app1/ent/migrate"
 
+	"github.com/pepeunlimited/files/internal/app/app1/ent/buckets"
 	"github.com/pepeunlimited/files/internal/app/app1/ent/files"
-	"github.com/pepeunlimited/files/internal/app/app1/ent/spaces"
 
 	"github.com/facebookincubator/ent/dialect"
 	"github.com/facebookincubator/ent/dialect/sql"
@@ -22,10 +22,10 @@ type Client struct {
 	config
 	// Schema is the client for creating, migrating and dropping schema.
 	Schema *migrate.Schema
+	// Buckets is the client for interacting with the Buckets builders.
+	Buckets *BucketsClient
 	// Files is the client for interacting with the Files builders.
 	Files *FilesClient
-	// Spaces is the client for interacting with the Spaces builders.
-	Spaces *SpacesClient
 }
 
 // NewClient creates a new client configured with the given options.
@@ -33,10 +33,10 @@ func NewClient(opts ...Option) *Client {
 	c := config{log: log.Println}
 	c.options(opts...)
 	return &Client{
-		config: c,
-		Schema: migrate.NewSchema(c.driver),
-		Files:  NewFilesClient(c),
-		Spaces: NewSpacesClient(c),
+		config:  c,
+		Schema:  migrate.NewSchema(c.driver),
+		Buckets: NewBucketsClient(c),
+		Files:   NewFilesClient(c),
 	}
 }
 
@@ -67,16 +67,16 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	}
 	cfg := config{driver: tx, log: c.log, debug: c.debug}
 	return &Tx{
-		config: cfg,
-		Files:  NewFilesClient(cfg),
-		Spaces: NewSpacesClient(cfg),
+		config:  cfg,
+		Buckets: NewBucketsClient(cfg),
+		Files:   NewFilesClient(cfg),
 	}, nil
 }
 
 // Debug returns a new debug-client. It's used to get verbose logging on specific operations.
 //
 //	client.Debug().
-//		Files.
+//		Buckets.
 //		Query().
 //		Count(ctx)
 //
@@ -86,16 +86,94 @@ func (c *Client) Debug() *Client {
 	}
 	cfg := config{driver: dialect.Debug(c.driver, c.log), log: c.log, debug: true}
 	return &Client{
-		config: cfg,
-		Schema: migrate.NewSchema(cfg.driver),
-		Files:  NewFilesClient(cfg),
-		Spaces: NewSpacesClient(cfg),
+		config:  cfg,
+		Schema:  migrate.NewSchema(cfg.driver),
+		Buckets: NewBucketsClient(cfg),
+		Files:   NewFilesClient(cfg),
 	}
 }
 
 // Close closes the database connection and prevents new queries from starting.
 func (c *Client) Close() error {
 	return c.driver.Close()
+}
+
+// BucketsClient is a client for the Buckets schema.
+type BucketsClient struct {
+	config
+}
+
+// NewBucketsClient returns a client for the Buckets from the given config.
+func NewBucketsClient(c config) *BucketsClient {
+	return &BucketsClient{config: c}
+}
+
+// Create returns a create builder for Buckets.
+func (c *BucketsClient) Create() *BucketsCreate {
+	return &BucketsCreate{config: c.config}
+}
+
+// Update returns an update builder for Buckets.
+func (c *BucketsClient) Update() *BucketsUpdate {
+	return &BucketsUpdate{config: c.config}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *BucketsClient) UpdateOne(b *Buckets) *BucketsUpdateOne {
+	return c.UpdateOneID(b.ID)
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *BucketsClient) UpdateOneID(id int) *BucketsUpdateOne {
+	return &BucketsUpdateOne{config: c.config, id: id}
+}
+
+// Delete returns a delete builder for Buckets.
+func (c *BucketsClient) Delete() *BucketsDelete {
+	return &BucketsDelete{config: c.config}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *BucketsClient) DeleteOne(b *Buckets) *BucketsDeleteOne {
+	return c.DeleteOneID(b.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *BucketsClient) DeleteOneID(id int) *BucketsDeleteOne {
+	return &BucketsDeleteOne{c.Delete().Where(buckets.ID(id))}
+}
+
+// Create returns a query builder for Buckets.
+func (c *BucketsClient) Query() *BucketsQuery {
+	return &BucketsQuery{config: c.config}
+}
+
+// Get returns a Buckets entity by its id.
+func (c *BucketsClient) Get(ctx context.Context, id int) (*Buckets, error) {
+	return c.Query().Where(buckets.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *BucketsClient) GetX(ctx context.Context, id int) *Buckets {
+	b, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return b
+}
+
+// QueryFiles queries the files edge of a Buckets.
+func (c *BucketsClient) QueryFiles(b *Buckets) *FilesQuery {
+	query := &FilesQuery{config: c.config}
+	id := b.ID
+	step := sqlgraph.NewStep(
+		sqlgraph.From(buckets.Table, buckets.FieldID, id),
+		sqlgraph.To(files.Table, files.FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, buckets.FilesTable, buckets.FilesColumn),
+	)
+	query.sql = sqlgraph.Neighbors(b.driver.Dialect(), step)
+
+	return query
 }
 
 // FilesClient is a client for the Files schema.
@@ -162,94 +240,16 @@ func (c *FilesClient) GetX(ctx context.Context, id int) *Files {
 	return f
 }
 
-// QuerySpaces queries the spaces edge of a Files.
-func (c *FilesClient) QuerySpaces(f *Files) *SpacesQuery {
-	query := &SpacesQuery{config: c.config}
+// QueryBuckets queries the buckets edge of a Files.
+func (c *FilesClient) QueryBuckets(f *Files) *BucketsQuery {
+	query := &BucketsQuery{config: c.config}
 	id := f.ID
 	step := sqlgraph.NewStep(
 		sqlgraph.From(files.Table, files.FieldID, id),
-		sqlgraph.To(spaces.Table, spaces.FieldID),
-		sqlgraph.Edge(sqlgraph.M2O, true, files.SpacesTable, files.SpacesColumn),
+		sqlgraph.To(buckets.Table, buckets.FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, true, files.BucketsTable, files.BucketsColumn),
 	)
 	query.sql = sqlgraph.Neighbors(f.driver.Dialect(), step)
-
-	return query
-}
-
-// SpacesClient is a client for the Spaces schema.
-type SpacesClient struct {
-	config
-}
-
-// NewSpacesClient returns a client for the Spaces from the given config.
-func NewSpacesClient(c config) *SpacesClient {
-	return &SpacesClient{config: c}
-}
-
-// Create returns a create builder for Spaces.
-func (c *SpacesClient) Create() *SpacesCreate {
-	return &SpacesCreate{config: c.config}
-}
-
-// Update returns an update builder for Spaces.
-func (c *SpacesClient) Update() *SpacesUpdate {
-	return &SpacesUpdate{config: c.config}
-}
-
-// UpdateOne returns an update builder for the given entity.
-func (c *SpacesClient) UpdateOne(s *Spaces) *SpacesUpdateOne {
-	return c.UpdateOneID(s.ID)
-}
-
-// UpdateOneID returns an update builder for the given id.
-func (c *SpacesClient) UpdateOneID(id int) *SpacesUpdateOne {
-	return &SpacesUpdateOne{config: c.config, id: id}
-}
-
-// Delete returns a delete builder for Spaces.
-func (c *SpacesClient) Delete() *SpacesDelete {
-	return &SpacesDelete{config: c.config}
-}
-
-// DeleteOne returns a delete builder for the given entity.
-func (c *SpacesClient) DeleteOne(s *Spaces) *SpacesDeleteOne {
-	return c.DeleteOneID(s.ID)
-}
-
-// DeleteOneID returns a delete builder for the given id.
-func (c *SpacesClient) DeleteOneID(id int) *SpacesDeleteOne {
-	return &SpacesDeleteOne{c.Delete().Where(spaces.ID(id))}
-}
-
-// Create returns a query builder for Spaces.
-func (c *SpacesClient) Query() *SpacesQuery {
-	return &SpacesQuery{config: c.config}
-}
-
-// Get returns a Spaces entity by its id.
-func (c *SpacesClient) Get(ctx context.Context, id int) (*Spaces, error) {
-	return c.Query().Where(spaces.ID(id)).Only(ctx)
-}
-
-// GetX is like Get, but panics if an error occurs.
-func (c *SpacesClient) GetX(ctx context.Context, id int) *Spaces {
-	s, err := c.Get(ctx, id)
-	if err != nil {
-		panic(err)
-	}
-	return s
-}
-
-// QueryFiles queries the files edge of a Spaces.
-func (c *SpacesClient) QueryFiles(s *Spaces) *FilesQuery {
-	query := &FilesQuery{config: c.config}
-	id := s.ID
-	step := sqlgraph.NewStep(
-		sqlgraph.From(spaces.Table, spaces.FieldID, id),
-		sqlgraph.To(files.Table, files.FieldID),
-		sqlgraph.Edge(sqlgraph.O2M, false, spaces.FilesTable, spaces.FilesColumn),
-	)
-	query.sql = sqlgraph.Neighbors(s.driver.Dialect(), step)
 
 	return query
 }

@@ -6,19 +6,19 @@ import (
 	"github.com/facebookincubator/ent/schema/field"
 )
 
-type Spaces struct {
+type Buckets struct {
 	ent.Schema
 }
 
 
-func (Spaces) Config() ent.Config {
+func (Buckets) Config() ent.Config {
 	return ent.Config{
-		Table: "spaces",
+		Table: "buckets",
 	}
 }
 
 // Fields of the Spaces.
-func (Spaces) Fields() []ent.Field {
+func (Buckets) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("name").MinLen(3).MaxLen(63).NotEmpty().Unique(),
 		field.String("endpoint").MaxLen(35).NotEmpty(),
@@ -28,7 +28,7 @@ func (Spaces) Fields() []ent.Field {
 }
 
 // Edges of the Spaces.
-func (Spaces) Edges() []ent.Edge {
+func (Buckets) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To("files", Files.Type), // one-to-many
 	}

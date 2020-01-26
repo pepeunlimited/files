@@ -1,29 +1,69 @@
-package spaces
+package storage
 
 import (
 	"context"
 	"fmt"
 	"github.com/digitalocean/godo"
 	"github.com/minio/minio-go"
-	"github.com/pepeunlimited/files/storage"
 	"io"
 	"log"
 )
 
-type spaces struct {
+const (
+	SpacesAccessKey 			= "SPACES_ACCESS_KEY"
+	SpacesSecretKey 			= "SPACES_SECRET_KEY"
+	DoAccessToken				= "DO_ACCESS_TOKEN"
+
+	GoogleCloudStorageAccessKey = "GOOGLE_CLOUD_STORAGE_ACCESS_KEY"
+	GoogleCloudStorageSecretKey = "GOOGLE_CLOUD_STORAGE_SECRET_KEY"
+)
+
+func newClient(endpoint string, accessKey string, secretKey string) *minio.Client {
+	client, err := minio.New(endpoint, accessKey, secretKey, true)
+	if err != nil {
+		log.Panic(err)
+	}
+	return client
+}
+
+func NewSpacesBuilder(endpoint string, accessKey string, secretKey string, bucketName string, accessToken *string) Bucket {
+	client := newClient(endpoint, accessKey, secretKey)
+	service := service{endpoint: endpoint, accessKey: accessKey, secretKey: secretKey}
+	b := &bucket{service: service, bucketName: bucketName, client: client, isSpaces:true, isGKE:false}
+	if accessToken == nil {
+		return b
+	}
+	b.spaces = &spaces{doClient: NewDoClient(*accessToken)}
+	return b
+}
+
+func NewGoogleCloudStorageBuilder(endpoint string, accessKey string, secretKey string, bucketName string) Bucket {
+	return nil
+}
+
+type service struct {
 	endpoint	 	string
 	accessKey		string
 	secretKey		string
 }
 
 type bucket struct {
+	isSpaces    bool
+	isGKE       bool
 	isCreate 	bool
 	isFiles    	bool
 	bucketName  string
-	spaces 		spaces
+	service 	service
 	client 		*minio.Client
+	spaces      *spaces
+	gke         *gke
+}
+
+type spaces struct {
 	doClient    *godo.Client
 }
+
+type gke struct {}
 
 func (b *bucket) Exist() (bool, error) {
 	return b.client.BucketExists(b.bucketName)
@@ -33,14 +73,14 @@ func (b *bucket) Delete() error {
 	return b.client.RemoveBucket(b.bucketName)
 }
 
-func (b *bucket) Files() storage.Object {
+func (b *bucket) Files() Object {
 	executor := make(map[int]interface{})
 	b.isFiles = true
 	b.isCreate = false
 	return &files{bucket:*b, executor:executor, order: 0}
 }
 
-func (b *bucket) Create() storage.Object {
+func (b *bucket) Create() Object {
 	executor := make(map[int]interface{})
 	b.isCreate = true
 	b.isFiles = false
@@ -54,8 +94,8 @@ type files struct {
 }
 
 type create struct {
-	fileMetaData storage.FileMetaData
-	file 		storage.File
+	fileMetaData FileMetaData
+	file 		File
 }
 type delete struct {
 	filename 	string
@@ -75,19 +115,19 @@ func (f *files) GetMetadata(filename string) (*minio.ObjectInfo, error) {
 	return &stat, nil
 }
 
-func (f *files) Create(file storage.File, meta storage.FileMetaData) storage.Object {
+func (f *files) Create(file File, meta FileMetaData) Object {
 	f.executor[f.order] = create{file:file,fileMetaData:meta}
 	f.order++
 	return f
 }
 
-func (f *files) Delete(filename string) storage.Object {
+func (f *files) Delete(filename string) Object {
 	f.executor[f.order] = delete{filename:filename}
 	f.order++
 	return f
 }
 
-func (f *files) Update() storage.Object {
+func (f *files) Update() Object {
 	f.executor[f.order] = update{}
 	f.order++
 	return f
@@ -114,21 +154,24 @@ func (f *files) Get(filename string) ([]byte, error) {
 	return bytes, nil
 }
 
-func (f *files) Execute() error {
+func (f *files) Execute(ctx context.Context) error {
 	if f.bucket.isCreate {
 		if err := f.bucket.client.MakeBucket(f.bucket.bucketName, ""); err != nil {
 			return err
 		}
-		if f.bucket.doClient != nil {
-			_, _, err := f.bucket.doClient.CDNs.Create(context.Background(), &godo.CDNCreateRequest{
-				Origin: f.bucket.bucketName+"."+f.bucket.spaces.endpoint,
-				TTL:    3600,
-			})
-			if err != nil {
-				return err
+		if f.bucket.isSpaces {
+			if f.bucket.spaces != nil {
+				_, _, err := f.bucket.spaces.doClient.CDNs.Create(ctx, &godo.CDNCreateRequest{
+					Origin: f.bucket.bucketName+"."+f.bucket.service.endpoint,
+					TTL:    3600,
+				})
+				if err != nil {
+					return err
+				}
 			}
-		}
+		} else {
 
+		}
 	}
 	if f.bucket.isFiles {
 		//TODO: validate does the bucket exist

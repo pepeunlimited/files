@@ -5,20 +5,20 @@ import (
 	"github.com/golang/protobuf/ptypes/wrappers"
 	"github.com/pepeunlimited/files/internal/app/app1/mysql"
 	"github.com/pepeunlimited/files/internal/app/app1/upload"
-	"github.com/pepeunlimited/files/spacesrpc"
+	"github.com/pepeunlimited/files/filesrpc"
 	"testing"
 )
 
 func TestDOFileServer_GetFileByID(t *testing.T) {
 	ctx 	  := context.TODO()
-	mock      := upload.NewDosMock(nil)
-	server    := NewSpacesServer(mock, mysql.NewEntClient())
+	mock      := upload.NewActionsMock(nil)
+	server    := NewFilesServer(mock, mysql.NewEntClient())
 	server.spaces.Wipe(ctx)
 
 	doBucket,_ := server.spaces.Create(ctx, "lol", "aaaa", nil)
-	created,_ := server.files.CreateSpacesFile(ctx, "filename", 1, "mimetype", false, false, 1, doBucket.ID)
+	created,_ := server.files.CreateFile(ctx, "filename", 1, "mimetype", false, false, 1, doBucket.ID)
 
-	resp0, err := server.GetFile(ctx, &spacesrpc.GetFileParams{
+	resp0, err := server.GetFile(ctx, &filesrpc.GetFileParams{
 		FileId: &wrappers.Int64Value{
 			Value: int64(created.ID),
 		},
@@ -46,34 +46,34 @@ func TestDOFileServer_GetFileByID(t *testing.T) {
 
 func TestDOFileServer_GetFileByFilename(t *testing.T) {
 	ctx 	  := context.TODO()
-	mock      := upload.NewDosMock(nil)
-	server    := NewSpacesServer(mock, mysql.NewEntClient())
+	mock      := upload.NewActionsMock(nil)
+	server    := NewFilesServer(mock, mysql.NewEntClient())
 	server.spaces.Wipe(ctx)
 
-	bucket0,_ := server.CreateSpaces(ctx, &spacesrpc.CreateSpacesParams{
+	bucket0,_ := server.CreateBucket(ctx, &filesrpc.CreateBucketParams{
 		Name: "lol-1",
 		Endpoint:   "endpoint1.aa.com",
 	})
-	bucket1,_ := server.CreateSpaces(ctx, &spacesrpc.CreateSpacesParams{
+	bucket1,_ := server.CreateBucket(ctx, &filesrpc.CreateBucketParams{
 		Name: "lol-2",
 		Endpoint:   "endpoint2.aa.com",
 	})
 
-	file0, err := server.files.CreateSpacesFile(ctx, "filename", 1, "mimetype2", false, false, 1, int(bucket0.SpacesId))
+	file0, err := server.files.CreateFile(ctx, "filename", 1, "mimetype2", false, false, 1, int(bucket0.BucketId))
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
-	_, err = server.files.CreateSpacesFile(ctx, "filename", 1, "mimetype2", false, false, 1, int(bucket1.SpacesId))
+	_, err = server.files.CreateFile(ctx, "filename", 1, "mimetype2", false, false, 1, int(bucket1.BucketId))
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
-	resp0, err := server.GetFile(ctx, &spacesrpc.GetFileParams{
-		Filename: &spacesrpc.Filename{
+	resp0, err := server.GetFile(ctx, &filesrpc.GetFileParams{
+		Filename: &filesrpc.Filename{
 			Name:       "filename",
 			BucketId:   &wrappers.Int64Value{
-				Value: bucket0.SpacesId,
+				Value: bucket0.BucketId,
 			},
 			BucketName: nil,
 		},
@@ -85,7 +85,7 @@ func TestDOFileServer_GetFileByFilename(t *testing.T) {
 	if resp0.Id != int64(file0.ID) {
 		t.FailNow()
 	}
-	if resp0.SpacesId != bucket0.SpacesId {
+	if resp0.SpacesId != bucket0.BucketId {
 		t.FailNow()
 	}
 	if resp0.UserId != file0.UserID {
@@ -97,8 +97,8 @@ func TestDOFileServer_GetFileByFilename(t *testing.T) {
 	if resp0.Filename != file0.Filename {
 		t.FailNow()
 	}
-	resp0, err = server.GetFile(ctx, &spacesrpc.GetFileParams{
-		Filename: &spacesrpc.Filename{
+	resp0, err = server.GetFile(ctx, &filesrpc.GetFileParams{
+		Filename: &filesrpc.Filename{
 			Name:       "filename",
 			BucketName: &wrappers.StringValue{
 				Value: "lol-1",
@@ -112,7 +112,7 @@ func TestDOFileServer_GetFileByFilename(t *testing.T) {
 	if resp0.Id != int64(file0.ID) {
 		t.FailNow()
 	}
-	if resp0.SpacesId != bucket0.SpacesId {
+	if resp0.SpacesId != bucket0.BucketId {
 		t.FailNow()
 	}
 	if resp0.UserId != file0.UserID {
@@ -128,10 +128,10 @@ func TestDOFileServer_GetFileByFilename(t *testing.T) {
 
 func TestDOFileServer_CreateBucket(t *testing.T) {
 	ctx 	  := context.TODO()
-	mock      := upload.NewDosMock(nil)
-	server    := NewSpacesServer(mock, mysql.NewEntClient())
+	mock      := upload.NewActionsMock(nil)
+	server    := NewFilesServer(mock, mysql.NewEntClient())
 	server.spaces.Wipe(ctx)
-	bucket, err := server.CreateSpaces(ctx, &spacesrpc.CreateSpacesParams{
+	bucket, err := server.CreateBucket(ctx, &filesrpc.CreateBucketParams{
 		Name:  "bucket-test",
 		Endpoint:    "fra.endpoint.com",
 	})
@@ -139,7 +139,7 @@ func TestDOFileServer_CreateBucket(t *testing.T) {
 		t.Error(err)
 		t.FailNow()
 	}
-	name, err := server.spaces.GetSpaceByName(ctx, "bucket-test")
+	name, err := server.spaces.GetBucketsByName(ctx, "bucket-test")
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -147,10 +147,10 @@ func TestDOFileServer_CreateBucket(t *testing.T) {
 	if name.Name != bucket.Name {
 		t.FailNow()
 	}
-	if !mock.(*upload.DosMock).IsCreateBucket {
+	if !mock.(*upload.ActionsMock).IsCreateBucket {
 		t.FailNow()
 	}
-	if mock.(*upload.DosMock).IsDeleteBucket {
+	if mock.(*upload.ActionsMock).IsDeleteBucket {
 		t.FailNow()
 	}
 }
@@ -158,15 +158,15 @@ func TestDOFileServer_CreateBucket(t *testing.T) {
 func TestDOFileServer_Delete(t *testing.T) {
 	ent       := mysql.NewEntClient()
 	ctx 	  := context.TODO()
-	mock      := upload.NewDosMock(nil)
-	server    := NewSpacesServer(mock, ent)
+	mock      := upload.NewActionsMock(nil)
+	server    := NewFilesServer(mock, ent)
 	server.spaces.Wipe(ctx)
 
 	doBucket,_ := server.spaces.Create(ctx, "bucket", "endpoint", nil)
-	server.files.CreateSpacesFile(ctx, "filename.txt", 15, "plain/text", false, false, 1, doBucket.ID)
-	file1,_ := server.files.CreateSpacesFile(ctx, "filename2.txt", 15, "plain/text", false, false, 1, doBucket.ID)
-	_, err := server.Delete(ctx, &spacesrpc.DeleteParams{
-		Filename: &spacesrpc.Filename{
+	server.files.CreateFile(ctx, "filename.txt", 15, "plain/text", false, false, 1, doBucket.ID)
+	file1,_ := server.files.CreateFile(ctx, "filename2.txt", 15, "plain/text", false, false, 1, doBucket.ID)
+	_, err := server.Delete(ctx, &filesrpc.DeleteParams{
+		Filename: &filesrpc.Filename{
 			Name: "filename.txt",
 			BucketName: &wrappers.StringValue{
 				Value: "bucket",
@@ -174,14 +174,14 @@ func TestDOFileServer_Delete(t *testing.T) {
 		},
 		IsPermanent: false,
 	})
-	if mock.(*upload.DosMock).IsDeleteBucket {
+	if mock.(*upload.ActionsMock).IsDeleteBucket {
 		t.FailNow()
 	}
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
-	query0,_, err := server.files.GetFileByFilenameSpacesID(ctx, "filename.txt", doBucket.ID, nil, nil)
+	query0,_, err := server.files.GetFileByFilenameBucketID(ctx, "filename.txt", doBucket.ID, nil, nil)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -189,7 +189,7 @@ func TestDOFileServer_Delete(t *testing.T) {
 	if !query0.IsDeleted {
 		t.FailNow()
 	}
-	_, err = server.Delete(ctx, &spacesrpc.DeleteParams{
+	_, err = server.Delete(ctx, &filesrpc.DeleteParams{
 		FileId:      &wrappers.Int64Value{
 			Value: int64(file1.ID),
 		},
@@ -207,7 +207,7 @@ func TestDOFileServer_Delete(t *testing.T) {
 	if !query1.IsDeleted {
 		t.FailNow()
 	}
-	if mock.(*upload.DosMock).IsDeleteBucket {
+	if mock.(*upload.ActionsMock).IsDeleteBucket {
 		t.FailNow()
 	}
 }

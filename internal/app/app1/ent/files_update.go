@@ -11,27 +11,27 @@ import (
 	"github.com/facebookincubator/ent/dialect/sql"
 	"github.com/facebookincubator/ent/dialect/sql/sqlgraph"
 	"github.com/facebookincubator/ent/schema/field"
+	"github.com/pepeunlimited/files/internal/app/app1/ent/buckets"
 	"github.com/pepeunlimited/files/internal/app/app1/ent/files"
 	"github.com/pepeunlimited/files/internal/app/app1/ent/predicate"
-	"github.com/pepeunlimited/files/internal/app/app1/ent/spaces"
 )
 
 // FilesUpdate is the builder for updating Files entities.
 type FilesUpdate struct {
 	config
-	filename      *string
-	mime_type     *string
-	file_size     *int64
-	addfile_size  *int64
-	is_draft      *bool
-	is_deleted    *bool
-	user_id       *int64
-	adduser_id    *int64
-	created_at    *time.Time
-	updated_at    *time.Time
-	spaces        map[int]struct{}
-	clearedSpaces bool
-	predicates    []predicate.Files
+	filename       *string
+	mime_type      *string
+	file_size      *int64
+	addfile_size   *int64
+	is_draft       *bool
+	is_deleted     *bool
+	user_id        *int64
+	adduser_id     *int64
+	created_at     *time.Time
+	updated_at     *time.Time
+	buckets        map[int]struct{}
+	clearedBuckets bool
+	predicates     []predicate.Files
 }
 
 // Where adds a new predicate for the builder.
@@ -126,31 +126,31 @@ func (fu *FilesUpdate) SetUpdatedAt(t time.Time) *FilesUpdate {
 	return fu
 }
 
-// SetSpacesID sets the spaces edge to Spaces by id.
-func (fu *FilesUpdate) SetSpacesID(id int) *FilesUpdate {
-	if fu.spaces == nil {
-		fu.spaces = make(map[int]struct{})
+// SetBucketsID sets the buckets edge to Buckets by id.
+func (fu *FilesUpdate) SetBucketsID(id int) *FilesUpdate {
+	if fu.buckets == nil {
+		fu.buckets = make(map[int]struct{})
 	}
-	fu.spaces[id] = struct{}{}
+	fu.buckets[id] = struct{}{}
 	return fu
 }
 
-// SetNillableSpacesID sets the spaces edge to Spaces by id if the given value is not nil.
-func (fu *FilesUpdate) SetNillableSpacesID(id *int) *FilesUpdate {
+// SetNillableBucketsID sets the buckets edge to Buckets by id if the given value is not nil.
+func (fu *FilesUpdate) SetNillableBucketsID(id *int) *FilesUpdate {
 	if id != nil {
-		fu = fu.SetSpacesID(*id)
+		fu = fu.SetBucketsID(*id)
 	}
 	return fu
 }
 
-// SetSpaces sets the spaces edge to Spaces.
-func (fu *FilesUpdate) SetSpaces(s *Spaces) *FilesUpdate {
-	return fu.SetSpacesID(s.ID)
+// SetBuckets sets the buckets edge to Buckets.
+func (fu *FilesUpdate) SetBuckets(b *Buckets) *FilesUpdate {
+	return fu.SetBucketsID(b.ID)
 }
 
-// ClearSpaces clears the spaces edge to Spaces.
-func (fu *FilesUpdate) ClearSpaces() *FilesUpdate {
-	fu.clearedSpaces = true
+// ClearBuckets clears the buckets edge to Buckets.
+func (fu *FilesUpdate) ClearBuckets() *FilesUpdate {
+	fu.clearedBuckets = true
 	return fu
 }
 
@@ -166,8 +166,8 @@ func (fu *FilesUpdate) Save(ctx context.Context) (int, error) {
 			return 0, fmt.Errorf("ent: validator failed for field \"mime_type\": %v", err)
 		}
 	}
-	if len(fu.spaces) > 1 {
-		return 0, errors.New("ent: multiple assignments on a unique edge \"spaces\"")
+	if len(fu.buckets) > 1 {
+		return 0, errors.New("ent: multiple assignments on a unique edge \"buckets\"")
 	}
 	return fu.sqlSave(ctx)
 }
@@ -195,7 +195,7 @@ func (fu *FilesUpdate) ExecX(ctx context.Context) {
 }
 
 func (fu *FilesUpdate) sqlSave(ctx context.Context) (n int, err error) {
-	spec := &sqlgraph.UpdateSpec{
+	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
 			Table:   files.Table,
 			Columns: files.Columns,
@@ -206,118 +206,118 @@ func (fu *FilesUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		},
 	}
 	if ps := fu.predicates; len(ps) > 0 {
-		spec.Predicate = func(selector *sql.Selector) {
+		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
 	if value := fu.filename; value != nil {
-		spec.Fields.Set = append(spec.Fields.Set, &sqlgraph.FieldSpec{
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  *value,
 			Column: files.FieldFilename,
 		})
 	}
 	if value := fu.mime_type; value != nil {
-		spec.Fields.Set = append(spec.Fields.Set, &sqlgraph.FieldSpec{
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  *value,
 			Column: files.FieldMimeType,
 		})
 	}
 	if value := fu.file_size; value != nil {
-		spec.Fields.Set = append(spec.Fields.Set, &sqlgraph.FieldSpec{
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeInt64,
 			Value:  *value,
 			Column: files.FieldFileSize,
 		})
 	}
 	if value := fu.addfile_size; value != nil {
-		spec.Fields.Add = append(spec.Fields.Add, &sqlgraph.FieldSpec{
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
 			Type:   field.TypeInt64,
 			Value:  *value,
 			Column: files.FieldFileSize,
 		})
 	}
 	if value := fu.is_draft; value != nil {
-		spec.Fields.Set = append(spec.Fields.Set, &sqlgraph.FieldSpec{
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeBool,
 			Value:  *value,
 			Column: files.FieldIsDraft,
 		})
 	}
 	if value := fu.is_deleted; value != nil {
-		spec.Fields.Set = append(spec.Fields.Set, &sqlgraph.FieldSpec{
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeBool,
 			Value:  *value,
 			Column: files.FieldIsDeleted,
 		})
 	}
 	if value := fu.user_id; value != nil {
-		spec.Fields.Set = append(spec.Fields.Set, &sqlgraph.FieldSpec{
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeInt64,
 			Value:  *value,
 			Column: files.FieldUserID,
 		})
 	}
 	if value := fu.adduser_id; value != nil {
-		spec.Fields.Add = append(spec.Fields.Add, &sqlgraph.FieldSpec{
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
 			Type:   field.TypeInt64,
 			Value:  *value,
 			Column: files.FieldUserID,
 		})
 	}
 	if value := fu.created_at; value != nil {
-		spec.Fields.Set = append(spec.Fields.Set, &sqlgraph.FieldSpec{
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Value:  *value,
 			Column: files.FieldCreatedAt,
 		})
 	}
 	if value := fu.updated_at; value != nil {
-		spec.Fields.Set = append(spec.Fields.Set, &sqlgraph.FieldSpec{
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Value:  *value,
 			Column: files.FieldUpdatedAt,
 		})
 	}
-	if fu.clearedSpaces {
+	if fu.clearedBuckets {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   files.SpacesTable,
-			Columns: []string{files.SpacesColumn},
+			Table:   files.BucketsTable,
+			Columns: []string{files.BucketsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: spaces.FieldID,
+					Column: buckets.FieldID,
 				},
 			},
 		}
-		spec.Edges.Clear = append(spec.Edges.Clear, edge)
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := fu.spaces; len(nodes) > 0 {
+	if nodes := fu.buckets; len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   files.SpacesTable,
-			Columns: []string{files.SpacesColumn},
+			Table:   files.BucketsTable,
+			Columns: []string{files.BucketsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: spaces.FieldID,
+					Column: buckets.FieldID,
 				},
 			},
 		}
 		for k, _ := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		spec.Edges.Add = append(spec.Edges.Add, edge)
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if n, err = sqlgraph.UpdateNodes(ctx, fu.driver, spec); err != nil {
+	if n, err = sqlgraph.UpdateNodes(ctx, fu.driver, _spec); err != nil {
 		if cerr, ok := isSQLConstraintError(err); ok {
 			err = cerr
 		}
@@ -329,19 +329,19 @@ func (fu *FilesUpdate) sqlSave(ctx context.Context) (n int, err error) {
 // FilesUpdateOne is the builder for updating a single Files entity.
 type FilesUpdateOne struct {
 	config
-	id            int
-	filename      *string
-	mime_type     *string
-	file_size     *int64
-	addfile_size  *int64
-	is_draft      *bool
-	is_deleted    *bool
-	user_id       *int64
-	adduser_id    *int64
-	created_at    *time.Time
-	updated_at    *time.Time
-	spaces        map[int]struct{}
-	clearedSpaces bool
+	id             int
+	filename       *string
+	mime_type      *string
+	file_size      *int64
+	addfile_size   *int64
+	is_draft       *bool
+	is_deleted     *bool
+	user_id        *int64
+	adduser_id     *int64
+	created_at     *time.Time
+	updated_at     *time.Time
+	buckets        map[int]struct{}
+	clearedBuckets bool
 }
 
 // SetFilename sets the filename field.
@@ -430,31 +430,31 @@ func (fuo *FilesUpdateOne) SetUpdatedAt(t time.Time) *FilesUpdateOne {
 	return fuo
 }
 
-// SetSpacesID sets the spaces edge to Spaces by id.
-func (fuo *FilesUpdateOne) SetSpacesID(id int) *FilesUpdateOne {
-	if fuo.spaces == nil {
-		fuo.spaces = make(map[int]struct{})
+// SetBucketsID sets the buckets edge to Buckets by id.
+func (fuo *FilesUpdateOne) SetBucketsID(id int) *FilesUpdateOne {
+	if fuo.buckets == nil {
+		fuo.buckets = make(map[int]struct{})
 	}
-	fuo.spaces[id] = struct{}{}
+	fuo.buckets[id] = struct{}{}
 	return fuo
 }
 
-// SetNillableSpacesID sets the spaces edge to Spaces by id if the given value is not nil.
-func (fuo *FilesUpdateOne) SetNillableSpacesID(id *int) *FilesUpdateOne {
+// SetNillableBucketsID sets the buckets edge to Buckets by id if the given value is not nil.
+func (fuo *FilesUpdateOne) SetNillableBucketsID(id *int) *FilesUpdateOne {
 	if id != nil {
-		fuo = fuo.SetSpacesID(*id)
+		fuo = fuo.SetBucketsID(*id)
 	}
 	return fuo
 }
 
-// SetSpaces sets the spaces edge to Spaces.
-func (fuo *FilesUpdateOne) SetSpaces(s *Spaces) *FilesUpdateOne {
-	return fuo.SetSpacesID(s.ID)
+// SetBuckets sets the buckets edge to Buckets.
+func (fuo *FilesUpdateOne) SetBuckets(b *Buckets) *FilesUpdateOne {
+	return fuo.SetBucketsID(b.ID)
 }
 
-// ClearSpaces clears the spaces edge to Spaces.
-func (fuo *FilesUpdateOne) ClearSpaces() *FilesUpdateOne {
-	fuo.clearedSpaces = true
+// ClearBuckets clears the buckets edge to Buckets.
+func (fuo *FilesUpdateOne) ClearBuckets() *FilesUpdateOne {
+	fuo.clearedBuckets = true
 	return fuo
 }
 
@@ -470,8 +470,8 @@ func (fuo *FilesUpdateOne) Save(ctx context.Context) (*Files, error) {
 			return nil, fmt.Errorf("ent: validator failed for field \"mime_type\": %v", err)
 		}
 	}
-	if len(fuo.spaces) > 1 {
-		return nil, errors.New("ent: multiple assignments on a unique edge \"spaces\"")
+	if len(fuo.buckets) > 1 {
+		return nil, errors.New("ent: multiple assignments on a unique edge \"buckets\"")
 	}
 	return fuo.sqlSave(ctx)
 }
@@ -499,7 +499,7 @@ func (fuo *FilesUpdateOne) ExecX(ctx context.Context) {
 }
 
 func (fuo *FilesUpdateOne) sqlSave(ctx context.Context) (f *Files, err error) {
-	spec := &sqlgraph.UpdateSpec{
+	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
 			Table:   files.Table,
 			Columns: files.Columns,
@@ -511,114 +511,114 @@ func (fuo *FilesUpdateOne) sqlSave(ctx context.Context) (f *Files, err error) {
 		},
 	}
 	if value := fuo.filename; value != nil {
-		spec.Fields.Set = append(spec.Fields.Set, &sqlgraph.FieldSpec{
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  *value,
 			Column: files.FieldFilename,
 		})
 	}
 	if value := fuo.mime_type; value != nil {
-		spec.Fields.Set = append(spec.Fields.Set, &sqlgraph.FieldSpec{
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  *value,
 			Column: files.FieldMimeType,
 		})
 	}
 	if value := fuo.file_size; value != nil {
-		spec.Fields.Set = append(spec.Fields.Set, &sqlgraph.FieldSpec{
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeInt64,
 			Value:  *value,
 			Column: files.FieldFileSize,
 		})
 	}
 	if value := fuo.addfile_size; value != nil {
-		spec.Fields.Add = append(spec.Fields.Add, &sqlgraph.FieldSpec{
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
 			Type:   field.TypeInt64,
 			Value:  *value,
 			Column: files.FieldFileSize,
 		})
 	}
 	if value := fuo.is_draft; value != nil {
-		spec.Fields.Set = append(spec.Fields.Set, &sqlgraph.FieldSpec{
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeBool,
 			Value:  *value,
 			Column: files.FieldIsDraft,
 		})
 	}
 	if value := fuo.is_deleted; value != nil {
-		spec.Fields.Set = append(spec.Fields.Set, &sqlgraph.FieldSpec{
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeBool,
 			Value:  *value,
 			Column: files.FieldIsDeleted,
 		})
 	}
 	if value := fuo.user_id; value != nil {
-		spec.Fields.Set = append(spec.Fields.Set, &sqlgraph.FieldSpec{
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeInt64,
 			Value:  *value,
 			Column: files.FieldUserID,
 		})
 	}
 	if value := fuo.adduser_id; value != nil {
-		spec.Fields.Add = append(spec.Fields.Add, &sqlgraph.FieldSpec{
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
 			Type:   field.TypeInt64,
 			Value:  *value,
 			Column: files.FieldUserID,
 		})
 	}
 	if value := fuo.created_at; value != nil {
-		spec.Fields.Set = append(spec.Fields.Set, &sqlgraph.FieldSpec{
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Value:  *value,
 			Column: files.FieldCreatedAt,
 		})
 	}
 	if value := fuo.updated_at; value != nil {
-		spec.Fields.Set = append(spec.Fields.Set, &sqlgraph.FieldSpec{
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Value:  *value,
 			Column: files.FieldUpdatedAt,
 		})
 	}
-	if fuo.clearedSpaces {
+	if fuo.clearedBuckets {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   files.SpacesTable,
-			Columns: []string{files.SpacesColumn},
+			Table:   files.BucketsTable,
+			Columns: []string{files.BucketsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: spaces.FieldID,
+					Column: buckets.FieldID,
 				},
 			},
 		}
-		spec.Edges.Clear = append(spec.Edges.Clear, edge)
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := fuo.spaces; len(nodes) > 0 {
+	if nodes := fuo.buckets; len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   files.SpacesTable,
-			Columns: []string{files.SpacesColumn},
+			Table:   files.BucketsTable,
+			Columns: []string{files.BucketsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: spaces.FieldID,
+					Column: buckets.FieldID,
 				},
 			},
 		}
 		for k, _ := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		spec.Edges.Add = append(spec.Edges.Add, edge)
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	f = &Files{config: fuo.config}
-	spec.Assign = f.assignValues
-	spec.ScanValues = f.scanValues()
-	if err = sqlgraph.UpdateNode(ctx, fuo.driver, spec); err != nil {
+	_spec.Assign = f.assignValues
+	_spec.ScanValues = f.scanValues()
+	if err = sqlgraph.UpdateNode(ctx, fuo.driver, _spec); err != nil {
 		if cerr, ok := isSQLConstraintError(err); ok {
 			err = cerr
 		}

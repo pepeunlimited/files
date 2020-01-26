@@ -2,12 +2,12 @@ package server
 
 import (
 	"github.com/pepeunlimited/files/internal/app/app1/ent"
-	"github.com/pepeunlimited/files/spacesrpc"
+	"github.com/pepeunlimited/files/filesrpc"
 	"time"
 )
 
-func toFile(files *ent.Files, spaces *ent.Spaces) *spacesrpc.File {
-	file := &spacesrpc.File{
+func toFile(files *ent.Files, buckets *ent.Buckets) *filesrpc.File {
+	file := &filesrpc.File{
 		Id:        int64(files.ID),
 		Filename:  files.Filename,
 		CreatedAt: files.CreatedAt.Format(time.RFC3339),
@@ -16,16 +16,16 @@ func toFile(files *ent.Files, spaces *ent.Spaces) *spacesrpc.File {
 		FileSize:  files.FileSize,
 		UserId:    files.UserID,
 		IsDraft:   files.IsDraft}
-	if spaces == nil {
+	if buckets == nil {
 		return file
 	}
 
-	if spaces.CdnEndpoint == nil {
-		file.FileUrl = "https://"+spaces.Endpoint+"/"+file.Filename
+	if buckets.CdnEndpoint == nil {
+		file.FileUrl = "https://"+buckets.Endpoint+"/"+file.Filename
 	} else {
-		file.FileUrl = "https://"+*spaces.CdnEndpoint+"/"+file.Filename
+		file.FileUrl = "https://"+*buckets.CdnEndpoint+"/"+file.Filename
 	}
 
-	file.SpacesId = int64(spaces.ID)
+	file.SpacesId = int64(buckets.ID)
 	return file
 }

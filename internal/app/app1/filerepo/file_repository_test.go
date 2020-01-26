@@ -3,14 +3,14 @@ package filerepo
 import (
 	"context"
 	"github.com/pepeunlimited/files/internal/app/app1/mysql"
-	"github.com/pepeunlimited/files/internal/app/app1/spacesrepo"
+	"github.com/pepeunlimited/files/internal/app/app1/bucketsrepo"
 	"testing"
 )
 
 func TestFilesMySQL_CreateDOFile(t *testing.T) {
 	ctx    := context.TODO()
 	client := mysql.NewEntClient()
-	bucket := spacesrepo.NewSpacesRepository(client)
+	bucket := bucketsrepo.NewBucketsRepository(client)
 	files := NewFileRepository(client)
 	bucket.Wipe(ctx)
 
@@ -26,7 +26,7 @@ func TestFilesMySQL_CreateDOFile(t *testing.T) {
 		t.Error(err)
 		t.FailNow()
 	}
-	_, err = files.CreateSpacesFile(ctx, filename, fileSize, mimeType, isDeleted, isDraft, userId, created.ID)
+	_, err = files.CreateFile(ctx, filename, fileSize, mimeType, isDeleted, isDraft, userId, created.ID)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -36,7 +36,7 @@ func TestFilesMySQL_CreateDOFile(t *testing.T) {
 func TestFilesMySQL_GetFilesDOBucketByID2(t *testing.T) {
 	ctx    := context.TODO()
 	client := mysql.NewEntClient()
-	bucket := spacesrepo.NewSpacesRepository(client)
+	bucket := bucketsrepo.NewBucketsRepository(client)
 	files := NewFileRepository(client)
 	bucket.Wipe(ctx)
 
@@ -48,12 +48,12 @@ func TestFilesMySQL_GetFilesDOBucketByID2(t *testing.T) {
 	userId := int64(1)
 
 	doBucket,_ := bucket.Create(ctx, "bucket-name", "e", nil)
-	file, err := files.CreateSpacesFile(ctx, filename, fileSize, mimeType, isDeleted, isDraft, userId, doBucket.ID)
+	file, err := files.CreateFile(ctx, filename, fileSize, mimeType, isDeleted, isDraft, userId, doBucket.ID)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
-	file2, doBucket2, err := files.GetFilesSpacesByID(ctx, file.ID, nil, nil)
+	file2, doBucket2, err := files.GetFilesBucketByID(ctx, file.ID, nil, nil)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -69,10 +69,10 @@ func TestFilesMySQL_GetFilesDOBucketByID2(t *testing.T) {
 func TestFilesMySQL_GetFilesDOBucketByIDNotFound(t *testing.T) {
 	ctx    := context.TODO()
 	client := mysql.NewEntClient()
-	bucket := spacesrepo.NewSpacesRepository(client)
+	bucket := bucketsrepo.NewBucketsRepository(client)
 	files := NewFileRepository(client)
 	bucket.Wipe(ctx)
-	_, _, err := files.GetFilesSpacesByID(ctx, 11111111, nil, nil)
+	_, _, err := files.GetFilesBucketByID(ctx, 11111111, nil, nil)
 	if err == nil {
 		t.FailNow()
 	}
@@ -84,7 +84,7 @@ func TestFilesMySQL_GetFilesDOBucketByIDNotFound(t *testing.T) {
 func TestFilesMySQL_GetFileByFilename(t *testing.T) {
 	ctx    := context.TODO()
 	client := mysql.NewEntClient()
-	bucket := spacesrepo.NewSpacesRepository(client)
+	bucket := bucketsrepo.NewBucketsRepository(client)
 	files := NewFileRepository(client)
 	bucket.Wipe(ctx)
 
@@ -98,23 +98,23 @@ func TestFilesMySQL_GetFileByFilename(t *testing.T) {
 	bucket0,_ := bucket.Create(ctx, "bucket-name-0", "e0", nil)
 	bucket1,_ := bucket.Create(ctx, "bucket-name-1", "e1", nil)
 
-	_, err := files.CreateSpacesFile(ctx, filename, fileSize, mimeType, isDeleted, isDraft, userId, bucket0.ID)
+	_, err := files.CreateFile(ctx, filename, fileSize, mimeType, isDeleted, isDraft, userId, bucket0.ID)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
-	_, err = files.CreateSpacesFile(ctx, filename, fileSize, mimeType, isDeleted, isDraft, userId, bucket1.ID)
+	_, err = files.CreateFile(ctx, filename, fileSize, mimeType, isDeleted, isDraft, userId, bucket1.ID)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
 
-	_,_, err = files.GetFileByFilenameSpacesName(ctx, filename, bucket0.Name, nil, nil)
+	_,_, err = files.GetFileByFilenameBucketName(ctx, filename, bucket0.Name, nil, nil)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
-	_,_, err = files.GetFileByFilenameSpacesID(ctx, filename, bucket1.ID, nil, nil)
+	_,_, err = files.GetFileByFilenameBucketID(ctx, filename, bucket1.ID, nil, nil)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -124,7 +124,7 @@ func TestFilesMySQL_GetFileByFilename(t *testing.T) {
 func TestFilesMySQL_GetFileByID(t *testing.T) {
 	ctx    := context.TODO()
 	client := mysql.NewEntClient()
-	bucket := spacesrepo.NewSpacesRepository(client)
+	bucket := bucketsrepo.NewBucketsRepository(client)
 	files := NewFileRepository(client)
 	bucket.Wipe(ctx)
 
@@ -138,23 +138,23 @@ func TestFilesMySQL_GetFileByID(t *testing.T) {
 	bucket0,_ := bucket.Create(ctx, "bucket-name-0", "e0", nil)
 	bucket1,_ := bucket.Create(ctx, "bucket-name-1", "e1", nil)
 
-	_, err := files.CreateSpacesFile(ctx, filename, fileSize, mimeType, isDeleted, isDraft, userId, bucket0.ID)
+	_, err := files.CreateFile(ctx, filename, fileSize, mimeType, isDeleted, isDraft, userId, bucket0.ID)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
-	file1, err := files.CreateSpacesFile(ctx, filename, fileSize, mimeType, isDeleted, isDraft, userId, bucket1.ID)
+	file1, err := files.CreateFile(ctx, filename, fileSize, mimeType, isDeleted, isDraft, userId, bucket1.ID)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
 
-	_,_, err = files.GetFilesSpacesByID(ctx, file1.ID, nil, nil)
+	_,_, err = files.GetFilesBucketByID(ctx, file1.ID, nil, nil)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
-	_,_, err = files.GetFileByFilenameSpacesName(ctx, filename, bucket1.Name, nil, nil)
+	_,_, err = files.GetFileByFilenameBucketName(ctx, filename, bucket1.Name, nil, nil)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -164,7 +164,7 @@ func TestFilesMySQL_GetFileByID(t *testing.T) {
 func TestFilesMySQL_MarkAsDeletedByID(t *testing.T) {
 	ctx    := context.TODO()
 	client := mysql.NewEntClient()
-	bucket := spacesrepo.NewSpacesRepository(client)
+	bucket := bucketsrepo.NewBucketsRepository(client)
 	files := NewFileRepository(client)
 	bucket.Wipe(ctx)
 
@@ -176,7 +176,7 @@ func TestFilesMySQL_MarkAsDeletedByID(t *testing.T) {
 	userId := int64(1)
 
 	bucket0,_ := bucket.Create(ctx, "bucket-name-0", "e0", nil)
-	file, err := files.CreateSpacesFile(ctx, filename, fileSize, mimeType, isDeleted, isDraft, userId, bucket0.ID)
+	file, err := files.CreateFile(ctx, filename, fileSize, mimeType, isDeleted, isDraft, userId, bucket0.ID)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
