@@ -4,14 +4,14 @@
 ```
 $ curl -X POST \
 -H "Content-Type: application/json" \
-"api.dev.pepeunlimited.com/twirp/pepeunlimited.files.SpacesService/GetFile" \
+"api.dev.pepeunlimited.com/twirp/pepeunlimited.files.FilesService/GetFile" \
 -d '{"file_id": 58}'
 ```
 #### GetFileByFilename
 ```
 $ curl -X POST \
 -H "Content-Type: application/json" \
-"api.dev.pepeunlimited.com/twirp/pepeunlimited.files.SpacesService/GetFile" \
+"api.dev.pepeunlimited.com/twirp/pepeunlimited.files.FilesService/GetFile" \
 -d '{"file_id": 58}' \
 -d '{"filename": { "name": "filename.txt", "bucket_name": "bucketName", "bucket_id": 1 }}'
 ```
@@ -19,21 +19,21 @@ $ curl -X POST \
 ```
 $ curl -X POST \
 -H "Content-Type: application/json" \
-"api.dev.pepeunlimited.com/twirp/pepeunlimited.files.SpacesService/Delete" \
+"api.dev.pepeunlimited.com/twirp/pepeunlimited.files.FilesService/Delete" \
 -d '{"file_id": 58, "is_permanent": false}'
 ```
 #### DeleteByFilename
 ```
 $ curl -X POST \
 -H "Content-Type: application/json" \
-"api.dev.pepeunlimited.com/twirp/pepeunlimited.files.SpacesService/Delete" \
+"api.dev.pepeunlimited.com/twirp/pepeunlimited.files.FilesService/Delete" \
 -d '{"filename": { "name": "filename.txt", "bucket_name": "bucketName", "bucket_id": 1 }, "is_permanent": false}'
 ```
-#### CreateSpaces
+#### CreateBucket
 ```
 $ curl -X POST \
 -H "Content-Type: application/json" \
-"api.dev.pepeunlimited.com/twirp/pepeunlimited.files.SpacesService/CreateSpaces" \
+"api.dev.pepeunlimited.com/twirp/pepeunlimited.files.FilesService/CreateBucket" \
 -d '{"name": "test0r-666", "endpoint": "fra1.digitaloceanspaces.com"}'
 ```
 #### Content-Length
@@ -47,6 +47,6 @@ curl -X POST \
 -H "Content-Type: plain/text" \
 -H "Content-Length: 50" \
 -H "Meta-API-Args: {\"filename\": \"trolli.txt\"}" \
-api.dev.pepeunlimited.com/upload/spaces/v1/files \
+api.dev.pepeunlimited.com/upload/v1/files \
 --data-binary @const.go
 ```

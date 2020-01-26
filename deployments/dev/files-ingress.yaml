@@ -13,8 +13,8 @@ spec:
           - backend:
               serviceName: files
               servicePort: 80
-            path: /twirp/pepeunlimited.files.SpacesService/*
+            path: /twirp/pepeunlimited.files.FilesService/*
           - backend:
               serviceName: files
               servicePort: 80
-            path: /upload/spaces/v1/files
+            path: /upload/v1/files
