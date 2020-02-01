@@ -2,7 +2,7 @@ package rest
 
 import (
 	"context"
-	"github.com/pepeunlimited/authentication-twirp/authrpc"
+	"github.com/pepeunlimited/authentication-twirp/pkg/authrpc"
 	"github.com/pepeunlimited/files/internal/pkg/ent"
 	"github.com/pepeunlimited/files/internal/pkg/upload"
 	"github.com/pepeunlimited/files/internal/server/twirp"

@@ -1,7 +1,7 @@
 package rest
 
 import (
-	"github.com/pepeunlimited/authentication-twirp/authrpc"
+	"github.com/pepeunlimited/authentication-twirp/pkg/authrpc"
 	"github.com/pepeunlimited/files/internal/pkg/ent"
 	"github.com/pepeunlimited/files/internal/pkg/mysql/bucketsrepo"
 	"github.com/pepeunlimited/files/internal/pkg/mysql/filerepo"
