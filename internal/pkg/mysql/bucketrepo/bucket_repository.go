@@ -26,11 +26,11 @@ type BucketRepository interface {
 	Wipe(ctx context.Context)
 }
 
-type bucketsMySQL struct {
+type bucketMySQL struct {
 	client *ent.Client
 }
 //AND id > ? ORDER BY id ASC LIMIT ?
-func (b bucketsMySQL) GetBuckets(ctx context.Context, pageToken int64, pageSize int32) ([]*ent.Bucket, int64, error) {
+func (b bucketMySQL) GetBuckets(ctx context.Context, pageToken int64, pageSize int32) ([]*ent.Bucket, int64, error) {
 	buckets, err := b.client.Bucket.Query().Where(bucket.IDGT(int(pageToken))).Order(ent.Asc(file.FieldID)).Limit(int(pageSize)).All(ctx)
 	if err != nil {
 		return nil, 0, err
@@ -41,7 +41,7 @@ func (b bucketsMySQL) GetBuckets(ctx context.Context, pageToken int64, pageSize 
 	return buckets, int64(buckets[len(buckets) - 1].ID), nil
 }
 
-func (b bucketsMySQL) GetBucketByID(ctx context.Context, id int) (*ent.Bucket, error) {
+func (b bucketMySQL) GetBucketByID(ctx context.Context, id int) (*ent.Bucket, error) {
 	bucket, err := b.client.Bucket.Get(ctx, id)
 	if err != nil {
 		return nil, b.isSpacesError(err)
@@ -49,7 +49,7 @@ func (b bucketsMySQL) GetBucketByID(ctx context.Context, id int) (*ent.Bucket, e
 	return bucket, nil
 }
 
-func (b bucketsMySQL) DeleteBucketByName(ctx context.Context, name string) error {
+func (b bucketMySQL) DeleteBucketByName(ctx context.Context, name string) error {
 	if _, err := b.GetBucketsByName(ctx, name); err != nil {
 		return err
 	}
@@ -57,12 +57,12 @@ func (b bucketsMySQL) DeleteBucketByName(ctx context.Context, name string) error
 	return err
 }
 
-func (b bucketsMySQL) Wipe(ctx context.Context) {
+func (b bucketMySQL) Wipe(ctx context.Context) {
 	b.client.File.Delete().ExecX(ctx)
 	b.client.Bucket.Delete().ExecX(ctx)
 }
 
-func (b bucketsMySQL) GetBucketsByName(ctx context.Context, bucketName string) (*ent.Bucket, error) {
+func (b bucketMySQL) GetBucketsByName(ctx context.Context, bucketName string) (*ent.Bucket, error) {
 	bucket, err := b.client.Bucket.Query().Where(bucket.Name(bucketName)).Only(ctx)
 	if err != nil {
 		return nil, b.isSpacesError(err)
@@ -70,7 +70,7 @@ func (b bucketsMySQL) GetBucketsByName(ctx context.Context, bucketName string) (
 	return bucket, nil
 }
 
-func (b bucketsMySQL) isSpacesError(err error) error {
+func (b bucketMySQL) isSpacesError(err error) error {
 	if ent.IsNotFound(err) {
 		return ErrBucketsNotExist
 	}
@@ -78,7 +78,7 @@ func (b bucketsMySQL) isSpacesError(err error) error {
 	return err
 }
 
-func (b bucketsMySQL) Create(ctx context.Context, name string, endpoint string, cdnEndpoint *string) (*ent.Bucket, error) {
+func (b bucketMySQL) Create(ctx context.Context, name string, endpoint string, cdnEndpoint *string) (*ent.Bucket, error) {
 	if _, err := b.GetBucketsByName(ctx, name); err == nil {
 		return nil, ErrBucketsExist
 	}
@@ -93,5 +93,5 @@ func (b bucketsMySQL) Create(ctx context.Context, name string, endpoint string, 
 }
 
 func NewBucketRepository(client *ent.Client) BucketRepository {
-	return &bucketsMySQL{client: client}
+	return &bucketMySQL{client: client}
 }
