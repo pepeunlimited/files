@@ -4,32 +4,33 @@ package ent
 
 import (
 	"context"
+
 	"github.com/facebookincubator/ent/dialect/sql"
 	"github.com/facebookincubator/ent/dialect/sql/sqlgraph"
 	"github.com/facebookincubator/ent/schema/field"
-	"github.com/pepeunlimited/files/internal/pkg/ent/files"
+	"github.com/pepeunlimited/files/internal/pkg/ent/file"
 	"github.com/pepeunlimited/files/internal/pkg/ent/predicate"
 )
 
-// FilesDelete is the builder for deleting a Files entity.
-type FilesDelete struct {
+// FileDelete is the builder for deleting a File entity.
+type FileDelete struct {
 	config
-	predicates []predicate.Files
+	predicates []predicate.File
 }
 
 // Where adds a new predicate to the delete builder.
-func (fd *FilesDelete) Where(ps ...predicate.Files) *FilesDelete {
+func (fd *FileDelete) Where(ps ...predicate.File) *FileDelete {
 	fd.predicates = append(fd.predicates, ps...)
 	return fd
 }
 
 // Exec executes the deletion query and returns how many vertices were deleted.
-func (fd *FilesDelete) Exec(ctx context.Context) (int, error) {
+func (fd *FileDelete) Exec(ctx context.Context) (int, error) {
 	return fd.sqlExec(ctx)
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (fd *FilesDelete) ExecX(ctx context.Context) int {
+func (fd *FileDelete) ExecX(ctx context.Context) int {
 	n, err := fd.Exec(ctx)
 	if err != nil {
 		panic(err)
@@ -37,13 +38,13 @@ func (fd *FilesDelete) ExecX(ctx context.Context) int {
 	return n
 }
 
-func (fd *FilesDelete) sqlExec(ctx context.Context) (int, error) {
+func (fd *FileDelete) sqlExec(ctx context.Context) (int, error) {
 	_spec := &sqlgraph.DeleteSpec{
 		Node: &sqlgraph.NodeSpec{
-			Table: files.Table,
+			Table: file.Table,
 			ID: &sqlgraph.FieldSpec{
 				Type:   field.TypeInt,
-				Column: files.FieldID,
+				Column: file.FieldID,
 			},
 		},
 	}
@@ -57,25 +58,25 @@ func (fd *FilesDelete) sqlExec(ctx context.Context) (int, error) {
 	return sqlgraph.DeleteNodes(ctx, fd.driver, _spec)
 }
 
-// FilesDeleteOne is the builder for deleting a single Files entity.
-type FilesDeleteOne struct {
-	fd *FilesDelete
+// FileDeleteOne is the builder for deleting a single File entity.
+type FileDeleteOne struct {
+	fd *FileDelete
 }
 
 // Exec executes the deletion query.
-func (fdo *FilesDeleteOne) Exec(ctx context.Context) error {
+func (fdo *FileDeleteOne) Exec(ctx context.Context) error {
 	n, err := fdo.fd.Exec(ctx)
 	switch {
 	case err != nil:
 		return err
 	case n == 0:
-		return &ErrNotFound{files.Label}
+		return &NotFoundError{file.Label}
 	default:
 		return nil
 	}
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (fdo *FilesDeleteOne) ExecX(ctx context.Context) {
+func (fdo *FileDeleteOne) ExecX(ctx context.Context) {
 	fdo.fd.ExecX(ctx)
 }

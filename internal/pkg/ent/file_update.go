@@ -6,18 +6,18 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/pepeunlimited/files/internal/pkg/ent/buckets"
-	"github.com/pepeunlimited/files/internal/pkg/ent/files"
-	"github.com/pepeunlimited/files/internal/pkg/ent/predicate"
 	"time"
 
 	"github.com/facebookincubator/ent/dialect/sql"
 	"github.com/facebookincubator/ent/dialect/sql/sqlgraph"
 	"github.com/facebookincubator/ent/schema/field"
+	"github.com/pepeunlimited/files/internal/pkg/ent/bucket"
+	"github.com/pepeunlimited/files/internal/pkg/ent/file"
+	"github.com/pepeunlimited/files/internal/pkg/ent/predicate"
 )
 
-// FilesUpdate is the builder for updating Files entities.
-type FilesUpdate struct {
+// FileUpdate is the builder for updating File entities.
+type FileUpdate struct {
 	config
 	filename       *string
 	mime_type      *string
@@ -31,36 +31,36 @@ type FilesUpdate struct {
 	updated_at     *time.Time
 	buckets        map[int]struct{}
 	clearedBuckets bool
-	predicates     []predicate.Files
+	predicates     []predicate.File
 }
 
 // Where adds a new predicate for the builder.
-func (fu *FilesUpdate) Where(ps ...predicate.Files) *FilesUpdate {
+func (fu *FileUpdate) Where(ps ...predicate.File) *FileUpdate {
 	fu.predicates = append(fu.predicates, ps...)
 	return fu
 }
 
 // SetFilename sets the filename field.
-func (fu *FilesUpdate) SetFilename(s string) *FilesUpdate {
+func (fu *FileUpdate) SetFilename(s string) *FileUpdate {
 	fu.filename = &s
 	return fu
 }
 
 // SetMimeType sets the mime_type field.
-func (fu *FilesUpdate) SetMimeType(s string) *FilesUpdate {
+func (fu *FileUpdate) SetMimeType(s string) *FileUpdate {
 	fu.mime_type = &s
 	return fu
 }
 
 // SetFileSize sets the file_size field.
-func (fu *FilesUpdate) SetFileSize(i int64) *FilesUpdate {
+func (fu *FileUpdate) SetFileSize(i int64) *FileUpdate {
 	fu.file_size = &i
 	fu.addfile_size = nil
 	return fu
 }
 
 // AddFileSize adds i to file_size.
-func (fu *FilesUpdate) AddFileSize(i int64) *FilesUpdate {
+func (fu *FileUpdate) AddFileSize(i int64) *FileUpdate {
 	if fu.addfile_size == nil {
 		fu.addfile_size = &i
 	} else {
@@ -70,13 +70,13 @@ func (fu *FilesUpdate) AddFileSize(i int64) *FilesUpdate {
 }
 
 // SetIsDraft sets the is_draft field.
-func (fu *FilesUpdate) SetIsDraft(b bool) *FilesUpdate {
+func (fu *FileUpdate) SetIsDraft(b bool) *FileUpdate {
 	fu.is_draft = &b
 	return fu
 }
 
 // SetNillableIsDraft sets the is_draft field if the given value is not nil.
-func (fu *FilesUpdate) SetNillableIsDraft(b *bool) *FilesUpdate {
+func (fu *FileUpdate) SetNillableIsDraft(b *bool) *FileUpdate {
 	if b != nil {
 		fu.SetIsDraft(*b)
 	}
@@ -84,13 +84,13 @@ func (fu *FilesUpdate) SetNillableIsDraft(b *bool) *FilesUpdate {
 }
 
 // SetIsDeleted sets the is_deleted field.
-func (fu *FilesUpdate) SetIsDeleted(b bool) *FilesUpdate {
+func (fu *FileUpdate) SetIsDeleted(b bool) *FileUpdate {
 	fu.is_deleted = &b
 	return fu
 }
 
 // SetNillableIsDeleted sets the is_deleted field if the given value is not nil.
-func (fu *FilesUpdate) SetNillableIsDeleted(b *bool) *FilesUpdate {
+func (fu *FileUpdate) SetNillableIsDeleted(b *bool) *FileUpdate {
 	if b != nil {
 		fu.SetIsDeleted(*b)
 	}
@@ -98,14 +98,14 @@ func (fu *FilesUpdate) SetNillableIsDeleted(b *bool) *FilesUpdate {
 }
 
 // SetUserID sets the user_id field.
-func (fu *FilesUpdate) SetUserID(i int64) *FilesUpdate {
+func (fu *FileUpdate) SetUserID(i int64) *FileUpdate {
 	fu.user_id = &i
 	fu.adduser_id = nil
 	return fu
 }
 
 // AddUserID adds i to user_id.
-func (fu *FilesUpdate) AddUserID(i int64) *FilesUpdate {
+func (fu *FileUpdate) AddUserID(i int64) *FileUpdate {
 	if fu.adduser_id == nil {
 		fu.adduser_id = &i
 	} else {
@@ -115,19 +115,19 @@ func (fu *FilesUpdate) AddUserID(i int64) *FilesUpdate {
 }
 
 // SetCreatedAt sets the created_at field.
-func (fu *FilesUpdate) SetCreatedAt(t time.Time) *FilesUpdate {
+func (fu *FileUpdate) SetCreatedAt(t time.Time) *FileUpdate {
 	fu.created_at = &t
 	return fu
 }
 
 // SetUpdatedAt sets the updated_at field.
-func (fu *FilesUpdate) SetUpdatedAt(t time.Time) *FilesUpdate {
+func (fu *FileUpdate) SetUpdatedAt(t time.Time) *FileUpdate {
 	fu.updated_at = &t
 	return fu
 }
 
-// SetBucketsID sets the buckets edge to Buckets by id.
-func (fu *FilesUpdate) SetBucketsID(id int) *FilesUpdate {
+// SetBucketsID sets the buckets edge to Bucket by id.
+func (fu *FileUpdate) SetBucketsID(id int) *FileUpdate {
 	if fu.buckets == nil {
 		fu.buckets = make(map[int]struct{})
 	}
@@ -135,34 +135,34 @@ func (fu *FilesUpdate) SetBucketsID(id int) *FilesUpdate {
 	return fu
 }
 
-// SetNillableBucketsID sets the buckets edge to Buckets by id if the given value is not nil.
-func (fu *FilesUpdate) SetNillableBucketsID(id *int) *FilesUpdate {
+// SetNillableBucketsID sets the buckets edge to Bucket by id if the given value is not nil.
+func (fu *FileUpdate) SetNillableBucketsID(id *int) *FileUpdate {
 	if id != nil {
 		fu = fu.SetBucketsID(*id)
 	}
 	return fu
 }
 
-// SetBuckets sets the buckets edge to Buckets.
-func (fu *FilesUpdate) SetBuckets(b *Buckets) *FilesUpdate {
+// SetBuckets sets the buckets edge to Bucket.
+func (fu *FileUpdate) SetBuckets(b *Bucket) *FileUpdate {
 	return fu.SetBucketsID(b.ID)
 }
 
-// ClearBuckets clears the buckets edge to Buckets.
-func (fu *FilesUpdate) ClearBuckets() *FilesUpdate {
+// ClearBuckets clears the buckets edge to Bucket.
+func (fu *FileUpdate) ClearBuckets() *FileUpdate {
 	fu.clearedBuckets = true
 	return fu
 }
 
 // Save executes the query and returns the number of rows/vertices matched by this operation.
-func (fu *FilesUpdate) Save(ctx context.Context) (int, error) {
+func (fu *FileUpdate) Save(ctx context.Context) (int, error) {
 	if fu.filename != nil {
-		if err := files.FilenameValidator(*fu.filename); err != nil {
+		if err := file.FilenameValidator(*fu.filename); err != nil {
 			return 0, fmt.Errorf("ent: validator failed for field \"filename\": %v", err)
 		}
 	}
 	if fu.mime_type != nil {
-		if err := files.MimeTypeValidator(*fu.mime_type); err != nil {
+		if err := file.MimeTypeValidator(*fu.mime_type); err != nil {
 			return 0, fmt.Errorf("ent: validator failed for field \"mime_type\": %v", err)
 		}
 	}
@@ -173,7 +173,7 @@ func (fu *FilesUpdate) Save(ctx context.Context) (int, error) {
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (fu *FilesUpdate) SaveX(ctx context.Context) int {
+func (fu *FileUpdate) SaveX(ctx context.Context) int {
 	affected, err := fu.Save(ctx)
 	if err != nil {
 		panic(err)
@@ -182,26 +182,26 @@ func (fu *FilesUpdate) SaveX(ctx context.Context) int {
 }
 
 // Exec executes the query.
-func (fu *FilesUpdate) Exec(ctx context.Context) error {
+func (fu *FileUpdate) Exec(ctx context.Context) error {
 	_, err := fu.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (fu *FilesUpdate) ExecX(ctx context.Context) {
+func (fu *FileUpdate) ExecX(ctx context.Context) {
 	if err := fu.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
-func (fu *FilesUpdate) sqlSave(ctx context.Context) (n int, err error) {
+func (fu *FileUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
-			Table:   files.Table,
-			Columns: files.Columns,
+			Table:   file.Table,
+			Columns: file.Columns,
 			ID: &sqlgraph.FieldSpec{
 				Type:   field.TypeInt,
-				Column: files.FieldID,
+				Column: file.FieldID,
 			},
 		},
 	}
@@ -216,83 +216,83 @@ func (fu *FilesUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  *value,
-			Column: files.FieldFilename,
+			Column: file.FieldFilename,
 		})
 	}
 	if value := fu.mime_type; value != nil {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  *value,
-			Column: files.FieldMimeType,
+			Column: file.FieldMimeType,
 		})
 	}
 	if value := fu.file_size; value != nil {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeInt64,
 			Value:  *value,
-			Column: files.FieldFileSize,
+			Column: file.FieldFileSize,
 		})
 	}
 	if value := fu.addfile_size; value != nil {
 		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
 			Type:   field.TypeInt64,
 			Value:  *value,
-			Column: files.FieldFileSize,
+			Column: file.FieldFileSize,
 		})
 	}
 	if value := fu.is_draft; value != nil {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeBool,
 			Value:  *value,
-			Column: files.FieldIsDraft,
+			Column: file.FieldIsDraft,
 		})
 	}
 	if value := fu.is_deleted; value != nil {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeBool,
 			Value:  *value,
-			Column: files.FieldIsDeleted,
+			Column: file.FieldIsDeleted,
 		})
 	}
 	if value := fu.user_id; value != nil {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeInt64,
 			Value:  *value,
-			Column: files.FieldUserID,
+			Column: file.FieldUserID,
 		})
 	}
 	if value := fu.adduser_id; value != nil {
 		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
 			Type:   field.TypeInt64,
 			Value:  *value,
-			Column: files.FieldUserID,
+			Column: file.FieldUserID,
 		})
 	}
 	if value := fu.created_at; value != nil {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Value:  *value,
-			Column: files.FieldCreatedAt,
+			Column: file.FieldCreatedAt,
 		})
 	}
 	if value := fu.updated_at; value != nil {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Value:  *value,
-			Column: files.FieldUpdatedAt,
+			Column: file.FieldUpdatedAt,
 		})
 	}
 	if fu.clearedBuckets {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   files.BucketsTable,
-			Columns: []string{files.BucketsColumn},
+			Table:   file.BucketsTable,
+			Columns: []string{file.BucketsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: buckets.FieldID,
+					Column: bucket.FieldID,
 				},
 			},
 		}
@@ -302,13 +302,13 @@ func (fu *FilesUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   files.BucketsTable,
-			Columns: []string{files.BucketsColumn},
+			Table:   file.BucketsTable,
+			Columns: []string{file.BucketsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: buckets.FieldID,
+					Column: bucket.FieldID,
 				},
 			},
 		}
@@ -326,8 +326,8 @@ func (fu *FilesUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	return n, nil
 }
 
-// FilesUpdateOne is the builder for updating a single Files entity.
-type FilesUpdateOne struct {
+// FileUpdateOne is the builder for updating a single File entity.
+type FileUpdateOne struct {
 	config
 	id             int
 	filename       *string
@@ -345,26 +345,26 @@ type FilesUpdateOne struct {
 }
 
 // SetFilename sets the filename field.
-func (fuo *FilesUpdateOne) SetFilename(s string) *FilesUpdateOne {
+func (fuo *FileUpdateOne) SetFilename(s string) *FileUpdateOne {
 	fuo.filename = &s
 	return fuo
 }
 
 // SetMimeType sets the mime_type field.
-func (fuo *FilesUpdateOne) SetMimeType(s string) *FilesUpdateOne {
+func (fuo *FileUpdateOne) SetMimeType(s string) *FileUpdateOne {
 	fuo.mime_type = &s
 	return fuo
 }
 
 // SetFileSize sets the file_size field.
-func (fuo *FilesUpdateOne) SetFileSize(i int64) *FilesUpdateOne {
+func (fuo *FileUpdateOne) SetFileSize(i int64) *FileUpdateOne {
 	fuo.file_size = &i
 	fuo.addfile_size = nil
 	return fuo
 }
 
 // AddFileSize adds i to file_size.
-func (fuo *FilesUpdateOne) AddFileSize(i int64) *FilesUpdateOne {
+func (fuo *FileUpdateOne) AddFileSize(i int64) *FileUpdateOne {
 	if fuo.addfile_size == nil {
 		fuo.addfile_size = &i
 	} else {
@@ -374,13 +374,13 @@ func (fuo *FilesUpdateOne) AddFileSize(i int64) *FilesUpdateOne {
 }
 
 // SetIsDraft sets the is_draft field.
-func (fuo *FilesUpdateOne) SetIsDraft(b bool) *FilesUpdateOne {
+func (fuo *FileUpdateOne) SetIsDraft(b bool) *FileUpdateOne {
 	fuo.is_draft = &b
 	return fuo
 }
 
 // SetNillableIsDraft sets the is_draft field if the given value is not nil.
-func (fuo *FilesUpdateOne) SetNillableIsDraft(b *bool) *FilesUpdateOne {
+func (fuo *FileUpdateOne) SetNillableIsDraft(b *bool) *FileUpdateOne {
 	if b != nil {
 		fuo.SetIsDraft(*b)
 	}
@@ -388,13 +388,13 @@ func (fuo *FilesUpdateOne) SetNillableIsDraft(b *bool) *FilesUpdateOne {
 }
 
 // SetIsDeleted sets the is_deleted field.
-func (fuo *FilesUpdateOne) SetIsDeleted(b bool) *FilesUpdateOne {
+func (fuo *FileUpdateOne) SetIsDeleted(b bool) *FileUpdateOne {
 	fuo.is_deleted = &b
 	return fuo
 }
 
 // SetNillableIsDeleted sets the is_deleted field if the given value is not nil.
-func (fuo *FilesUpdateOne) SetNillableIsDeleted(b *bool) *FilesUpdateOne {
+func (fuo *FileUpdateOne) SetNillableIsDeleted(b *bool) *FileUpdateOne {
 	if b != nil {
 		fuo.SetIsDeleted(*b)
 	}
@@ -402,14 +402,14 @@ func (fuo *FilesUpdateOne) SetNillableIsDeleted(b *bool) *FilesUpdateOne {
 }
 
 // SetUserID sets the user_id field.
-func (fuo *FilesUpdateOne) SetUserID(i int64) *FilesUpdateOne {
+func (fuo *FileUpdateOne) SetUserID(i int64) *FileUpdateOne {
 	fuo.user_id = &i
 	fuo.adduser_id = nil
 	return fuo
 }
 
 // AddUserID adds i to user_id.
-func (fuo *FilesUpdateOne) AddUserID(i int64) *FilesUpdateOne {
+func (fuo *FileUpdateOne) AddUserID(i int64) *FileUpdateOne {
 	if fuo.adduser_id == nil {
 		fuo.adduser_id = &i
 	} else {
@@ -419,19 +419,19 @@ func (fuo *FilesUpdateOne) AddUserID(i int64) *FilesUpdateOne {
 }
 
 // SetCreatedAt sets the created_at field.
-func (fuo *FilesUpdateOne) SetCreatedAt(t time.Time) *FilesUpdateOne {
+func (fuo *FileUpdateOne) SetCreatedAt(t time.Time) *FileUpdateOne {
 	fuo.created_at = &t
 	return fuo
 }
 
 // SetUpdatedAt sets the updated_at field.
-func (fuo *FilesUpdateOne) SetUpdatedAt(t time.Time) *FilesUpdateOne {
+func (fuo *FileUpdateOne) SetUpdatedAt(t time.Time) *FileUpdateOne {
 	fuo.updated_at = &t
 	return fuo
 }
 
-// SetBucketsID sets the buckets edge to Buckets by id.
-func (fuo *FilesUpdateOne) SetBucketsID(id int) *FilesUpdateOne {
+// SetBucketsID sets the buckets edge to Bucket by id.
+func (fuo *FileUpdateOne) SetBucketsID(id int) *FileUpdateOne {
 	if fuo.buckets == nil {
 		fuo.buckets = make(map[int]struct{})
 	}
@@ -439,34 +439,34 @@ func (fuo *FilesUpdateOne) SetBucketsID(id int) *FilesUpdateOne {
 	return fuo
 }
 
-// SetNillableBucketsID sets the buckets edge to Buckets by id if the given value is not nil.
-func (fuo *FilesUpdateOne) SetNillableBucketsID(id *int) *FilesUpdateOne {
+// SetNillableBucketsID sets the buckets edge to Bucket by id if the given value is not nil.
+func (fuo *FileUpdateOne) SetNillableBucketsID(id *int) *FileUpdateOne {
 	if id != nil {
 		fuo = fuo.SetBucketsID(*id)
 	}
 	return fuo
 }
 
-// SetBuckets sets the buckets edge to Buckets.
-func (fuo *FilesUpdateOne) SetBuckets(b *Buckets) *FilesUpdateOne {
+// SetBuckets sets the buckets edge to Bucket.
+func (fuo *FileUpdateOne) SetBuckets(b *Bucket) *FileUpdateOne {
 	return fuo.SetBucketsID(b.ID)
 }
 
-// ClearBuckets clears the buckets edge to Buckets.
-func (fuo *FilesUpdateOne) ClearBuckets() *FilesUpdateOne {
+// ClearBuckets clears the buckets edge to Bucket.
+func (fuo *FileUpdateOne) ClearBuckets() *FileUpdateOne {
 	fuo.clearedBuckets = true
 	return fuo
 }
 
 // Save executes the query and returns the updated entity.
-func (fuo *FilesUpdateOne) Save(ctx context.Context) (*Files, error) {
+func (fuo *FileUpdateOne) Save(ctx context.Context) (*File, error) {
 	if fuo.filename != nil {
-		if err := files.FilenameValidator(*fuo.filename); err != nil {
+		if err := file.FilenameValidator(*fuo.filename); err != nil {
 			return nil, fmt.Errorf("ent: validator failed for field \"filename\": %v", err)
 		}
 	}
 	if fuo.mime_type != nil {
-		if err := files.MimeTypeValidator(*fuo.mime_type); err != nil {
+		if err := file.MimeTypeValidator(*fuo.mime_type); err != nil {
 			return nil, fmt.Errorf("ent: validator failed for field \"mime_type\": %v", err)
 		}
 	}
@@ -477,7 +477,7 @@ func (fuo *FilesUpdateOne) Save(ctx context.Context) (*Files, error) {
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (fuo *FilesUpdateOne) SaveX(ctx context.Context) *Files {
+func (fuo *FileUpdateOne) SaveX(ctx context.Context) *File {
 	f, err := fuo.Save(ctx)
 	if err != nil {
 		panic(err)
@@ -486,27 +486,27 @@ func (fuo *FilesUpdateOne) SaveX(ctx context.Context) *Files {
 }
 
 // Exec executes the query on the entity.
-func (fuo *FilesUpdateOne) Exec(ctx context.Context) error {
+func (fuo *FileUpdateOne) Exec(ctx context.Context) error {
 	_, err := fuo.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (fuo *FilesUpdateOne) ExecX(ctx context.Context) {
+func (fuo *FileUpdateOne) ExecX(ctx context.Context) {
 	if err := fuo.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
-func (fuo *FilesUpdateOne) sqlSave(ctx context.Context) (f *Files, err error) {
+func (fuo *FileUpdateOne) sqlSave(ctx context.Context) (f *File, err error) {
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
-			Table:   files.Table,
-			Columns: files.Columns,
+			Table:   file.Table,
+			Columns: file.Columns,
 			ID: &sqlgraph.FieldSpec{
 				Value:  fuo.id,
 				Type:   field.TypeInt,
-				Column: files.FieldID,
+				Column: file.FieldID,
 			},
 		},
 	}
@@ -514,83 +514,83 @@ func (fuo *FilesUpdateOne) sqlSave(ctx context.Context) (f *Files, err error) {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  *value,
-			Column: files.FieldFilename,
+			Column: file.FieldFilename,
 		})
 	}
 	if value := fuo.mime_type; value != nil {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  *value,
-			Column: files.FieldMimeType,
+			Column: file.FieldMimeType,
 		})
 	}
 	if value := fuo.file_size; value != nil {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeInt64,
 			Value:  *value,
-			Column: files.FieldFileSize,
+			Column: file.FieldFileSize,
 		})
 	}
 	if value := fuo.addfile_size; value != nil {
 		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
 			Type:   field.TypeInt64,
 			Value:  *value,
-			Column: files.FieldFileSize,
+			Column: file.FieldFileSize,
 		})
 	}
 	if value := fuo.is_draft; value != nil {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeBool,
 			Value:  *value,
-			Column: files.FieldIsDraft,
+			Column: file.FieldIsDraft,
 		})
 	}
 	if value := fuo.is_deleted; value != nil {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeBool,
 			Value:  *value,
-			Column: files.FieldIsDeleted,
+			Column: file.FieldIsDeleted,
 		})
 	}
 	if value := fuo.user_id; value != nil {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeInt64,
 			Value:  *value,
-			Column: files.FieldUserID,
+			Column: file.FieldUserID,
 		})
 	}
 	if value := fuo.adduser_id; value != nil {
 		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
 			Type:   field.TypeInt64,
 			Value:  *value,
-			Column: files.FieldUserID,
+			Column: file.FieldUserID,
 		})
 	}
 	if value := fuo.created_at; value != nil {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Value:  *value,
-			Column: files.FieldCreatedAt,
+			Column: file.FieldCreatedAt,
 		})
 	}
 	if value := fuo.updated_at; value != nil {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Value:  *value,
-			Column: files.FieldUpdatedAt,
+			Column: file.FieldUpdatedAt,
 		})
 	}
 	if fuo.clearedBuckets {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   files.BucketsTable,
-			Columns: []string{files.BucketsColumn},
+			Table:   file.BucketsTable,
+			Columns: []string{file.BucketsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: buckets.FieldID,
+					Column: bucket.FieldID,
 				},
 			},
 		}
@@ -600,13 +600,13 @@ func (fuo *FilesUpdateOne) sqlSave(ctx context.Context) (f *Files, err error) {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   files.BucketsTable,
-			Columns: []string{files.BucketsColumn},
+			Table:   file.BucketsTable,
+			Columns: []string{file.BucketsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: buckets.FieldID,
+					Column: bucket.FieldID,
 				},
 			},
 		}
@@ -615,7 +615,7 @@ func (fuo *FilesUpdateOne) sqlSave(ctx context.Context) (f *Files, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	f = &Files{config: fuo.config}
+	f = &File{config: fuo.config}
 	_spec.Assign = f.assignValues
 	_spec.ScanValues = f.scanValues()
 	if err = sqlgraph.UpdateNode(ctx, fuo.driver, _spec); err != nil {

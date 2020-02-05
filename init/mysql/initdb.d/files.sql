@@ -18,12 +18,12 @@ CREATE TABLE files (
     filename        VARCHAR(100) NOT NULL,                     -- 'hello_world.txt'
     mime_type      VARCHAR(255) NOT NULL,                     -- 'plain/text'
     file_size       int(10)      NOT NULL,                     -- '12'
-    buckets_id     int(10)      NULL,
+    bucket_files    int(10)      NULL,
     is_draft       BOOLEAN      DEFAULT false,                -- only visible for the self
     is_deleted     BOOLEAN      DEFAULT false,                -- 'deleted' from the self and anyone
     user_id        int(10)      NOT NULL,                     -- userId is referenced from users-service (from the jwt-token)
     created_at     DATETIME(3)  NOT NULL,
     updated_at     DATETIME(3)  NOT NULL,
-    FOREIGN KEY (buckets_id)    REFERENCES buckets (id),
+    FOREIGN KEY (bucket_files)    REFERENCES buckets (id),
     PRIMARY KEY (id)
 );

@@ -5,18 +5,18 @@ package ent
 import (
 	"context"
 	"fmt"
-	"github.com/pepeunlimited/files/internal/pkg/ent/buckets"
-	"github.com/pepeunlimited/files/internal/pkg/ent/files"
-	"github.com/pepeunlimited/files/internal/pkg/ent/predicate"
 	"time"
 
 	"github.com/facebookincubator/ent/dialect/sql"
 	"github.com/facebookincubator/ent/dialect/sql/sqlgraph"
 	"github.com/facebookincubator/ent/schema/field"
+	"github.com/pepeunlimited/files/internal/pkg/ent/bucket"
+	"github.com/pepeunlimited/files/internal/pkg/ent/file"
+	"github.com/pepeunlimited/files/internal/pkg/ent/predicate"
 )
 
-// BucketsUpdate is the builder for updating Buckets entities.
-type BucketsUpdate struct {
+// BucketUpdate is the builder for updating Bucket entities.
+type BucketUpdate struct {
 	config
 	name              *string
 	endpoint          *string
@@ -25,35 +25,35 @@ type BucketsUpdate struct {
 	created_at        *time.Time
 	files             map[int]struct{}
 	removedFiles      map[int]struct{}
-	predicates        []predicate.Buckets
+	predicates        []predicate.Bucket
 }
 
 // Where adds a new predicate for the builder.
-func (bu *BucketsUpdate) Where(ps ...predicate.Buckets) *BucketsUpdate {
+func (bu *BucketUpdate) Where(ps ...predicate.Bucket) *BucketUpdate {
 	bu.predicates = append(bu.predicates, ps...)
 	return bu
 }
 
 // SetName sets the name field.
-func (bu *BucketsUpdate) SetName(s string) *BucketsUpdate {
+func (bu *BucketUpdate) SetName(s string) *BucketUpdate {
 	bu.name = &s
 	return bu
 }
 
 // SetEndpoint sets the endpoint field.
-func (bu *BucketsUpdate) SetEndpoint(s string) *BucketsUpdate {
+func (bu *BucketUpdate) SetEndpoint(s string) *BucketUpdate {
 	bu.endpoint = &s
 	return bu
 }
 
 // SetCdnEndpoint sets the cdn_endpoint field.
-func (bu *BucketsUpdate) SetCdnEndpoint(s string) *BucketsUpdate {
+func (bu *BucketUpdate) SetCdnEndpoint(s string) *BucketUpdate {
 	bu.cdn_endpoint = &s
 	return bu
 }
 
 // SetNillableCdnEndpoint sets the cdn_endpoint field if the given value is not nil.
-func (bu *BucketsUpdate) SetNillableCdnEndpoint(s *string) *BucketsUpdate {
+func (bu *BucketUpdate) SetNillableCdnEndpoint(s *string) *BucketUpdate {
 	if s != nil {
 		bu.SetCdnEndpoint(*s)
 	}
@@ -61,20 +61,20 @@ func (bu *BucketsUpdate) SetNillableCdnEndpoint(s *string) *BucketsUpdate {
 }
 
 // ClearCdnEndpoint clears the value of cdn_endpoint.
-func (bu *BucketsUpdate) ClearCdnEndpoint() *BucketsUpdate {
+func (bu *BucketUpdate) ClearCdnEndpoint() *BucketUpdate {
 	bu.cdn_endpoint = nil
 	bu.clearcdn_endpoint = true
 	return bu
 }
 
 // SetCreatedAt sets the created_at field.
-func (bu *BucketsUpdate) SetCreatedAt(t time.Time) *BucketsUpdate {
+func (bu *BucketUpdate) SetCreatedAt(t time.Time) *BucketUpdate {
 	bu.created_at = &t
 	return bu
 }
 
-// AddFileIDs adds the files edge to Files by ids.
-func (bu *BucketsUpdate) AddFileIDs(ids ...int) *BucketsUpdate {
+// AddFileIDs adds the files edge to File by ids.
+func (bu *BucketUpdate) AddFileIDs(ids ...int) *BucketUpdate {
 	if bu.files == nil {
 		bu.files = make(map[int]struct{})
 	}
@@ -84,8 +84,8 @@ func (bu *BucketsUpdate) AddFileIDs(ids ...int) *BucketsUpdate {
 	return bu
 }
 
-// AddFiles adds the files edges to Files.
-func (bu *BucketsUpdate) AddFiles(f ...*Files) *BucketsUpdate {
+// AddFiles adds the files edges to File.
+func (bu *BucketUpdate) AddFiles(f ...*File) *BucketUpdate {
 	ids := make([]int, len(f))
 	for i := range f {
 		ids[i] = f[i].ID
@@ -93,8 +93,8 @@ func (bu *BucketsUpdate) AddFiles(f ...*Files) *BucketsUpdate {
 	return bu.AddFileIDs(ids...)
 }
 
-// RemoveFileIDs removes the files edge to Files by ids.
-func (bu *BucketsUpdate) RemoveFileIDs(ids ...int) *BucketsUpdate {
+// RemoveFileIDs removes the files edge to File by ids.
+func (bu *BucketUpdate) RemoveFileIDs(ids ...int) *BucketUpdate {
 	if bu.removedFiles == nil {
 		bu.removedFiles = make(map[int]struct{})
 	}
@@ -104,8 +104,8 @@ func (bu *BucketsUpdate) RemoveFileIDs(ids ...int) *BucketsUpdate {
 	return bu
 }
 
-// RemoveFiles removes files edges to Files.
-func (bu *BucketsUpdate) RemoveFiles(f ...*Files) *BucketsUpdate {
+// RemoveFiles removes files edges to File.
+func (bu *BucketUpdate) RemoveFiles(f ...*File) *BucketUpdate {
 	ids := make([]int, len(f))
 	for i := range f {
 		ids[i] = f[i].ID
@@ -114,14 +114,14 @@ func (bu *BucketsUpdate) RemoveFiles(f ...*Files) *BucketsUpdate {
 }
 
 // Save executes the query and returns the number of rows/vertices matched by this operation.
-func (bu *BucketsUpdate) Save(ctx context.Context) (int, error) {
+func (bu *BucketUpdate) Save(ctx context.Context) (int, error) {
 	if bu.name != nil {
-		if err := buckets.NameValidator(*bu.name); err != nil {
+		if err := bucket.NameValidator(*bu.name); err != nil {
 			return 0, fmt.Errorf("ent: validator failed for field \"name\": %v", err)
 		}
 	}
 	if bu.endpoint != nil {
-		if err := buckets.EndpointValidator(*bu.endpoint); err != nil {
+		if err := bucket.EndpointValidator(*bu.endpoint); err != nil {
 			return 0, fmt.Errorf("ent: validator failed for field \"endpoint\": %v", err)
 		}
 	}
@@ -129,7 +129,7 @@ func (bu *BucketsUpdate) Save(ctx context.Context) (int, error) {
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (bu *BucketsUpdate) SaveX(ctx context.Context) int {
+func (bu *BucketUpdate) SaveX(ctx context.Context) int {
 	affected, err := bu.Save(ctx)
 	if err != nil {
 		panic(err)
@@ -138,26 +138,26 @@ func (bu *BucketsUpdate) SaveX(ctx context.Context) int {
 }
 
 // Exec executes the query.
-func (bu *BucketsUpdate) Exec(ctx context.Context) error {
+func (bu *BucketUpdate) Exec(ctx context.Context) error {
 	_, err := bu.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (bu *BucketsUpdate) ExecX(ctx context.Context) {
+func (bu *BucketUpdate) ExecX(ctx context.Context) {
 	if err := bu.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
-func (bu *BucketsUpdate) sqlSave(ctx context.Context) (n int, err error) {
+func (bu *BucketUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
-			Table:   buckets.Table,
-			Columns: buckets.Columns,
+			Table:   bucket.Table,
+			Columns: bucket.Columns,
 			ID: &sqlgraph.FieldSpec{
 				Type:   field.TypeInt,
-				Column: buckets.FieldID,
+				Column: bucket.FieldID,
 			},
 		},
 	}
@@ -172,47 +172,47 @@ func (bu *BucketsUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  *value,
-			Column: buckets.FieldName,
+			Column: bucket.FieldName,
 		})
 	}
 	if value := bu.endpoint; value != nil {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  *value,
-			Column: buckets.FieldEndpoint,
+			Column: bucket.FieldEndpoint,
 		})
 	}
 	if value := bu.cdn_endpoint; value != nil {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  *value,
-			Column: buckets.FieldCdnEndpoint,
+			Column: bucket.FieldCdnEndpoint,
 		})
 	}
 	if bu.clearcdn_endpoint {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
-			Column: buckets.FieldCdnEndpoint,
+			Column: bucket.FieldCdnEndpoint,
 		})
 	}
 	if value := bu.created_at; value != nil {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Value:  *value,
-			Column: buckets.FieldCreatedAt,
+			Column: bucket.FieldCreatedAt,
 		})
 	}
 	if nodes := bu.removedFiles; len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   buckets.FilesTable,
-			Columns: []string{buckets.FilesColumn},
+			Table:   bucket.FilesTable,
+			Columns: []string{bucket.FilesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: files.FieldID,
+					Column: file.FieldID,
 				},
 			},
 		}
@@ -225,13 +225,13 @@ func (bu *BucketsUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   buckets.FilesTable,
-			Columns: []string{buckets.FilesColumn},
+			Table:   bucket.FilesTable,
+			Columns: []string{bucket.FilesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: files.FieldID,
+					Column: file.FieldID,
 				},
 			},
 		}
@@ -249,8 +249,8 @@ func (bu *BucketsUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	return n, nil
 }
 
-// BucketsUpdateOne is the builder for updating a single Buckets entity.
-type BucketsUpdateOne struct {
+// BucketUpdateOne is the builder for updating a single Bucket entity.
+type BucketUpdateOne struct {
 	config
 	id                int
 	name              *string
@@ -263,25 +263,25 @@ type BucketsUpdateOne struct {
 }
 
 // SetName sets the name field.
-func (buo *BucketsUpdateOne) SetName(s string) *BucketsUpdateOne {
+func (buo *BucketUpdateOne) SetName(s string) *BucketUpdateOne {
 	buo.name = &s
 	return buo
 }
 
 // SetEndpoint sets the endpoint field.
-func (buo *BucketsUpdateOne) SetEndpoint(s string) *BucketsUpdateOne {
+func (buo *BucketUpdateOne) SetEndpoint(s string) *BucketUpdateOne {
 	buo.endpoint = &s
 	return buo
 }
 
 // SetCdnEndpoint sets the cdn_endpoint field.
-func (buo *BucketsUpdateOne) SetCdnEndpoint(s string) *BucketsUpdateOne {
+func (buo *BucketUpdateOne) SetCdnEndpoint(s string) *BucketUpdateOne {
 	buo.cdn_endpoint = &s
 	return buo
 }
 
 // SetNillableCdnEndpoint sets the cdn_endpoint field if the given value is not nil.
-func (buo *BucketsUpdateOne) SetNillableCdnEndpoint(s *string) *BucketsUpdateOne {
+func (buo *BucketUpdateOne) SetNillableCdnEndpoint(s *string) *BucketUpdateOne {
 	if s != nil {
 		buo.SetCdnEndpoint(*s)
 	}
@@ -289,20 +289,20 @@ func (buo *BucketsUpdateOne) SetNillableCdnEndpoint(s *string) *BucketsUpdateOne
 }
 
 // ClearCdnEndpoint clears the value of cdn_endpoint.
-func (buo *BucketsUpdateOne) ClearCdnEndpoint() *BucketsUpdateOne {
+func (buo *BucketUpdateOne) ClearCdnEndpoint() *BucketUpdateOne {
 	buo.cdn_endpoint = nil
 	buo.clearcdn_endpoint = true
 	return buo
 }
 
 // SetCreatedAt sets the created_at field.
-func (buo *BucketsUpdateOne) SetCreatedAt(t time.Time) *BucketsUpdateOne {
+func (buo *BucketUpdateOne) SetCreatedAt(t time.Time) *BucketUpdateOne {
 	buo.created_at = &t
 	return buo
 }
 
-// AddFileIDs adds the files edge to Files by ids.
-func (buo *BucketsUpdateOne) AddFileIDs(ids ...int) *BucketsUpdateOne {
+// AddFileIDs adds the files edge to File by ids.
+func (buo *BucketUpdateOne) AddFileIDs(ids ...int) *BucketUpdateOne {
 	if buo.files == nil {
 		buo.files = make(map[int]struct{})
 	}
@@ -312,8 +312,8 @@ func (buo *BucketsUpdateOne) AddFileIDs(ids ...int) *BucketsUpdateOne {
 	return buo
 }
 
-// AddFiles adds the files edges to Files.
-func (buo *BucketsUpdateOne) AddFiles(f ...*Files) *BucketsUpdateOne {
+// AddFiles adds the files edges to File.
+func (buo *BucketUpdateOne) AddFiles(f ...*File) *BucketUpdateOne {
 	ids := make([]int, len(f))
 	for i := range f {
 		ids[i] = f[i].ID
@@ -321,8 +321,8 @@ func (buo *BucketsUpdateOne) AddFiles(f ...*Files) *BucketsUpdateOne {
 	return buo.AddFileIDs(ids...)
 }
 
-// RemoveFileIDs removes the files edge to Files by ids.
-func (buo *BucketsUpdateOne) RemoveFileIDs(ids ...int) *BucketsUpdateOne {
+// RemoveFileIDs removes the files edge to File by ids.
+func (buo *BucketUpdateOne) RemoveFileIDs(ids ...int) *BucketUpdateOne {
 	if buo.removedFiles == nil {
 		buo.removedFiles = make(map[int]struct{})
 	}
@@ -332,8 +332,8 @@ func (buo *BucketsUpdateOne) RemoveFileIDs(ids ...int) *BucketsUpdateOne {
 	return buo
 }
 
-// RemoveFiles removes files edges to Files.
-func (buo *BucketsUpdateOne) RemoveFiles(f ...*Files) *BucketsUpdateOne {
+// RemoveFiles removes files edges to File.
+func (buo *BucketUpdateOne) RemoveFiles(f ...*File) *BucketUpdateOne {
 	ids := make([]int, len(f))
 	for i := range f {
 		ids[i] = f[i].ID
@@ -342,14 +342,14 @@ func (buo *BucketsUpdateOne) RemoveFiles(f ...*Files) *BucketsUpdateOne {
 }
 
 // Save executes the query and returns the updated entity.
-func (buo *BucketsUpdateOne) Save(ctx context.Context) (*Buckets, error) {
+func (buo *BucketUpdateOne) Save(ctx context.Context) (*Bucket, error) {
 	if buo.name != nil {
-		if err := buckets.NameValidator(*buo.name); err != nil {
+		if err := bucket.NameValidator(*buo.name); err != nil {
 			return nil, fmt.Errorf("ent: validator failed for field \"name\": %v", err)
 		}
 	}
 	if buo.endpoint != nil {
-		if err := buckets.EndpointValidator(*buo.endpoint); err != nil {
+		if err := bucket.EndpointValidator(*buo.endpoint); err != nil {
 			return nil, fmt.Errorf("ent: validator failed for field \"endpoint\": %v", err)
 		}
 	}
@@ -357,7 +357,7 @@ func (buo *BucketsUpdateOne) Save(ctx context.Context) (*Buckets, error) {
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (buo *BucketsUpdateOne) SaveX(ctx context.Context) *Buckets {
+func (buo *BucketUpdateOne) SaveX(ctx context.Context) *Bucket {
 	b, err := buo.Save(ctx)
 	if err != nil {
 		panic(err)
@@ -366,27 +366,27 @@ func (buo *BucketsUpdateOne) SaveX(ctx context.Context) *Buckets {
 }
 
 // Exec executes the query on the entity.
-func (buo *BucketsUpdateOne) Exec(ctx context.Context) error {
+func (buo *BucketUpdateOne) Exec(ctx context.Context) error {
 	_, err := buo.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (buo *BucketsUpdateOne) ExecX(ctx context.Context) {
+func (buo *BucketUpdateOne) ExecX(ctx context.Context) {
 	if err := buo.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
-func (buo *BucketsUpdateOne) sqlSave(ctx context.Context) (b *Buckets, err error) {
+func (buo *BucketUpdateOne) sqlSave(ctx context.Context) (b *Bucket, err error) {
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
-			Table:   buckets.Table,
-			Columns: buckets.Columns,
+			Table:   bucket.Table,
+			Columns: bucket.Columns,
 			ID: &sqlgraph.FieldSpec{
 				Value:  buo.id,
 				Type:   field.TypeInt,
-				Column: buckets.FieldID,
+				Column: bucket.FieldID,
 			},
 		},
 	}
@@ -394,47 +394,47 @@ func (buo *BucketsUpdateOne) sqlSave(ctx context.Context) (b *Buckets, err error
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  *value,
-			Column: buckets.FieldName,
+			Column: bucket.FieldName,
 		})
 	}
 	if value := buo.endpoint; value != nil {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  *value,
-			Column: buckets.FieldEndpoint,
+			Column: bucket.FieldEndpoint,
 		})
 	}
 	if value := buo.cdn_endpoint; value != nil {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  *value,
-			Column: buckets.FieldCdnEndpoint,
+			Column: bucket.FieldCdnEndpoint,
 		})
 	}
 	if buo.clearcdn_endpoint {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
-			Column: buckets.FieldCdnEndpoint,
+			Column: bucket.FieldCdnEndpoint,
 		})
 	}
 	if value := buo.created_at; value != nil {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Value:  *value,
-			Column: buckets.FieldCreatedAt,
+			Column: bucket.FieldCreatedAt,
 		})
 	}
 	if nodes := buo.removedFiles; len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   buckets.FilesTable,
-			Columns: []string{buckets.FilesColumn},
+			Table:   bucket.FilesTable,
+			Columns: []string{bucket.FilesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: files.FieldID,
+					Column: file.FieldID,
 				},
 			},
 		}
@@ -447,13 +447,13 @@ func (buo *BucketsUpdateOne) sqlSave(ctx context.Context) (b *Buckets, err error
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   buckets.FilesTable,
-			Columns: []string{buckets.FilesColumn},
+			Table:   bucket.FilesTable,
+			Columns: []string{bucket.FilesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: files.FieldID,
+					Column: file.FieldID,
 				},
 			},
 		}
@@ -462,7 +462,7 @@ func (buo *BucketsUpdateOne) sqlSave(ctx context.Context) (b *Buckets, err error
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	b = &Buckets{config: buo.config}
+	b = &Bucket{config: buo.config}
 	_spec.Assign = b.assignValues
 	_spec.ScanValues = b.scanValues()
 	if err = sqlgraph.UpdateNode(ctx, buo.driver, _spec); err != nil {

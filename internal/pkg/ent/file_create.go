@@ -6,16 +6,16 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/pepeunlimited/files/internal/pkg/ent/buckets"
-	"github.com/pepeunlimited/files/internal/pkg/ent/files"
 	"time"
 
 	"github.com/facebookincubator/ent/dialect/sql/sqlgraph"
 	"github.com/facebookincubator/ent/schema/field"
+	"github.com/pepeunlimited/files/internal/pkg/ent/bucket"
+	"github.com/pepeunlimited/files/internal/pkg/ent/file"
 )
 
-// FilesCreate is the builder for creating a Files entity.
-type FilesCreate struct {
+// FileCreate is the builder for creating a File entity.
+type FileCreate struct {
 	config
 	filename   *string
 	mime_type  *string
@@ -29,31 +29,31 @@ type FilesCreate struct {
 }
 
 // SetFilename sets the filename field.
-func (fc *FilesCreate) SetFilename(s string) *FilesCreate {
+func (fc *FileCreate) SetFilename(s string) *FileCreate {
 	fc.filename = &s
 	return fc
 }
 
 // SetMimeType sets the mime_type field.
-func (fc *FilesCreate) SetMimeType(s string) *FilesCreate {
+func (fc *FileCreate) SetMimeType(s string) *FileCreate {
 	fc.mime_type = &s
 	return fc
 }
 
 // SetFileSize sets the file_size field.
-func (fc *FilesCreate) SetFileSize(i int64) *FilesCreate {
+func (fc *FileCreate) SetFileSize(i int64) *FileCreate {
 	fc.file_size = &i
 	return fc
 }
 
 // SetIsDraft sets the is_draft field.
-func (fc *FilesCreate) SetIsDraft(b bool) *FilesCreate {
+func (fc *FileCreate) SetIsDraft(b bool) *FileCreate {
 	fc.is_draft = &b
 	return fc
 }
 
 // SetNillableIsDraft sets the is_draft field if the given value is not nil.
-func (fc *FilesCreate) SetNillableIsDraft(b *bool) *FilesCreate {
+func (fc *FileCreate) SetNillableIsDraft(b *bool) *FileCreate {
 	if b != nil {
 		fc.SetIsDraft(*b)
 	}
@@ -61,13 +61,13 @@ func (fc *FilesCreate) SetNillableIsDraft(b *bool) *FilesCreate {
 }
 
 // SetIsDeleted sets the is_deleted field.
-func (fc *FilesCreate) SetIsDeleted(b bool) *FilesCreate {
+func (fc *FileCreate) SetIsDeleted(b bool) *FileCreate {
 	fc.is_deleted = &b
 	return fc
 }
 
 // SetNillableIsDeleted sets the is_deleted field if the given value is not nil.
-func (fc *FilesCreate) SetNillableIsDeleted(b *bool) *FilesCreate {
+func (fc *FileCreate) SetNillableIsDeleted(b *bool) *FileCreate {
 	if b != nil {
 		fc.SetIsDeleted(*b)
 	}
@@ -75,25 +75,25 @@ func (fc *FilesCreate) SetNillableIsDeleted(b *bool) *FilesCreate {
 }
 
 // SetUserID sets the user_id field.
-func (fc *FilesCreate) SetUserID(i int64) *FilesCreate {
+func (fc *FileCreate) SetUserID(i int64) *FileCreate {
 	fc.user_id = &i
 	return fc
 }
 
 // SetCreatedAt sets the created_at field.
-func (fc *FilesCreate) SetCreatedAt(t time.Time) *FilesCreate {
+func (fc *FileCreate) SetCreatedAt(t time.Time) *FileCreate {
 	fc.created_at = &t
 	return fc
 }
 
 // SetUpdatedAt sets the updated_at field.
-func (fc *FilesCreate) SetUpdatedAt(t time.Time) *FilesCreate {
+func (fc *FileCreate) SetUpdatedAt(t time.Time) *FileCreate {
 	fc.updated_at = &t
 	return fc
 }
 
-// SetBucketsID sets the buckets edge to Buckets by id.
-func (fc *FilesCreate) SetBucketsID(id int) *FilesCreate {
+// SetBucketsID sets the buckets edge to Bucket by id.
+func (fc *FileCreate) SetBucketsID(id int) *FileCreate {
 	if fc.buckets == nil {
 		fc.buckets = make(map[int]struct{})
 	}
@@ -101,42 +101,42 @@ func (fc *FilesCreate) SetBucketsID(id int) *FilesCreate {
 	return fc
 }
 
-// SetNillableBucketsID sets the buckets edge to Buckets by id if the given value is not nil.
-func (fc *FilesCreate) SetNillableBucketsID(id *int) *FilesCreate {
+// SetNillableBucketsID sets the buckets edge to Bucket by id if the given value is not nil.
+func (fc *FileCreate) SetNillableBucketsID(id *int) *FileCreate {
 	if id != nil {
 		fc = fc.SetBucketsID(*id)
 	}
 	return fc
 }
 
-// SetBuckets sets the buckets edge to Buckets.
-func (fc *FilesCreate) SetBuckets(b *Buckets) *FilesCreate {
+// SetBuckets sets the buckets edge to Bucket.
+func (fc *FileCreate) SetBuckets(b *Bucket) *FileCreate {
 	return fc.SetBucketsID(b.ID)
 }
 
-// Save creates the Files in the database.
-func (fc *FilesCreate) Save(ctx context.Context) (*Files, error) {
+// Save creates the File in the database.
+func (fc *FileCreate) Save(ctx context.Context) (*File, error) {
 	if fc.filename == nil {
 		return nil, errors.New("ent: missing required field \"filename\"")
 	}
-	if err := files.FilenameValidator(*fc.filename); err != nil {
+	if err := file.FilenameValidator(*fc.filename); err != nil {
 		return nil, fmt.Errorf("ent: validator failed for field \"filename\": %v", err)
 	}
 	if fc.mime_type == nil {
 		return nil, errors.New("ent: missing required field \"mime_type\"")
 	}
-	if err := files.MimeTypeValidator(*fc.mime_type); err != nil {
+	if err := file.MimeTypeValidator(*fc.mime_type); err != nil {
 		return nil, fmt.Errorf("ent: validator failed for field \"mime_type\": %v", err)
 	}
 	if fc.file_size == nil {
 		return nil, errors.New("ent: missing required field \"file_size\"")
 	}
 	if fc.is_draft == nil {
-		v := files.DefaultIsDraft
+		v := file.DefaultIsDraft
 		fc.is_draft = &v
 	}
 	if fc.is_deleted == nil {
-		v := files.DefaultIsDeleted
+		v := file.DefaultIsDeleted
 		fc.is_deleted = &v
 	}
 	if fc.user_id == nil {
@@ -155,7 +155,7 @@ func (fc *FilesCreate) Save(ctx context.Context) (*Files, error) {
 }
 
 // SaveX calls Save and panics if Save returns an error.
-func (fc *FilesCreate) SaveX(ctx context.Context) *Files {
+func (fc *FileCreate) SaveX(ctx context.Context) *File {
 	v, err := fc.Save(ctx)
 	if err != nil {
 		panic(err)
@@ -163,14 +163,14 @@ func (fc *FilesCreate) SaveX(ctx context.Context) *Files {
 	return v
 }
 
-func (fc *FilesCreate) sqlSave(ctx context.Context) (*Files, error) {
+func (fc *FileCreate) sqlSave(ctx context.Context) (*File, error) {
 	var (
-		f     = &Files{config: fc.config}
+		f     = &File{config: fc.config}
 		_spec = &sqlgraph.CreateSpec{
-			Table: files.Table,
+			Table: file.Table,
 			ID: &sqlgraph.FieldSpec{
 				Type:   field.TypeInt,
-				Column: files.FieldID,
+				Column: file.FieldID,
 			},
 		}
 	)
@@ -178,7 +178,7 @@ func (fc *FilesCreate) sqlSave(ctx context.Context) (*Files, error) {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  *value,
-			Column: files.FieldFilename,
+			Column: file.FieldFilename,
 		})
 		f.Filename = *value
 	}
@@ -186,7 +186,7 @@ func (fc *FilesCreate) sqlSave(ctx context.Context) (*Files, error) {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  *value,
-			Column: files.FieldMimeType,
+			Column: file.FieldMimeType,
 		})
 		f.MimeType = *value
 	}
@@ -194,7 +194,7 @@ func (fc *FilesCreate) sqlSave(ctx context.Context) (*Files, error) {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeInt64,
 			Value:  *value,
-			Column: files.FieldFileSize,
+			Column: file.FieldFileSize,
 		})
 		f.FileSize = *value
 	}
@@ -202,7 +202,7 @@ func (fc *FilesCreate) sqlSave(ctx context.Context) (*Files, error) {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeBool,
 			Value:  *value,
-			Column: files.FieldIsDraft,
+			Column: file.FieldIsDraft,
 		})
 		f.IsDraft = *value
 	}
@@ -210,7 +210,7 @@ func (fc *FilesCreate) sqlSave(ctx context.Context) (*Files, error) {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeBool,
 			Value:  *value,
-			Column: files.FieldIsDeleted,
+			Column: file.FieldIsDeleted,
 		})
 		f.IsDeleted = *value
 	}
@@ -218,7 +218,7 @@ func (fc *FilesCreate) sqlSave(ctx context.Context) (*Files, error) {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeInt64,
 			Value:  *value,
-			Column: files.FieldUserID,
+			Column: file.FieldUserID,
 		})
 		f.UserID = *value
 	}
@@ -226,7 +226,7 @@ func (fc *FilesCreate) sqlSave(ctx context.Context) (*Files, error) {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Value:  *value,
-			Column: files.FieldCreatedAt,
+			Column: file.FieldCreatedAt,
 		})
 		f.CreatedAt = *value
 	}
@@ -234,7 +234,7 @@ func (fc *FilesCreate) sqlSave(ctx context.Context) (*Files, error) {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Value:  *value,
-			Column: files.FieldUpdatedAt,
+			Column: file.FieldUpdatedAt,
 		})
 		f.UpdatedAt = *value
 	}
@@ -242,13 +242,13 @@ func (fc *FilesCreate) sqlSave(ctx context.Context) (*Files, error) {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   files.BucketsTable,
-			Columns: []string{files.BucketsColumn},
+			Table:   file.BucketsTable,
+			Columns: []string{file.BucketsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: buckets.FieldID,
+					Column: bucket.FieldID,
 				},
 			},
 		}

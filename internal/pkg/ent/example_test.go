@@ -16,7 +16,7 @@ import (
 //
 var dsn string
 
-func ExampleBuckets() {
+func ExampleBucket() {
 	if dsn == "" {
 		return
 	}
@@ -27,8 +27,8 @@ func ExampleBuckets() {
 	}
 	defer drv.Close()
 	client := NewClient(Driver(drv))
-	// creating vertices for the buckets's edges.
-	f0 := client.Files.
+	// creating vertices for the bucket's edges.
+	f0 := client.File.
 		Create().
 		SetFilename("string").
 		SetMimeType("string").
@@ -39,10 +39,10 @@ func ExampleBuckets() {
 		SetCreatedAt(time.Now()).
 		SetUpdatedAt(time.Now()).
 		SaveX(ctx)
-	log.Println("files created:", f0)
+	log.Println("file created:", f0)
 
-	// create buckets vertex with its edges.
-	b := client.Buckets.
+	// create bucket vertex with its edges.
+	b := client.Bucket.
 		Create().
 		SetName("string").
 		SetEndpoint("string").
@@ -50,7 +50,7 @@ func ExampleBuckets() {
 		SetCreatedAt(time.Now()).
 		AddFiles(f0).
 		SaveX(ctx)
-	log.Println("buckets created:", b)
+	log.Println("bucket created:", b)
 
 	// query edges.
 	f0, err = b.QueryFiles().First(ctx)
@@ -61,7 +61,7 @@ func ExampleBuckets() {
 
 	// Output:
 }
-func ExampleFiles() {
+func ExampleFile() {
 	if dsn == "" {
 		return
 	}
@@ -72,10 +72,10 @@ func ExampleFiles() {
 	}
 	defer drv.Close()
 	client := NewClient(Driver(drv))
-	// creating vertices for the files's edges.
+	// creating vertices for the file's edges.
 
-	// create files vertex with its edges.
-	f := client.Files.
+	// create file vertex with its edges.
+	f := client.File.
 		Create().
 		SetFilename("string").
 		SetMimeType("string").
@@ -86,7 +86,7 @@ func ExampleFiles() {
 		SetCreatedAt(time.Now()).
 		SetUpdatedAt(time.Now()).
 		SaveX(ctx)
-	log.Println("files created:", f)
+	log.Println("file created:", f)
 
 	// query edges.
 

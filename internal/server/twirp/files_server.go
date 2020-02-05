@@ -55,7 +55,7 @@ func (server FilesServer) CreateBucket(ctx context.Context, params *filesrpc.Cre
 	}, nil
 }
 
-func (server FilesServer) fileByFilename(ctx context.Context, params *filesrpc.Filename) (*ent.Files, *ent.Buckets, error) {
+func (server FilesServer) fileByFilename(ctx context.Context, params *filesrpc.Filename) (*ent.File, *ent.Bucket, error) {
 	isDeleted := false
 	if params.BucketName != nil && !validator2.IsEmpty(params.BucketName.Value) {
 		return server.files.GetFileByFilenameBucketName(ctx, params.Name, params.BucketName.Value, nil, &isDeleted)
@@ -67,9 +67,9 @@ func (server FilesServer) GetFile(ctx context.Context, params *filesrpc.GetFileP
 	if err := server.validator.GetFile(params); err != nil {
 		return nil, err
 	}
-	var file *ent.Files
+	var file *ent.File
 	var err error
-	var buckets *ent.Buckets
+	var buckets *ent.Bucket
 	isDraft := false
 	isDeleted := false
 	if params.Filename == nil {

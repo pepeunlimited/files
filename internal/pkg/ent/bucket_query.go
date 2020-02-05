@@ -7,80 +7,80 @@ import (
 	"database/sql/driver"
 	"errors"
 	"fmt"
-	"github.com/pepeunlimited/files/internal/pkg/ent/buckets"
-	"github.com/pepeunlimited/files/internal/pkg/ent/files"
-	"github.com/pepeunlimited/files/internal/pkg/ent/predicate"
 	"math"
 
 	"github.com/facebookincubator/ent/dialect/sql"
 	"github.com/facebookincubator/ent/dialect/sql/sqlgraph"
 	"github.com/facebookincubator/ent/schema/field"
+	"github.com/pepeunlimited/files/internal/pkg/ent/bucket"
+	"github.com/pepeunlimited/files/internal/pkg/ent/file"
+	"github.com/pepeunlimited/files/internal/pkg/ent/predicate"
 )
 
-// BucketsQuery is the builder for querying Buckets entities.
-type BucketsQuery struct {
+// BucketQuery is the builder for querying Bucket entities.
+type BucketQuery struct {
 	config
 	limit      *int
 	offset     *int
 	order      []Order
 	unique     []string
-	predicates []predicate.Buckets
+	predicates []predicate.Bucket
 	// eager-loading edges.
-	withFiles *FilesQuery
+	withFiles *FileQuery
 	// intermediate query.
 	sql *sql.Selector
 }
 
 // Where adds a new predicate for the builder.
-func (bq *BucketsQuery) Where(ps ...predicate.Buckets) *BucketsQuery {
+func (bq *BucketQuery) Where(ps ...predicate.Bucket) *BucketQuery {
 	bq.predicates = append(bq.predicates, ps...)
 	return bq
 }
 
 // Limit adds a limit step to the query.
-func (bq *BucketsQuery) Limit(limit int) *BucketsQuery {
+func (bq *BucketQuery) Limit(limit int) *BucketQuery {
 	bq.limit = &limit
 	return bq
 }
 
 // Offset adds an offset step to the query.
-func (bq *BucketsQuery) Offset(offset int) *BucketsQuery {
+func (bq *BucketQuery) Offset(offset int) *BucketQuery {
 	bq.offset = &offset
 	return bq
 }
 
 // Order adds an order step to the query.
-func (bq *BucketsQuery) Order(o ...Order) *BucketsQuery {
+func (bq *BucketQuery) Order(o ...Order) *BucketQuery {
 	bq.order = append(bq.order, o...)
 	return bq
 }
 
 // QueryFiles chains the current query on the files edge.
-func (bq *BucketsQuery) QueryFiles() *FilesQuery {
-	query := &FilesQuery{config: bq.config}
+func (bq *BucketQuery) QueryFiles() *FileQuery {
+	query := &FileQuery{config: bq.config}
 	step := sqlgraph.NewStep(
-		sqlgraph.From(buckets.Table, buckets.FieldID, bq.sqlQuery()),
-		sqlgraph.To(files.Table, files.FieldID),
-		sqlgraph.Edge(sqlgraph.O2M, false, buckets.FilesTable, buckets.FilesColumn),
+		sqlgraph.From(bucket.Table, bucket.FieldID, bq.sqlQuery()),
+		sqlgraph.To(file.Table, file.FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, bucket.FilesTable, bucket.FilesColumn),
 	)
 	query.sql = sqlgraph.SetNeighbors(bq.driver.Dialect(), step)
 	return query
 }
 
-// First returns the first Buckets entity in the query. Returns *ErrNotFound when no buckets was found.
-func (bq *BucketsQuery) First(ctx context.Context) (*Buckets, error) {
+// First returns the first Bucket entity in the query. Returns *NotFoundError when no bucket was found.
+func (bq *BucketQuery) First(ctx context.Context) (*Bucket, error) {
 	bs, err := bq.Limit(1).All(ctx)
 	if err != nil {
 		return nil, err
 	}
 	if len(bs) == 0 {
-		return nil, &ErrNotFound{buckets.Label}
+		return nil, &NotFoundError{bucket.Label}
 	}
 	return bs[0], nil
 }
 
 // FirstX is like First, but panics if an error occurs.
-func (bq *BucketsQuery) FirstX(ctx context.Context) *Buckets {
+func (bq *BucketQuery) FirstX(ctx context.Context) *Bucket {
 	b, err := bq.First(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -88,21 +88,21 @@ func (bq *BucketsQuery) FirstX(ctx context.Context) *Buckets {
 	return b
 }
 
-// FirstID returns the first Buckets id in the query. Returns *ErrNotFound when no id was found.
-func (bq *BucketsQuery) FirstID(ctx context.Context) (id int, err error) {
+// FirstID returns the first Bucket id in the query. Returns *NotFoundError when no id was found.
+func (bq *BucketQuery) FirstID(ctx context.Context) (id int, err error) {
 	var ids []int
 	if ids, err = bq.Limit(1).IDs(ctx); err != nil {
 		return
 	}
 	if len(ids) == 0 {
-		err = &ErrNotFound{buckets.Label}
+		err = &NotFoundError{bucket.Label}
 		return
 	}
 	return ids[0], nil
 }
 
 // FirstXID is like FirstID, but panics if an error occurs.
-func (bq *BucketsQuery) FirstXID(ctx context.Context) int {
+func (bq *BucketQuery) FirstXID(ctx context.Context) int {
 	id, err := bq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -110,8 +110,8 @@ func (bq *BucketsQuery) FirstXID(ctx context.Context) int {
 	return id
 }
 
-// Only returns the only Buckets entity in the query, returns an error if not exactly one entity was returned.
-func (bq *BucketsQuery) Only(ctx context.Context) (*Buckets, error) {
+// Only returns the only Bucket entity in the query, returns an error if not exactly one entity was returned.
+func (bq *BucketQuery) Only(ctx context.Context) (*Bucket, error) {
 	bs, err := bq.Limit(2).All(ctx)
 	if err != nil {
 		return nil, err
@@ -120,14 +120,14 @@ func (bq *BucketsQuery) Only(ctx context.Context) (*Buckets, error) {
 	case 1:
 		return bs[0], nil
 	case 0:
-		return nil, &ErrNotFound{buckets.Label}
+		return nil, &NotFoundError{bucket.Label}
 	default:
-		return nil, &ErrNotSingular{buckets.Label}
+		return nil, &NotSingularError{bucket.Label}
 	}
 }
 
 // OnlyX is like Only, but panics if an error occurs.
-func (bq *BucketsQuery) OnlyX(ctx context.Context) *Buckets {
+func (bq *BucketQuery) OnlyX(ctx context.Context) *Bucket {
 	b, err := bq.Only(ctx)
 	if err != nil {
 		panic(err)
@@ -135,8 +135,8 @@ func (bq *BucketsQuery) OnlyX(ctx context.Context) *Buckets {
 	return b
 }
 
-// OnlyID returns the only Buckets id in the query, returns an error if not exactly one id was returned.
-func (bq *BucketsQuery) OnlyID(ctx context.Context) (id int, err error) {
+// OnlyID returns the only Bucket id in the query, returns an error if not exactly one id was returned.
+func (bq *BucketQuery) OnlyID(ctx context.Context) (id int, err error) {
 	var ids []int
 	if ids, err = bq.Limit(2).IDs(ctx); err != nil {
 		return
@@ -145,15 +145,15 @@ func (bq *BucketsQuery) OnlyID(ctx context.Context) (id int, err error) {
 	case 1:
 		id = ids[0]
 	case 0:
-		err = &ErrNotFound{buckets.Label}
+		err = &NotFoundError{bucket.Label}
 	default:
-		err = &ErrNotSingular{buckets.Label}
+		err = &NotSingularError{bucket.Label}
 	}
 	return
 }
 
 // OnlyXID is like OnlyID, but panics if an error occurs.
-func (bq *BucketsQuery) OnlyXID(ctx context.Context) int {
+func (bq *BucketQuery) OnlyXID(ctx context.Context) int {
 	id, err := bq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -161,13 +161,13 @@ func (bq *BucketsQuery) OnlyXID(ctx context.Context) int {
 	return id
 }
 
-// All executes the query and returns a list of BucketsSlice.
-func (bq *BucketsQuery) All(ctx context.Context) ([]*Buckets, error) {
+// All executes the query and returns a list of Buckets.
+func (bq *BucketQuery) All(ctx context.Context) ([]*Bucket, error) {
 	return bq.sqlAll(ctx)
 }
 
 // AllX is like All, but panics if an error occurs.
-func (bq *BucketsQuery) AllX(ctx context.Context) []*Buckets {
+func (bq *BucketQuery) AllX(ctx context.Context) []*Bucket {
 	bs, err := bq.All(ctx)
 	if err != nil {
 		panic(err)
@@ -175,17 +175,17 @@ func (bq *BucketsQuery) AllX(ctx context.Context) []*Buckets {
 	return bs
 }
 
-// IDs executes the query and returns a list of Buckets ids.
-func (bq *BucketsQuery) IDs(ctx context.Context) ([]int, error) {
+// IDs executes the query and returns a list of Bucket ids.
+func (bq *BucketQuery) IDs(ctx context.Context) ([]int, error) {
 	var ids []int
-	if err := bq.Select(buckets.FieldID).Scan(ctx, &ids); err != nil {
+	if err := bq.Select(bucket.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
 	return ids, nil
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (bq *BucketsQuery) IDsX(ctx context.Context) []int {
+func (bq *BucketQuery) IDsX(ctx context.Context) []int {
 	ids, err := bq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -194,12 +194,12 @@ func (bq *BucketsQuery) IDsX(ctx context.Context) []int {
 }
 
 // Count returns the count of the given query.
-func (bq *BucketsQuery) Count(ctx context.Context) (int, error) {
+func (bq *BucketQuery) Count(ctx context.Context) (int, error) {
 	return bq.sqlCount(ctx)
 }
 
 // CountX is like Count, but panics if an error occurs.
-func (bq *BucketsQuery) CountX(ctx context.Context) int {
+func (bq *BucketQuery) CountX(ctx context.Context) int {
 	count, err := bq.Count(ctx)
 	if err != nil {
 		panic(err)
@@ -208,12 +208,12 @@ func (bq *BucketsQuery) CountX(ctx context.Context) int {
 }
 
 // Exist returns true if the query has elements in the graph.
-func (bq *BucketsQuery) Exist(ctx context.Context) (bool, error) {
+func (bq *BucketQuery) Exist(ctx context.Context) (bool, error) {
 	return bq.sqlExist(ctx)
 }
 
 // ExistX is like Exist, but panics if an error occurs.
-func (bq *BucketsQuery) ExistX(ctx context.Context) bool {
+func (bq *BucketQuery) ExistX(ctx context.Context) bool {
 	exist, err := bq.Exist(ctx)
 	if err != nil {
 		panic(err)
@@ -223,14 +223,14 @@ func (bq *BucketsQuery) ExistX(ctx context.Context) bool {
 
 // Clone returns a duplicate of the query builder, including all associated steps. It can be
 // used to prepare common query builders and use them differently after the clone is made.
-func (bq *BucketsQuery) Clone() *BucketsQuery {
-	return &BucketsQuery{
+func (bq *BucketQuery) Clone() *BucketQuery {
+	return &BucketQuery{
 		config:     bq.config,
 		limit:      bq.limit,
 		offset:     bq.offset,
 		order:      append([]Order{}, bq.order...),
 		unique:     append([]string{}, bq.unique...),
-		predicates: append([]predicate.Buckets{}, bq.predicates...),
+		predicates: append([]predicate.Bucket{}, bq.predicates...),
 		// clone intermediate query.
 		sql: bq.sql.Clone(),
 	}
@@ -238,8 +238,8 @@ func (bq *BucketsQuery) Clone() *BucketsQuery {
 
 //  WithFiles tells the query-builder to eager-loads the nodes that are connected to
 // the "files" edge. The optional arguments used to configure the query builder of the edge.
-func (bq *BucketsQuery) WithFiles(opts ...func(*FilesQuery)) *BucketsQuery {
-	query := &FilesQuery{config: bq.config}
+func (bq *BucketQuery) WithFiles(opts ...func(*FileQuery)) *BucketQuery {
+	query := &FileQuery{config: bq.config}
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -257,13 +257,13 @@ func (bq *BucketsQuery) WithFiles(opts ...func(*FilesQuery)) *BucketsQuery {
 //		Count int `json:"count,omitempty"`
 //	}
 //
-//	client.Buckets.Query().
-//		GroupBy(buckets.FieldName).
+//	client.Bucket.Query().
+//		GroupBy(bucket.FieldName).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 //
-func (bq *BucketsQuery) GroupBy(field string, fields ...string) *BucketsGroupBy {
-	group := &BucketsGroupBy{config: bq.config}
+func (bq *BucketQuery) GroupBy(field string, fields ...string) *BucketGroupBy {
+	group := &BucketGroupBy{config: bq.config}
 	group.fields = append([]string{field}, fields...)
 	group.sql = bq.sqlQuery()
 	return group
@@ -277,24 +277,27 @@ func (bq *BucketsQuery) GroupBy(field string, fields ...string) *BucketsGroupBy 
 //		Name string `json:"name,omitempty"`
 //	}
 //
-//	client.Buckets.Query().
-//		Select(buckets.FieldName).
+//	client.Bucket.Query().
+//		Select(bucket.FieldName).
 //		Scan(ctx, &v)
 //
-func (bq *BucketsQuery) Select(field string, fields ...string) *BucketsSelect {
-	selector := &BucketsSelect{config: bq.config}
+func (bq *BucketQuery) Select(field string, fields ...string) *BucketSelect {
+	selector := &BucketSelect{config: bq.config}
 	selector.fields = append([]string{field}, fields...)
 	selector.sql = bq.sqlQuery()
 	return selector
 }
 
-func (bq *BucketsQuery) sqlAll(ctx context.Context) ([]*Buckets, error) {
+func (bq *BucketQuery) sqlAll(ctx context.Context) ([]*Bucket, error) {
 	var (
-		nodes []*Buckets
-		_spec = bq.querySpec()
+		nodes       = []*Bucket{}
+		_spec       = bq.querySpec()
+		loadedTypes = [1]bool{
+			bq.withFiles != nil,
+		}
 	)
 	_spec.ScanValues = func() []interface{} {
-		node := &Buckets{config: bq.config}
+		node := &Bucket{config: bq.config}
 		nodes = append(nodes, node)
 		values := node.scanValues()
 		return values
@@ -304,6 +307,7 @@ func (bq *BucketsQuery) sqlAll(ctx context.Context) ([]*Buckets, error) {
 			return fmt.Errorf("ent: Assign called without calling ScanValues")
 		}
 		node := nodes[len(nodes)-1]
+		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(values...)
 	}
 	if err := sqlgraph.QueryNodes(ctx, bq.driver, _spec); err != nil {
@@ -315,27 +319,27 @@ func (bq *BucketsQuery) sqlAll(ctx context.Context) ([]*Buckets, error) {
 
 	if query := bq.withFiles; query != nil {
 		fks := make([]driver.Value, 0, len(nodes))
-		nodeids := make(map[int]*Buckets)
+		nodeids := make(map[int]*Bucket)
 		for i := range nodes {
 			fks = append(fks, nodes[i].ID)
 			nodeids[nodes[i].ID] = nodes[i]
 		}
 		query.withFKs = true
-		query.Where(predicate.Files(func(s *sql.Selector) {
-			s.Where(sql.InValues(buckets.FilesColumn, fks...))
+		query.Where(predicate.File(func(s *sql.Selector) {
+			s.Where(sql.InValues(bucket.FilesColumn, fks...))
 		}))
 		neighbors, err := query.All(ctx)
 		if err != nil {
 			return nil, err
 		}
 		for _, n := range neighbors {
-			fk := n.buckets_id
+			fk := n.bucket_files
 			if fk == nil {
-				return nil, fmt.Errorf(`foreign-key "buckets_id" is nil for node %v`, n.ID)
+				return nil, fmt.Errorf(`foreign-key "bucket_files" is nil for node %v`, n.ID)
 			}
 			node, ok := nodeids[*fk]
 			if !ok {
-				return nil, fmt.Errorf(`unexpected foreign-key "buckets_id" returned %v for node %v`, *fk, n.ID)
+				return nil, fmt.Errorf(`unexpected foreign-key "bucket_files" returned %v for node %v`, *fk, n.ID)
 			}
 			node.Edges.Files = append(node.Edges.Files, n)
 		}
@@ -344,12 +348,12 @@ func (bq *BucketsQuery) sqlAll(ctx context.Context) ([]*Buckets, error) {
 	return nodes, nil
 }
 
-func (bq *BucketsQuery) sqlCount(ctx context.Context) (int, error) {
+func (bq *BucketQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := bq.querySpec()
 	return sqlgraph.CountNodes(ctx, bq.driver, _spec)
 }
 
-func (bq *BucketsQuery) sqlExist(ctx context.Context) (bool, error) {
+func (bq *BucketQuery) sqlExist(ctx context.Context) (bool, error) {
 	n, err := bq.sqlCount(ctx)
 	if err != nil {
 		return false, fmt.Errorf("ent: check existence: %v", err)
@@ -357,14 +361,14 @@ func (bq *BucketsQuery) sqlExist(ctx context.Context) (bool, error) {
 	return n > 0, nil
 }
 
-func (bq *BucketsQuery) querySpec() *sqlgraph.QuerySpec {
+func (bq *BucketQuery) querySpec() *sqlgraph.QuerySpec {
 	_spec := &sqlgraph.QuerySpec{
 		Node: &sqlgraph.NodeSpec{
-			Table:   buckets.Table,
-			Columns: buckets.Columns,
+			Table:   bucket.Table,
+			Columns: bucket.Columns,
 			ID: &sqlgraph.FieldSpec{
 				Type:   field.TypeInt,
-				Column: buckets.FieldID,
+				Column: bucket.FieldID,
 			},
 		},
 		From:   bq.sql,
@@ -393,13 +397,13 @@ func (bq *BucketsQuery) querySpec() *sqlgraph.QuerySpec {
 	return _spec
 }
 
-func (bq *BucketsQuery) sqlQuery() *sql.Selector {
+func (bq *BucketQuery) sqlQuery() *sql.Selector {
 	builder := sql.Dialect(bq.driver.Dialect())
-	t1 := builder.Table(buckets.Table)
-	selector := builder.Select(t1.Columns(buckets.Columns...)...).From(t1)
+	t1 := builder.Table(bucket.Table)
+	selector := builder.Select(t1.Columns(bucket.Columns...)...).From(t1)
 	if bq.sql != nil {
 		selector = bq.sql
-		selector.Select(selector.Columns(buckets.Columns...)...)
+		selector.Select(selector.Columns(bucket.Columns...)...)
 	}
 	for _, p := range bq.predicates {
 		p(selector)
@@ -418,8 +422,8 @@ func (bq *BucketsQuery) sqlQuery() *sql.Selector {
 	return selector
 }
 
-// BucketsGroupBy is the builder for group-by Buckets entities.
-type BucketsGroupBy struct {
+// BucketGroupBy is the builder for group-by Bucket entities.
+type BucketGroupBy struct {
 	config
 	fields []string
 	fns    []Aggregate
@@ -428,27 +432,27 @@ type BucketsGroupBy struct {
 }
 
 // Aggregate adds the given aggregation functions to the group-by query.
-func (bgb *BucketsGroupBy) Aggregate(fns ...Aggregate) *BucketsGroupBy {
+func (bgb *BucketGroupBy) Aggregate(fns ...Aggregate) *BucketGroupBy {
 	bgb.fns = append(bgb.fns, fns...)
 	return bgb
 }
 
 // Scan applies the group-by query and scan the result into the given value.
-func (bgb *BucketsGroupBy) Scan(ctx context.Context, v interface{}) error {
+func (bgb *BucketGroupBy) Scan(ctx context.Context, v interface{}) error {
 	return bgb.sqlScan(ctx, v)
 }
 
 // ScanX is like Scan, but panics if an error occurs.
-func (bgb *BucketsGroupBy) ScanX(ctx context.Context, v interface{}) {
+func (bgb *BucketGroupBy) ScanX(ctx context.Context, v interface{}) {
 	if err := bgb.Scan(ctx, v); err != nil {
 		panic(err)
 	}
 }
 
 // Strings returns list of strings from group-by. It is only allowed when querying group-by with one field.
-func (bgb *BucketsGroupBy) Strings(ctx context.Context) ([]string, error) {
+func (bgb *BucketGroupBy) Strings(ctx context.Context) ([]string, error) {
 	if len(bgb.fields) > 1 {
-		return nil, errors.New("ent: BucketsGroupBy.Strings is not achievable when grouping more than 1 field")
+		return nil, errors.New("ent: BucketGroupBy.Strings is not achievable when grouping more than 1 field")
 	}
 	var v []string
 	if err := bgb.Scan(ctx, &v); err != nil {
@@ -458,7 +462,7 @@ func (bgb *BucketsGroupBy) Strings(ctx context.Context) ([]string, error) {
 }
 
 // StringsX is like Strings, but panics if an error occurs.
-func (bgb *BucketsGroupBy) StringsX(ctx context.Context) []string {
+func (bgb *BucketGroupBy) StringsX(ctx context.Context) []string {
 	v, err := bgb.Strings(ctx)
 	if err != nil {
 		panic(err)
@@ -467,9 +471,9 @@ func (bgb *BucketsGroupBy) StringsX(ctx context.Context) []string {
 }
 
 // Ints returns list of ints from group-by. It is only allowed when querying group-by with one field.
-func (bgb *BucketsGroupBy) Ints(ctx context.Context) ([]int, error) {
+func (bgb *BucketGroupBy) Ints(ctx context.Context) ([]int, error) {
 	if len(bgb.fields) > 1 {
-		return nil, errors.New("ent: BucketsGroupBy.Ints is not achievable when grouping more than 1 field")
+		return nil, errors.New("ent: BucketGroupBy.Ints is not achievable when grouping more than 1 field")
 	}
 	var v []int
 	if err := bgb.Scan(ctx, &v); err != nil {
@@ -479,7 +483,7 @@ func (bgb *BucketsGroupBy) Ints(ctx context.Context) ([]int, error) {
 }
 
 // IntsX is like Ints, but panics if an error occurs.
-func (bgb *BucketsGroupBy) IntsX(ctx context.Context) []int {
+func (bgb *BucketGroupBy) IntsX(ctx context.Context) []int {
 	v, err := bgb.Ints(ctx)
 	if err != nil {
 		panic(err)
@@ -488,9 +492,9 @@ func (bgb *BucketsGroupBy) IntsX(ctx context.Context) []int {
 }
 
 // Float64s returns list of float64s from group-by. It is only allowed when querying group-by with one field.
-func (bgb *BucketsGroupBy) Float64s(ctx context.Context) ([]float64, error) {
+func (bgb *BucketGroupBy) Float64s(ctx context.Context) ([]float64, error) {
 	if len(bgb.fields) > 1 {
-		return nil, errors.New("ent: BucketsGroupBy.Float64s is not achievable when grouping more than 1 field")
+		return nil, errors.New("ent: BucketGroupBy.Float64s is not achievable when grouping more than 1 field")
 	}
 	var v []float64
 	if err := bgb.Scan(ctx, &v); err != nil {
@@ -500,7 +504,7 @@ func (bgb *BucketsGroupBy) Float64s(ctx context.Context) ([]float64, error) {
 }
 
 // Float64sX is like Float64s, but panics if an error occurs.
-func (bgb *BucketsGroupBy) Float64sX(ctx context.Context) []float64 {
+func (bgb *BucketGroupBy) Float64sX(ctx context.Context) []float64 {
 	v, err := bgb.Float64s(ctx)
 	if err != nil {
 		panic(err)
@@ -509,9 +513,9 @@ func (bgb *BucketsGroupBy) Float64sX(ctx context.Context) []float64 {
 }
 
 // Bools returns list of bools from group-by. It is only allowed when querying group-by with one field.
-func (bgb *BucketsGroupBy) Bools(ctx context.Context) ([]bool, error) {
+func (bgb *BucketGroupBy) Bools(ctx context.Context) ([]bool, error) {
 	if len(bgb.fields) > 1 {
-		return nil, errors.New("ent: BucketsGroupBy.Bools is not achievable when grouping more than 1 field")
+		return nil, errors.New("ent: BucketGroupBy.Bools is not achievable when grouping more than 1 field")
 	}
 	var v []bool
 	if err := bgb.Scan(ctx, &v); err != nil {
@@ -521,7 +525,7 @@ func (bgb *BucketsGroupBy) Bools(ctx context.Context) ([]bool, error) {
 }
 
 // BoolsX is like Bools, but panics if an error occurs.
-func (bgb *BucketsGroupBy) BoolsX(ctx context.Context) []bool {
+func (bgb *BucketGroupBy) BoolsX(ctx context.Context) []bool {
 	v, err := bgb.Bools(ctx)
 	if err != nil {
 		panic(err)
@@ -529,7 +533,7 @@ func (bgb *BucketsGroupBy) BoolsX(ctx context.Context) []bool {
 	return v
 }
 
-func (bgb *BucketsGroupBy) sqlScan(ctx context.Context, v interface{}) error {
+func (bgb *BucketGroupBy) sqlScan(ctx context.Context, v interface{}) error {
 	rows := &sql.Rows{}
 	query, args := bgb.sqlQuery().Query()
 	if err := bgb.driver.Query(ctx, query, args, rows); err != nil {
@@ -539,7 +543,7 @@ func (bgb *BucketsGroupBy) sqlScan(ctx context.Context, v interface{}) error {
 	return sql.ScanSlice(rows, v)
 }
 
-func (bgb *BucketsGroupBy) sqlQuery() *sql.Selector {
+func (bgb *BucketGroupBy) sqlQuery() *sql.Selector {
 	selector := bgb.sql
 	columns := make([]string, 0, len(bgb.fields)+len(bgb.fns))
 	columns = append(columns, bgb.fields...)
@@ -549,8 +553,8 @@ func (bgb *BucketsGroupBy) sqlQuery() *sql.Selector {
 	return selector.Select(columns...).GroupBy(bgb.fields...)
 }
 
-// BucketsSelect is the builder for select fields of Buckets entities.
-type BucketsSelect struct {
+// BucketSelect is the builder for select fields of Bucket entities.
+type BucketSelect struct {
 	config
 	fields []string
 	// intermediate queries.
@@ -558,21 +562,21 @@ type BucketsSelect struct {
 }
 
 // Scan applies the selector query and scan the result into the given value.
-func (bs *BucketsSelect) Scan(ctx context.Context, v interface{}) error {
+func (bs *BucketSelect) Scan(ctx context.Context, v interface{}) error {
 	return bs.sqlScan(ctx, v)
 }
 
 // ScanX is like Scan, but panics if an error occurs.
-func (bs *BucketsSelect) ScanX(ctx context.Context, v interface{}) {
+func (bs *BucketSelect) ScanX(ctx context.Context, v interface{}) {
 	if err := bs.Scan(ctx, v); err != nil {
 		panic(err)
 	}
 }
 
 // Strings returns list of strings from selector. It is only allowed when selecting one field.
-func (bs *BucketsSelect) Strings(ctx context.Context) ([]string, error) {
+func (bs *BucketSelect) Strings(ctx context.Context) ([]string, error) {
 	if len(bs.fields) > 1 {
-		return nil, errors.New("ent: BucketsSelect.Strings is not achievable when selecting more than 1 field")
+		return nil, errors.New("ent: BucketSelect.Strings is not achievable when selecting more than 1 field")
 	}
 	var v []string
 	if err := bs.Scan(ctx, &v); err != nil {
@@ -582,7 +586,7 @@ func (bs *BucketsSelect) Strings(ctx context.Context) ([]string, error) {
 }
 
 // StringsX is like Strings, but panics if an error occurs.
-func (bs *BucketsSelect) StringsX(ctx context.Context) []string {
+func (bs *BucketSelect) StringsX(ctx context.Context) []string {
 	v, err := bs.Strings(ctx)
 	if err != nil {
 		panic(err)
@@ -591,9 +595,9 @@ func (bs *BucketsSelect) StringsX(ctx context.Context) []string {
 }
 
 // Ints returns list of ints from selector. It is only allowed when selecting one field.
-func (bs *BucketsSelect) Ints(ctx context.Context) ([]int, error) {
+func (bs *BucketSelect) Ints(ctx context.Context) ([]int, error) {
 	if len(bs.fields) > 1 {
-		return nil, errors.New("ent: BucketsSelect.Ints is not achievable when selecting more than 1 field")
+		return nil, errors.New("ent: BucketSelect.Ints is not achievable when selecting more than 1 field")
 	}
 	var v []int
 	if err := bs.Scan(ctx, &v); err != nil {
@@ -603,7 +607,7 @@ func (bs *BucketsSelect) Ints(ctx context.Context) ([]int, error) {
 }
 
 // IntsX is like Ints, but panics if an error occurs.
-func (bs *BucketsSelect) IntsX(ctx context.Context) []int {
+func (bs *BucketSelect) IntsX(ctx context.Context) []int {
 	v, err := bs.Ints(ctx)
 	if err != nil {
 		panic(err)
@@ -612,9 +616,9 @@ func (bs *BucketsSelect) IntsX(ctx context.Context) []int {
 }
 
 // Float64s returns list of float64s from selector. It is only allowed when selecting one field.
-func (bs *BucketsSelect) Float64s(ctx context.Context) ([]float64, error) {
+func (bs *BucketSelect) Float64s(ctx context.Context) ([]float64, error) {
 	if len(bs.fields) > 1 {
-		return nil, errors.New("ent: BucketsSelect.Float64s is not achievable when selecting more than 1 field")
+		return nil, errors.New("ent: BucketSelect.Float64s is not achievable when selecting more than 1 field")
 	}
 	var v []float64
 	if err := bs.Scan(ctx, &v); err != nil {
@@ -624,7 +628,7 @@ func (bs *BucketsSelect) Float64s(ctx context.Context) ([]float64, error) {
 }
 
 // Float64sX is like Float64s, but panics if an error occurs.
-func (bs *BucketsSelect) Float64sX(ctx context.Context) []float64 {
+func (bs *BucketSelect) Float64sX(ctx context.Context) []float64 {
 	v, err := bs.Float64s(ctx)
 	if err != nil {
 		panic(err)
@@ -633,9 +637,9 @@ func (bs *BucketsSelect) Float64sX(ctx context.Context) []float64 {
 }
 
 // Bools returns list of bools from selector. It is only allowed when selecting one field.
-func (bs *BucketsSelect) Bools(ctx context.Context) ([]bool, error) {
+func (bs *BucketSelect) Bools(ctx context.Context) ([]bool, error) {
 	if len(bs.fields) > 1 {
-		return nil, errors.New("ent: BucketsSelect.Bools is not achievable when selecting more than 1 field")
+		return nil, errors.New("ent: BucketSelect.Bools is not achievable when selecting more than 1 field")
 	}
 	var v []bool
 	if err := bs.Scan(ctx, &v); err != nil {
@@ -645,7 +649,7 @@ func (bs *BucketsSelect) Bools(ctx context.Context) ([]bool, error) {
 }
 
 // BoolsX is like Bools, but panics if an error occurs.
-func (bs *BucketsSelect) BoolsX(ctx context.Context) []bool {
+func (bs *BucketSelect) BoolsX(ctx context.Context) []bool {
 	v, err := bs.Bools(ctx)
 	if err != nil {
 		panic(err)
@@ -653,7 +657,7 @@ func (bs *BucketsSelect) BoolsX(ctx context.Context) []bool {
 	return v
 }
 
-func (bs *BucketsSelect) sqlScan(ctx context.Context, v interface{}) error {
+func (bs *BucketSelect) sqlScan(ctx context.Context, v interface{}) error {
 	rows := &sql.Rows{}
 	query, args := bs.sqlQuery().Query()
 	if err := bs.driver.Query(ctx, query, args, rows); err != nil {
@@ -663,7 +667,7 @@ func (bs *BucketsSelect) sqlScan(ctx context.Context, v interface{}) error {
 	return sql.ScanSlice(rows, v)
 }
 
-func (bs *BucketsSelect) sqlQuery() sql.Querier {
+func (bs *BucketSelect) sqlQuery() sql.Querier {
 	selector := bs.sql
 	selector.Select(selector.Columns(bs.fields...)...)
 	return selector

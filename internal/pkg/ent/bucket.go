@@ -4,15 +4,15 @@ package ent
 
 import (
 	"fmt"
-	"github.com/pepeunlimited/files/internal/pkg/ent/buckets"
 	"strings"
 	"time"
 
 	"github.com/facebookincubator/ent/dialect/sql"
+	"github.com/pepeunlimited/files/internal/pkg/ent/bucket"
 )
 
-// Buckets is the model entity for the Buckets schema.
-type Buckets struct {
+// Bucket is the model entity for the Bucket schema.
+type Bucket struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID int `json:"id,omitempty"`
@@ -25,15 +25,30 @@ type Buckets struct {
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
-	// The values are being populated by the BucketsQuery when eager-loading is set.
-	Edges struct {
-		// Files holds the value of the files edge.
-		Files []*Files
-	} `json:"edges"`
+	// The values are being populated by the BucketQuery when eager-loading is set.
+	Edges BucketEdges `json:"edges"`
+}
+
+// BucketEdges holds the relations/edges for other nodes in the graph.
+type BucketEdges struct {
+	// Files holds the value of the files edge.
+	Files []*File
+	// loadedTypes holds the information for reporting if a
+	// type was loaded (or requested) in eager-loading or not.
+	loadedTypes [1]bool
+}
+
+// FilesOrErr returns the Files value or an error if the edge
+// was not loaded in eager-loading.
+func (e BucketEdges) FilesOrErr() ([]*File, error) {
+	if e.loadedTypes[0] {
+		return e.Files, nil
+	}
+	return nil, &NotLoadedError{edge: "files"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
-func (*Buckets) scanValues() []interface{} {
+func (*Bucket) scanValues() []interface{} {
 	return []interface{}{
 		&sql.NullInt64{},  // id
 		&sql.NullString{}, // name
@@ -44,9 +59,9 @@ func (*Buckets) scanValues() []interface{} {
 }
 
 // assignValues assigns the values that were returned from sql.Rows (after scanning)
-// to the Buckets fields.
-func (b *Buckets) assignValues(values ...interface{}) error {
-	if m, n := len(values), len(buckets.Columns); m < n {
+// to the Bucket fields.
+func (b *Bucket) assignValues(values ...interface{}) error {
+	if m, n := len(values), len(bucket.Columns); m < n {
 		return fmt.Errorf("mismatch number of scan values: %d != %d", m, n)
 	}
 	value, ok := values[0].(*sql.NullInt64)
@@ -79,33 +94,33 @@ func (b *Buckets) assignValues(values ...interface{}) error {
 	return nil
 }
 
-// QueryFiles queries the files edge of the Buckets.
-func (b *Buckets) QueryFiles() *FilesQuery {
-	return (&BucketsClient{b.config}).QueryFiles(b)
+// QueryFiles queries the files edge of the Bucket.
+func (b *Bucket) QueryFiles() *FileQuery {
+	return (&BucketClient{b.config}).QueryFiles(b)
 }
 
-// Update returns a builder for updating this Buckets.
-// Note that, you need to call Buckets.Unwrap() before calling this method, if this Buckets
+// Update returns a builder for updating this Bucket.
+// Note that, you need to call Bucket.Unwrap() before calling this method, if this Bucket
 // was returned from a transaction, and the transaction was committed or rolled back.
-func (b *Buckets) Update() *BucketsUpdateOne {
-	return (&BucketsClient{b.config}).UpdateOne(b)
+func (b *Bucket) Update() *BucketUpdateOne {
+	return (&BucketClient{b.config}).UpdateOne(b)
 }
 
 // Unwrap unwraps the entity that was returned from a transaction after it was closed,
 // so that all next queries will be executed through the driver which created the transaction.
-func (b *Buckets) Unwrap() *Buckets {
+func (b *Bucket) Unwrap() *Bucket {
 	tx, ok := b.config.driver.(*txDriver)
 	if !ok {
-		panic("ent: Buckets is not a transactional entity")
+		panic("ent: Bucket is not a transactional entity")
 	}
 	b.config.driver = tx.drv
 	return b
 }
 
 // String implements the fmt.Stringer.
-func (b *Buckets) String() string {
+func (b *Bucket) String() string {
 	var builder strings.Builder
-	builder.WriteString("Buckets(")
+	builder.WriteString("Bucket(")
 	builder.WriteString(fmt.Sprintf("id=%v", b.ID))
 	builder.WriteString(", name=")
 	builder.WriteString(b.Name)
@@ -121,10 +136,10 @@ func (b *Buckets) String() string {
 	return builder.String()
 }
 
-// BucketsSlice is a parsable slice of Buckets.
-type BucketsSlice []*Buckets
+// Buckets is a parsable slice of Bucket.
+type Buckets []*Bucket
 
-func (b BucketsSlice) config(cfg config) {
+func (b Buckets) config(cfg config) {
 	for _i := range b {
 		b[_i].config = cfg
 	}

@@ -6,16 +6,16 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/pepeunlimited/files/internal/pkg/ent/buckets"
-	"github.com/pepeunlimited/files/internal/pkg/ent/files"
 	"time"
 
 	"github.com/facebookincubator/ent/dialect/sql/sqlgraph"
 	"github.com/facebookincubator/ent/schema/field"
+	"github.com/pepeunlimited/files/internal/pkg/ent/bucket"
+	"github.com/pepeunlimited/files/internal/pkg/ent/file"
 )
 
-// BucketsCreate is the builder for creating a Buckets entity.
-type BucketsCreate struct {
+// BucketCreate is the builder for creating a Bucket entity.
+type BucketCreate struct {
 	config
 	name         *string
 	endpoint     *string
@@ -25,25 +25,25 @@ type BucketsCreate struct {
 }
 
 // SetName sets the name field.
-func (bc *BucketsCreate) SetName(s string) *BucketsCreate {
+func (bc *BucketCreate) SetName(s string) *BucketCreate {
 	bc.name = &s
 	return bc
 }
 
 // SetEndpoint sets the endpoint field.
-func (bc *BucketsCreate) SetEndpoint(s string) *BucketsCreate {
+func (bc *BucketCreate) SetEndpoint(s string) *BucketCreate {
 	bc.endpoint = &s
 	return bc
 }
 
 // SetCdnEndpoint sets the cdn_endpoint field.
-func (bc *BucketsCreate) SetCdnEndpoint(s string) *BucketsCreate {
+func (bc *BucketCreate) SetCdnEndpoint(s string) *BucketCreate {
 	bc.cdn_endpoint = &s
 	return bc
 }
 
 // SetNillableCdnEndpoint sets the cdn_endpoint field if the given value is not nil.
-func (bc *BucketsCreate) SetNillableCdnEndpoint(s *string) *BucketsCreate {
+func (bc *BucketCreate) SetNillableCdnEndpoint(s *string) *BucketCreate {
 	if s != nil {
 		bc.SetCdnEndpoint(*s)
 	}
@@ -51,13 +51,13 @@ func (bc *BucketsCreate) SetNillableCdnEndpoint(s *string) *BucketsCreate {
 }
 
 // SetCreatedAt sets the created_at field.
-func (bc *BucketsCreate) SetCreatedAt(t time.Time) *BucketsCreate {
+func (bc *BucketCreate) SetCreatedAt(t time.Time) *BucketCreate {
 	bc.created_at = &t
 	return bc
 }
 
-// AddFileIDs adds the files edge to Files by ids.
-func (bc *BucketsCreate) AddFileIDs(ids ...int) *BucketsCreate {
+// AddFileIDs adds the files edge to File by ids.
+func (bc *BucketCreate) AddFileIDs(ids ...int) *BucketCreate {
 	if bc.files == nil {
 		bc.files = make(map[int]struct{})
 	}
@@ -67,8 +67,8 @@ func (bc *BucketsCreate) AddFileIDs(ids ...int) *BucketsCreate {
 	return bc
 }
 
-// AddFiles adds the files edges to Files.
-func (bc *BucketsCreate) AddFiles(f ...*Files) *BucketsCreate {
+// AddFiles adds the files edges to File.
+func (bc *BucketCreate) AddFiles(f ...*File) *BucketCreate {
 	ids := make([]int, len(f))
 	for i := range f {
 		ids[i] = f[i].ID
@@ -76,18 +76,18 @@ func (bc *BucketsCreate) AddFiles(f ...*Files) *BucketsCreate {
 	return bc.AddFileIDs(ids...)
 }
 
-// Save creates the Buckets in the database.
-func (bc *BucketsCreate) Save(ctx context.Context) (*Buckets, error) {
+// Save creates the Bucket in the database.
+func (bc *BucketCreate) Save(ctx context.Context) (*Bucket, error) {
 	if bc.name == nil {
 		return nil, errors.New("ent: missing required field \"name\"")
 	}
-	if err := buckets.NameValidator(*bc.name); err != nil {
+	if err := bucket.NameValidator(*bc.name); err != nil {
 		return nil, fmt.Errorf("ent: validator failed for field \"name\": %v", err)
 	}
 	if bc.endpoint == nil {
 		return nil, errors.New("ent: missing required field \"endpoint\"")
 	}
-	if err := buckets.EndpointValidator(*bc.endpoint); err != nil {
+	if err := bucket.EndpointValidator(*bc.endpoint); err != nil {
 		return nil, fmt.Errorf("ent: validator failed for field \"endpoint\": %v", err)
 	}
 	if bc.created_at == nil {
@@ -97,7 +97,7 @@ func (bc *BucketsCreate) Save(ctx context.Context) (*Buckets, error) {
 }
 
 // SaveX calls Save and panics if Save returns an error.
-func (bc *BucketsCreate) SaveX(ctx context.Context) *Buckets {
+func (bc *BucketCreate) SaveX(ctx context.Context) *Bucket {
 	v, err := bc.Save(ctx)
 	if err != nil {
 		panic(err)
@@ -105,14 +105,14 @@ func (bc *BucketsCreate) SaveX(ctx context.Context) *Buckets {
 	return v
 }
 
-func (bc *BucketsCreate) sqlSave(ctx context.Context) (*Buckets, error) {
+func (bc *BucketCreate) sqlSave(ctx context.Context) (*Bucket, error) {
 	var (
-		b     = &Buckets{config: bc.config}
+		b     = &Bucket{config: bc.config}
 		_spec = &sqlgraph.CreateSpec{
-			Table: buckets.Table,
+			Table: bucket.Table,
 			ID: &sqlgraph.FieldSpec{
 				Type:   field.TypeInt,
-				Column: buckets.FieldID,
+				Column: bucket.FieldID,
 			},
 		}
 	)
@@ -120,7 +120,7 @@ func (bc *BucketsCreate) sqlSave(ctx context.Context) (*Buckets, error) {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  *value,
-			Column: buckets.FieldName,
+			Column: bucket.FieldName,
 		})
 		b.Name = *value
 	}
@@ -128,7 +128,7 @@ func (bc *BucketsCreate) sqlSave(ctx context.Context) (*Buckets, error) {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  *value,
-			Column: buckets.FieldEndpoint,
+			Column: bucket.FieldEndpoint,
 		})
 		b.Endpoint = *value
 	}
@@ -136,7 +136,7 @@ func (bc *BucketsCreate) sqlSave(ctx context.Context) (*Buckets, error) {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  *value,
-			Column: buckets.FieldCdnEndpoint,
+			Column: bucket.FieldCdnEndpoint,
 		})
 		b.CdnEndpoint = value
 	}
@@ -144,7 +144,7 @@ func (bc *BucketsCreate) sqlSave(ctx context.Context) (*Buckets, error) {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Value:  *value,
-			Column: buckets.FieldCreatedAt,
+			Column: bucket.FieldCreatedAt,
 		})
 		b.CreatedAt = *value
 	}
@@ -152,13 +152,13 @@ func (bc *BucketsCreate) sqlSave(ctx context.Context) (*Buckets, error) {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   buckets.FilesTable,
-			Columns: []string{buckets.FilesColumn},
+			Table:   bucket.FilesTable,
+			Columns: []string{bucket.FilesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: files.FieldID,
+					Column: file.FieldID,
 				},
 			},
 		}

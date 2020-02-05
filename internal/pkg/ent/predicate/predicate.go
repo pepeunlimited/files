@@ -6,8 +6,8 @@ import (
 	"github.com/facebookincubator/ent/dialect/sql"
 )
 
-// Buckets is the predicate function for buckets builders.
-type Buckets func(*sql.Selector)
+// Bucket is the predicate function for bucket builders.
+type Bucket func(*sql.Selector)
 
-// Files is the predicate function for files builders.
-type Files func(*sql.Selector)
+// File is the predicate function for file builders.
+type File func(*sql.Selector)

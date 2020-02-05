@@ -5,10 +5,12 @@ package ent
 import (
 	"context"
 	"fmt"
-	"github.com/pepeunlimited/files/internal/pkg/ent/buckets"
-	"github.com/pepeunlimited/files/internal/pkg/ent/files"
-	"github.com/pepeunlimited/files/internal/pkg/ent/migrate"
 	"log"
+
+	"github.com/pepeunlimited/files/internal/pkg/ent/migrate"
+
+	"github.com/pepeunlimited/files/internal/pkg/ent/bucket"
+	"github.com/pepeunlimited/files/internal/pkg/ent/file"
 
 	"github.com/facebookincubator/ent/dialect"
 	"github.com/facebookincubator/ent/dialect/sql"
@@ -20,10 +22,10 @@ type Client struct {
 	config
 	// Schema is the client for creating, migrating and dropping schema.
 	Schema *migrate.Schema
-	// Buckets is the client for interacting with the Buckets builders.
-	Buckets *BucketsClient
-	// Files is the client for interacting with the Files builders.
-	Files *FilesClient
+	// Bucket is the client for interacting with the Bucket builders.
+	Bucket *BucketClient
+	// File is the client for interacting with the File builders.
+	File *FileClient
 }
 
 // NewClient creates a new client configured with the given options.
@@ -31,10 +33,10 @@ func NewClient(opts ...Option) *Client {
 	c := config{log: log.Println}
 	c.options(opts...)
 	return &Client{
-		config:  c,
-		Schema:  migrate.NewSchema(c.driver),
-		Buckets: NewBucketsClient(c),
-		Files:   NewFilesClient(c),
+		config: c,
+		Schema: migrate.NewSchema(c.driver),
+		Bucket: NewBucketClient(c),
+		File:   NewFileClient(c),
 	}
 }
 
@@ -65,16 +67,16 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	}
 	cfg := config{driver: tx, log: c.log, debug: c.debug}
 	return &Tx{
-		config:  cfg,
-		Buckets: NewBucketsClient(cfg),
-		Files:   NewFilesClient(cfg),
+		config: cfg,
+		Bucket: NewBucketClient(cfg),
+		File:   NewFileClient(cfg),
 	}, nil
 }
 
 // Debug returns a new debug-client. It's used to get verbose logging on specific operations.
 //
 //	client.Debug().
-//		Buckets.
+//		Bucket.
 //		Query().
 //		Count(ctx)
 //
@@ -84,10 +86,10 @@ func (c *Client) Debug() *Client {
 	}
 	cfg := config{driver: dialect.Debug(c.driver, c.log), log: c.log, debug: true}
 	return &Client{
-		config:  cfg,
-		Schema:  migrate.NewSchema(cfg.driver),
-		Buckets: NewBucketsClient(cfg),
-		Files:   NewFilesClient(cfg),
+		config: cfg,
+		Schema: migrate.NewSchema(cfg.driver),
+		Bucket: NewBucketClient(cfg),
+		File:   NewFileClient(cfg),
 	}
 }
 
@@ -96,63 +98,63 @@ func (c *Client) Close() error {
 	return c.driver.Close()
 }
 
-// BucketsClient is a client for the Buckets schema.
-type BucketsClient struct {
+// BucketClient is a client for the Bucket schema.
+type BucketClient struct {
 	config
 }
 
-// NewBucketsClient returns a client for the Buckets from the given config.
-func NewBucketsClient(c config) *BucketsClient {
-	return &BucketsClient{config: c}
+// NewBucketClient returns a client for the Bucket from the given config.
+func NewBucketClient(c config) *BucketClient {
+	return &BucketClient{config: c}
 }
 
-// Create returns a create builder for Buckets.
-func (c *BucketsClient) Create() *BucketsCreate {
-	return &BucketsCreate{config: c.config}
+// Create returns a create builder for Bucket.
+func (c *BucketClient) Create() *BucketCreate {
+	return &BucketCreate{config: c.config}
 }
 
-// Update returns an update builder for Buckets.
-func (c *BucketsClient) Update() *BucketsUpdate {
-	return &BucketsUpdate{config: c.config}
+// Update returns an update builder for Bucket.
+func (c *BucketClient) Update() *BucketUpdate {
+	return &BucketUpdate{config: c.config}
 }
 
 // UpdateOne returns an update builder for the given entity.
-func (c *BucketsClient) UpdateOne(b *Buckets) *BucketsUpdateOne {
+func (c *BucketClient) UpdateOne(b *Bucket) *BucketUpdateOne {
 	return c.UpdateOneID(b.ID)
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *BucketsClient) UpdateOneID(id int) *BucketsUpdateOne {
-	return &BucketsUpdateOne{config: c.config, id: id}
+func (c *BucketClient) UpdateOneID(id int) *BucketUpdateOne {
+	return &BucketUpdateOne{config: c.config, id: id}
 }
 
-// Delete returns a delete builder for Buckets.
-func (c *BucketsClient) Delete() *BucketsDelete {
-	return &BucketsDelete{config: c.config}
+// Delete returns a delete builder for Bucket.
+func (c *BucketClient) Delete() *BucketDelete {
+	return &BucketDelete{config: c.config}
 }
 
 // DeleteOne returns a delete builder for the given entity.
-func (c *BucketsClient) DeleteOne(b *Buckets) *BucketsDeleteOne {
+func (c *BucketClient) DeleteOne(b *Bucket) *BucketDeleteOne {
 	return c.DeleteOneID(b.ID)
 }
 
 // DeleteOneID returns a delete builder for the given id.
-func (c *BucketsClient) DeleteOneID(id int) *BucketsDeleteOne {
-	return &BucketsDeleteOne{c.Delete().Where(buckets.ID(id))}
+func (c *BucketClient) DeleteOneID(id int) *BucketDeleteOne {
+	return &BucketDeleteOne{c.Delete().Where(bucket.ID(id))}
 }
 
-// Create returns a query builder for Buckets.
-func (c *BucketsClient) Query() *BucketsQuery {
-	return &BucketsQuery{config: c.config}
+// Create returns a query builder for Bucket.
+func (c *BucketClient) Query() *BucketQuery {
+	return &BucketQuery{config: c.config}
 }
 
-// Get returns a Buckets entity by its id.
-func (c *BucketsClient) Get(ctx context.Context, id int) (*Buckets, error) {
-	return c.Query().Where(buckets.ID(id)).Only(ctx)
+// Get returns a Bucket entity by its id.
+func (c *BucketClient) Get(ctx context.Context, id int) (*Bucket, error) {
+	return c.Query().Where(bucket.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *BucketsClient) GetX(ctx context.Context, id int) *Buckets {
+func (c *BucketClient) GetX(ctx context.Context, id int) *Bucket {
 	b, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)
@@ -160,77 +162,77 @@ func (c *BucketsClient) GetX(ctx context.Context, id int) *Buckets {
 	return b
 }
 
-// QueryFiles queries the files edge of a Buckets.
-func (c *BucketsClient) QueryFiles(b *Buckets) *FilesQuery {
-	query := &FilesQuery{config: c.config}
+// QueryFiles queries the files edge of a Bucket.
+func (c *BucketClient) QueryFiles(b *Bucket) *FileQuery {
+	query := &FileQuery{config: c.config}
 	id := b.ID
 	step := sqlgraph.NewStep(
-		sqlgraph.From(buckets.Table, buckets.FieldID, id),
-		sqlgraph.To(files.Table, files.FieldID),
-		sqlgraph.Edge(sqlgraph.O2M, false, buckets.FilesTable, buckets.FilesColumn),
+		sqlgraph.From(bucket.Table, bucket.FieldID, id),
+		sqlgraph.To(file.Table, file.FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, bucket.FilesTable, bucket.FilesColumn),
 	)
 	query.sql = sqlgraph.Neighbors(b.driver.Dialect(), step)
 
 	return query
 }
 
-// FilesClient is a client for the Files schema.
-type FilesClient struct {
+// FileClient is a client for the File schema.
+type FileClient struct {
 	config
 }
 
-// NewFilesClient returns a client for the Files from the given config.
-func NewFilesClient(c config) *FilesClient {
-	return &FilesClient{config: c}
+// NewFileClient returns a client for the File from the given config.
+func NewFileClient(c config) *FileClient {
+	return &FileClient{config: c}
 }
 
-// Create returns a create builder for Files.
-func (c *FilesClient) Create() *FilesCreate {
-	return &FilesCreate{config: c.config}
+// Create returns a create builder for File.
+func (c *FileClient) Create() *FileCreate {
+	return &FileCreate{config: c.config}
 }
 
-// Update returns an update builder for Files.
-func (c *FilesClient) Update() *FilesUpdate {
-	return &FilesUpdate{config: c.config}
+// Update returns an update builder for File.
+func (c *FileClient) Update() *FileUpdate {
+	return &FileUpdate{config: c.config}
 }
 
 // UpdateOne returns an update builder for the given entity.
-func (c *FilesClient) UpdateOne(f *Files) *FilesUpdateOne {
+func (c *FileClient) UpdateOne(f *File) *FileUpdateOne {
 	return c.UpdateOneID(f.ID)
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *FilesClient) UpdateOneID(id int) *FilesUpdateOne {
-	return &FilesUpdateOne{config: c.config, id: id}
+func (c *FileClient) UpdateOneID(id int) *FileUpdateOne {
+	return &FileUpdateOne{config: c.config, id: id}
 }
 
-// Delete returns a delete builder for Files.
-func (c *FilesClient) Delete() *FilesDelete {
-	return &FilesDelete{config: c.config}
+// Delete returns a delete builder for File.
+func (c *FileClient) Delete() *FileDelete {
+	return &FileDelete{config: c.config}
 }
 
 // DeleteOne returns a delete builder for the given entity.
-func (c *FilesClient) DeleteOne(f *Files) *FilesDeleteOne {
+func (c *FileClient) DeleteOne(f *File) *FileDeleteOne {
 	return c.DeleteOneID(f.ID)
 }
 
 // DeleteOneID returns a delete builder for the given id.
-func (c *FilesClient) DeleteOneID(id int) *FilesDeleteOne {
-	return &FilesDeleteOne{c.Delete().Where(files.ID(id))}
+func (c *FileClient) DeleteOneID(id int) *FileDeleteOne {
+	return &FileDeleteOne{c.Delete().Where(file.ID(id))}
 }
 
-// Create returns a query builder for Files.
-func (c *FilesClient) Query() *FilesQuery {
-	return &FilesQuery{config: c.config}
+// Create returns a query builder for File.
+func (c *FileClient) Query() *FileQuery {
+	return &FileQuery{config: c.config}
 }
 
-// Get returns a Files entity by its id.
-func (c *FilesClient) Get(ctx context.Context, id int) (*Files, error) {
-	return c.Query().Where(files.ID(id)).Only(ctx)
+// Get returns a File entity by its id.
+func (c *FileClient) Get(ctx context.Context, id int) (*File, error) {
+	return c.Query().Where(file.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *FilesClient) GetX(ctx context.Context, id int) *Files {
+func (c *FileClient) GetX(ctx context.Context, id int) *File {
 	f, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)
@@ -238,14 +240,14 @@ func (c *FilesClient) GetX(ctx context.Context, id int) *Files {
 	return f
 }
 
-// QueryBuckets queries the buckets edge of a Files.
-func (c *FilesClient) QueryBuckets(f *Files) *BucketsQuery {
-	query := &BucketsQuery{config: c.config}
+// QueryBuckets queries the buckets edge of a File.
+func (c *FileClient) QueryBuckets(f *File) *BucketQuery {
+	query := &BucketQuery{config: c.config}
 	id := f.ID
 	step := sqlgraph.NewStep(
-		sqlgraph.From(files.Table, files.FieldID, id),
-		sqlgraph.To(buckets.Table, buckets.FieldID),
-		sqlgraph.Edge(sqlgraph.M2O, true, files.BucketsTable, files.BucketsColumn),
+		sqlgraph.From(file.Table, file.FieldID, id),
+		sqlgraph.To(bucket.Table, bucket.FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, true, file.BucketsTable, file.BucketsColumn),
 	)
 	query.sql = sqlgraph.Neighbors(f.driver.Dialect(), step)
 

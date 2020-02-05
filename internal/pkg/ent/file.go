@@ -4,15 +4,16 @@ package ent
 
 import (
 	"fmt"
-	"github.com/pepeunlimited/files/internal/pkg/ent/files"
 	"strings"
 	"time"
 
 	"github.com/facebookincubator/ent/dialect/sql"
+	"github.com/pepeunlimited/files/internal/pkg/ent/bucket"
+	"github.com/pepeunlimited/files/internal/pkg/ent/file"
 )
 
-// Files is the model entity for the Files schema.
-type Files struct {
+// File is the model entity for the File schema.
+type File struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID int `json:"id,omitempty"`
@@ -33,16 +34,36 @@ type Files struct {
 	// UpdatedAt holds the value of the "updated_at" field.
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
-	// The values are being populated by the FilesQuery when eager-loading is set.
-	Edges struct {
-		// Buckets holds the value of the buckets edge.
-		Buckets *Buckets
-	} `json:"edges"`
-	buckets_id *int
+	// The values are being populated by the FileQuery when eager-loading is set.
+	Edges        FileEdges `json:"edges"`
+	bucket_files *int
+}
+
+// FileEdges holds the relations/edges for other nodes in the graph.
+type FileEdges struct {
+	// Buckets holds the value of the buckets edge.
+	Buckets *Bucket
+	// loadedTypes holds the information for reporting if a
+	// type was loaded (or requested) in eager-loading or not.
+	loadedTypes [1]bool
+}
+
+// BucketsOrErr returns the Buckets value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e FileEdges) BucketsOrErr() (*Bucket, error) {
+	if e.loadedTypes[0] {
+		if e.Buckets == nil {
+			// The edge buckets was loaded in eager-loading,
+			// but was not found.
+			return nil, &NotFoundError{label: bucket.Label}
+		}
+		return e.Buckets, nil
+	}
+	return nil, &NotLoadedError{edge: "buckets"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
-func (*Files) scanValues() []interface{} {
+func (*File) scanValues() []interface{} {
 	return []interface{}{
 		&sql.NullInt64{},  // id
 		&sql.NullString{}, // filename
@@ -57,16 +78,16 @@ func (*Files) scanValues() []interface{} {
 }
 
 // fkValues returns the types for scanning foreign-keys values from sql.Rows.
-func (*Files) fkValues() []interface{} {
+func (*File) fkValues() []interface{} {
 	return []interface{}{
-		&sql.NullInt64{}, // buckets_id
+		&sql.NullInt64{}, // bucket_files
 	}
 }
 
 // assignValues assigns the values that were returned from sql.Rows (after scanning)
-// to the Files fields.
-func (f *Files) assignValues(values ...interface{}) error {
-	if m, n := len(values), len(files.Columns); m < n {
+// to the File fields.
+func (f *File) assignValues(values ...interface{}) error {
+	if m, n := len(values), len(file.Columns); m < n {
 		return fmt.Errorf("mismatch number of scan values: %d != %d", m, n)
 	}
 	value, ok := values[0].(*sql.NullInt64)
@@ -116,44 +137,44 @@ func (f *Files) assignValues(values ...interface{}) error {
 		f.UpdatedAt = value.Time
 	}
 	values = values[8:]
-	if len(values) == len(files.ForeignKeys) {
+	if len(values) == len(file.ForeignKeys) {
 		if value, ok := values[0].(*sql.NullInt64); !ok {
-			return fmt.Errorf("unexpected type %T for edge-field buckets_id", value)
+			return fmt.Errorf("unexpected type %T for edge-field bucket_files", value)
 		} else if value.Valid {
-			f.buckets_id = new(int)
-			*f.buckets_id = int(value.Int64)
+			f.bucket_files = new(int)
+			*f.bucket_files = int(value.Int64)
 		}
 	}
 	return nil
 }
 
-// QueryBuckets queries the buckets edge of the Files.
-func (f *Files) QueryBuckets() *BucketsQuery {
-	return (&FilesClient{f.config}).QueryBuckets(f)
+// QueryBuckets queries the buckets edge of the File.
+func (f *File) QueryBuckets() *BucketQuery {
+	return (&FileClient{f.config}).QueryBuckets(f)
 }
 
-// Update returns a builder for updating this Files.
-// Note that, you need to call Files.Unwrap() before calling this method, if this Files
+// Update returns a builder for updating this File.
+// Note that, you need to call File.Unwrap() before calling this method, if this File
 // was returned from a transaction, and the transaction was committed or rolled back.
-func (f *Files) Update() *FilesUpdateOne {
-	return (&FilesClient{f.config}).UpdateOne(f)
+func (f *File) Update() *FileUpdateOne {
+	return (&FileClient{f.config}).UpdateOne(f)
 }
 
 // Unwrap unwraps the entity that was returned from a transaction after it was closed,
 // so that all next queries will be executed through the driver which created the transaction.
-func (f *Files) Unwrap() *Files {
+func (f *File) Unwrap() *File {
 	tx, ok := f.config.driver.(*txDriver)
 	if !ok {
-		panic("ent: Files is not a transactional entity")
+		panic("ent: File is not a transactional entity")
 	}
 	f.config.driver = tx.drv
 	return f
 }
 
 // String implements the fmt.Stringer.
-func (f *Files) String() string {
+func (f *File) String() string {
 	var builder strings.Builder
-	builder.WriteString("Files(")
+	builder.WriteString("File(")
 	builder.WriteString(fmt.Sprintf("id=%v", f.ID))
 	builder.WriteString(", filename=")
 	builder.WriteString(f.Filename)
@@ -175,10 +196,10 @@ func (f *Files) String() string {
 	return builder.String()
 }
 
-// FilesSlice is a parsable slice of Files.
-type FilesSlice []*Files
+// Files is a parsable slice of File.
+type Files []*File
 
-func (f FilesSlice) config(cfg config) {
+func (f Files) config(cfg config) {
 	for _i := range f {
 		f[_i].config = cfg
 	}

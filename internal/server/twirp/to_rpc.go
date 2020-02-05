@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-func toFile(files *ent.Files, buckets *ent.Buckets) *filesrpc.File {
+func toFile(files *ent.File, buckets *ent.Bucket) *filesrpc.File {
 	file := &filesrpc.File{
 		Id:        int64(files.ID),
 		Filename:  files.Filename,

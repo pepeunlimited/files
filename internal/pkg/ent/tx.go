@@ -4,6 +4,7 @@ package ent
 
 import (
 	"context"
+
 	"github.com/facebookincubator/ent/dialect"
 	"github.com/pepeunlimited/files/internal/pkg/ent/migrate"
 )
@@ -11,10 +12,10 @@ import (
 // Tx is a transactional client that is created by calling Client.Tx().
 type Tx struct {
 	config
-	// Buckets is the client for interacting with the Buckets builders.
-	Buckets *BucketsClient
-	// Files is the client for interacting with the Files builders.
-	Files *FilesClient
+	// Bucket is the client for interacting with the Bucket builders.
+	Bucket *BucketClient
+	// File is the client for interacting with the File builders.
+	File *FileClient
 }
 
 // Commit commits the transaction.
@@ -30,10 +31,10 @@ func (tx *Tx) Rollback() error {
 // Client returns a Client that binds to current transaction.
 func (tx *Tx) Client() *Client {
 	return &Client{
-		config:  tx.config,
-		Schema:  migrate.NewSchema(tx.driver),
-		Buckets: NewBucketsClient(tx.config),
-		Files:   NewFilesClient(tx.config),
+		config: tx.config,
+		Schema: migrate.NewSchema(tx.driver),
+		Bucket: NewBucketClient(tx.config),
+		File:   NewFileClient(tx.config),
 	}
 }
 
@@ -44,7 +45,7 @@ func (tx *Tx) Client() *Client {
 // of them in order to commit or rollback the transaction.
 //
 // If a closed transaction is embedded in one of the generated entities, and the entity
-// applies a query, for example: Buckets.QueryXXX(), the query will be executed
+// applies a query, for example: Bucket.QueryXXX(), the query will be executed
 // through the driver which created this transaction.
 //
 // Note that txDriver is not goroutine safe.
