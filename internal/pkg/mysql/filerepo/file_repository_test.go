@@ -3,14 +3,14 @@ package filerepo
 import (
 	"context"
 	"github.com/pepeunlimited/files/internal/pkg/ent"
-	"github.com/pepeunlimited/files/internal/pkg/mysql/bucketsrepo"
+	"github.com/pepeunlimited/files/internal/pkg/mysql/bucketrepo"
 	"testing"
 )
 
 func TestFilesMySQL_CreateDOFile(t *testing.T) {
 	ctx    := context.TODO()
 	client := ent.NewEntClient()
-	bucket := bucketsrepo.NewBucketsRepository(client)
+	bucket := bucketrepo.NewBucketRepository(client)
 	files := NewFileRepository(client)
 	bucket.Wipe(ctx)
 
@@ -36,7 +36,7 @@ func TestFilesMySQL_CreateDOFile(t *testing.T) {
 func TestFilesMySQL_GetFilesDOBucketByID2(t *testing.T) {
 	ctx    := context.TODO()
 	client := ent.NewEntClient()
-	bucket := bucketsrepo.NewBucketsRepository(client)
+	bucket := bucketrepo.NewBucketRepository(client)
 	files := NewFileRepository(client)
 	bucket.Wipe(ctx)
 
@@ -69,7 +69,7 @@ func TestFilesMySQL_GetFilesDOBucketByID2(t *testing.T) {
 func TestFilesMySQL_GetFilesDOBucketByIDNotFound(t *testing.T) {
 	ctx    := context.TODO()
 	client := ent.NewEntClient()
-	bucket := bucketsrepo.NewBucketsRepository(client)
+	bucket := bucketrepo.NewBucketRepository(client)
 	files := NewFileRepository(client)
 	bucket.Wipe(ctx)
 	_, _, err := files.GetFilesBucketByID(ctx, 11111111, nil, nil)
@@ -84,7 +84,7 @@ func TestFilesMySQL_GetFilesDOBucketByIDNotFound(t *testing.T) {
 func TestFilesMySQL_GetFileByFilename(t *testing.T) {
 	ctx    := context.TODO()
 	client := ent.NewEntClient()
-	bucket := bucketsrepo.NewBucketsRepository(client)
+	bucket := bucketrepo.NewBucketRepository(client)
 	files := NewFileRepository(client)
 	bucket.Wipe(ctx)
 
@@ -124,7 +124,7 @@ func TestFilesMySQL_GetFileByFilename(t *testing.T) {
 func TestFilesMySQL_GetFileByID(t *testing.T) {
 	ctx    := context.TODO()
 	client := ent.NewEntClient()
-	bucket := bucketsrepo.NewBucketsRepository(client)
+	bucket := bucketrepo.NewBucketRepository(client)
 	files := NewFileRepository(client)
 	bucket.Wipe(ctx)
 
@@ -164,7 +164,7 @@ func TestFilesMySQL_GetFileByID(t *testing.T) {
 func TestFilesMySQL_MarkAsDeletedByID(t *testing.T) {
 	ctx    := context.TODO()
 	client := ent.NewEntClient()
-	bucket := bucketsrepo.NewBucketsRepository(client)
+	bucket := bucketrepo.NewBucketRepository(client)
 	files := NewFileRepository(client)
 	bucket.Wipe(ctx)
 

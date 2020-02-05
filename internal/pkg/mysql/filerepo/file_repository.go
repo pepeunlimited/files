@@ -6,7 +6,7 @@ import (
 	"github.com/pepeunlimited/files/internal/pkg/ent"
 	"github.com/pepeunlimited/files/internal/pkg/ent/bucket"
 	"github.com/pepeunlimited/files/internal/pkg/ent/file"
-	"github.com/pepeunlimited/files/internal/pkg/mysql/bucketsrepo"
+	"github.com/pepeunlimited/files/internal/pkg/mysql/bucketrepo"
 	"time"
 )
 
@@ -166,7 +166,7 @@ func (f filesMySQL) isFilesError(err error) error {
 
 func (f filesMySQL) isSpacesError(err error) error {
 	if ent.IsNotFound(err) {
-		return bucketsrepo.ErrBucketsNotExist
+		return bucketrepo.ErrBucketsNotExist
 	}
 	return err
 }

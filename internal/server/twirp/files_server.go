@@ -3,7 +3,7 @@ package twirp
 import (
 	"context"
 	"github.com/pepeunlimited/files/internal/pkg/ent"
-	"github.com/pepeunlimited/files/internal/pkg/mysql/bucketsrepo"
+	"github.com/pepeunlimited/files/internal/pkg/mysql/bucketrepo"
 	"github.com/pepeunlimited/files/internal/pkg/mysql/filerepo"
 	"github.com/pepeunlimited/files/internal/server/validator"
 	"github.com/pepeunlimited/files/pkg/filesrpc"
@@ -16,7 +16,7 @@ import (
 
 type FilesServer struct {
 	validator validator.SpacesServerValidator
-	spaces    bucketsrepo.BucketsRepository
+	spaces    bucketrepo.BucketRepository
 	files     filerepo.FileRepository
 	actions   storage.Actions // storage actions..
 }
@@ -87,7 +87,7 @@ func (server FilesServer) isFileError(err error) error {
 	switch err {
 	case filerepo.ErrFileNotExist:
 		return twirp.NotFoundError(filesrpc.FileNotFound)
-	case bucketsrepo.ErrBucketsNotExist:
+	case bucketrepo.ErrBucketsNotExist:
 		return twirp.NotFoundError(filesrpc.BucketNotFound)
 	}
 	log.Print("buckets-service: unknown: "+err.Error())
@@ -152,7 +152,7 @@ func NewFilesServer(actions storage.Actions, client *ent.Client) FilesServer {
 	return FilesServer{
 		actions:   actions,
 		validator: validator.NewSpacesServerValidator(),
-		spaces:    bucketsrepo.NewBucketsRepository(client),
+		spaces:    bucketrepo.NewBucketRepository(client),
 		files:     filerepo.NewFileRepository(client),
 	}
 }

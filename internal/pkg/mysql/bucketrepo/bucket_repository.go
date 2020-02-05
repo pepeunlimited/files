@@ -1,4 +1,4 @@
-package bucketsrepo
+package bucketrepo
 
 import (
 	"context"
@@ -15,7 +15,7 @@ var (
 )
 
 // one-to-many `files`
-type BucketsRepository interface {
+type BucketRepository interface {
 	Create(ctx context.Context, name string, endpoint string, cdnEndpoint *string) (*ent.Bucket, error)
 	GetBucketsByName(ctx context.Context, name string) 				(*ent.Bucket, error)
 	GetBucketByID(ctx context.Context, id int) 						(*ent.Bucket, error)
@@ -92,6 +92,6 @@ func (b bucketsMySQL) Create(ctx context.Context, name string, endpoint string, 
 		Save(ctx)
 }
 
-func NewBucketsRepository(client *ent.Client) BucketsRepository {
+func NewBucketRepository(client *ent.Client) BucketRepository {
 	return &bucketsMySQL{client: client}
 }

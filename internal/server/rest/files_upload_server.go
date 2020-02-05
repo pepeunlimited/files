@@ -3,7 +3,7 @@ package rest
 import (
 	"github.com/pepeunlimited/authentication-twirp/pkg/authrpc"
 	"github.com/pepeunlimited/files/internal/pkg/ent"
-	"github.com/pepeunlimited/files/internal/pkg/mysql/bucketsrepo"
+	"github.com/pepeunlimited/files/internal/pkg/mysql/bucketrepo"
 	"github.com/pepeunlimited/files/internal/pkg/mysql/filerepo"
 	"github.com/pepeunlimited/files/internal/pkg/upload"
 	"github.com/pepeunlimited/files/internal/server/validator"
@@ -27,7 +27,7 @@ type UploadServer struct {
 	validator      validator.UploadServerValidator
 	actions        storage.Actions
 	files          filerepo.FileRepository
-	buckets        bucketsrepo.BucketsRepository
+	buckets        bucketrepo.BucketRepository
 	authentication authrpc.AuthenticationService
 }
 
@@ -141,7 +141,7 @@ func NewUploadServer(actions storage.Actions, client *ent.Client, authentication
 		authentication: authentication,
 		validator:      validator.NewSpacesUploadServerValidator(),
 		files:          filerepo.NewFileRepository(client),
-		buckets:        bucketsrepo.NewBucketsRepository(client),
+		buckets:        bucketrepo.NewBucketRepository(client),
 	}
 }
 

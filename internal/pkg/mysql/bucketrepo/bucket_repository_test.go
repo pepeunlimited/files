@@ -1,4 +1,4 @@
-package bucketsrepo
+package bucketrepo
 
 import (
 	"context"
@@ -8,7 +8,7 @@ import (
 
 func TestDOBucketMySQL_CreateBucketAndDelete(t *testing.T) {
 	ctx := context.TODO()
-	spaces := NewBucketsRepository(ent.NewEntClient())
+	spaces := NewBucketRepository(ent.NewEntClient())
 	spaces.Wipe(ctx)
 
 	bucketName := "bucket-666"
@@ -54,7 +54,7 @@ func TestDOBucketMySQL_CreateBucketAndDelete(t *testing.T) {
 
 func TestDobucketMySQL_GetBucketByID(t *testing.T) {
 	ctx := context.TODO()
-	bucketRepo := NewBucketsRepository(ent.NewEntClient())
+	bucketRepo := NewBucketRepository(ent.NewEntClient())
 	bucketRepo.Wipe(ctx)
 
 	bucketName := "bucket-666"
@@ -80,7 +80,7 @@ func TestDobucketMySQL_GetBucketByID(t *testing.T) {
 
 func TestDobucketsMySQL_GetBuckets(t *testing.T) {
 	ctx := context.TODO()
-	bucketRepo := NewBucketsRepository(ent.NewEntClient())
+	bucketRepo := NewBucketRepository(ent.NewEntClient())
 	bucketRepo.Wipe(ctx)
 
 	bucketName := "bucket-666"
