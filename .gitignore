@@ -16,7 +16,7 @@
 # Project-local glide cache, RE: https://github.com/Masterminds/glide/issues/736
 .glide/
 
-pkg/storage/space_test_const.go
+pkg/fs/space_test_const.go
 deployments/dev/files-deployment-secret.yaml
 # IDEA config files
 .idea/

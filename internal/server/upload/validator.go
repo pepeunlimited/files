@@ -1,8 +1,7 @@
-package validator
+package upload
 
 import (
 	"encoding/json"
-	"github.com/pepeunlimited/files/internal/pkg/upload"
 	"github.com/pepeunlimited/microservice-kit/httpz"
 	"github.com/pepeunlimited/microservice-kit/jwt"
 	"github.com/pepeunlimited/microservice-kit/validator"
@@ -17,7 +16,7 @@ func NewSpacesUploadServerValidator() UploadServerValidator {
 	return UploadServerValidator{}
 }
 
-func (UploadServerValidator) UploadSpacesV1Files(header http.Header, body io.ReadCloser) (*upload.UploadHeaders, *upload.MetaAPIArgs, error) {
+func (UploadServerValidator) UploadSpacesV1Files(header http.Header, body io.ReadCloser) (*UploadHeaders, *MetaAPIArgs, error) {
 	if body == nil {
 		return nil, nil, httpz.NewMsgError("body", http.StatusBadRequest)
 	}
@@ -50,7 +49,7 @@ func (UploadServerValidator) UploadSpacesV1Files(header http.Header, body io.Rea
 		return nil, nil, httpz.NewMsgError("meta_api_args", http.StatusBadRequest)
 	}
 
-	var args upload.MetaAPIArgs
+	var args MetaAPIArgs
 	err = json.Unmarshal([]byte(metaApiArgs), &args)
 	if err != nil {
 		return nil, nil, httpz.NewMsgError("meta_api_args_not_json", http.StatusBadRequest)
@@ -60,9 +59,9 @@ func (UploadServerValidator) UploadSpacesV1Files(header http.Header, body io.Rea
 		return nil, nil, httpz.NewMsgError("filename", http.StatusBadRequest)
 	}
 
-	return &upload.UploadHeaders{
-		ContentType: 	contentType,
-		Authorization: authorizaton,
-		ContentLength: 	contentLength64},
-		&args, nil
+	return &UploadHeaders{
+			ContentType: 	contentType,
+			Authorization: authorizaton,
+			ContentLength: 	contentLength64},
+			&args, nil
 }

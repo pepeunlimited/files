@@ -1,12 +1,12 @@
-package rest
+package upload
 
 import (
 	"context"
-	"github.com/pepeunlimited/authentication-twirp/pkg/authrpc"
+	"github.com/pepeunlimited/authentication-twirp/pkg/rpc/auth"
 	"github.com/pepeunlimited/files/internal/pkg/ent"
-	"github.com/pepeunlimited/files/internal/pkg/upload"
 	"github.com/pepeunlimited/files/internal/server/twirp"
-	"github.com/pepeunlimited/files/pkg/filesrpc"
+	"github.com/pepeunlimited/files/pkg/fs"
+	"github.com/pepeunlimited/files/pkg/rpc/files"
 	"net/http"
 	"net/http/httptest"
 	"strconv"
@@ -16,16 +16,14 @@ import (
 
 func TestDOFileUploadServer_UploadDOV1FilesSuccess(t *testing.T) {
 	ctx := context.TODO()
-	authClient := authrpc.NewAuthenticationMock(nil)
-	mock := upload.NewActionsMock(nil)
-
-	server := NewUploadServer(mock, ent.NewEntClient(), authClient)
+	authClient := auth.NewAuthenticationMock(nil)
+	fs        := fs.NewMock("mock.endpoint")
+	server := NewUploadServer(ent.NewEntClient(), authClient, fs)
 	server.buckets.Wipe(ctx)
 
-	fileServer := twirp.NewFilesServer(mock, ent.NewEntClient())
-	fileServer.CreateBucket(ctx, &filesrpc.CreateBucketParams{
+	fileServer := twirp.NewFilesServer(ent.NewEntClient(), fs)
+	fileServer.CreateBucket(ctx, &files.CreateBucketParams{
 		Name: "bucket",
-		Endpoint:   "fra1.mock.com",
 	})
 
 	body := strings.NewReader("Hello-World!\n\r Hei Maailma!")

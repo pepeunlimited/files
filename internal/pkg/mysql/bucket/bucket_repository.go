@@ -1,4 +1,4 @@
-package bucketrepo
+package bucket
 
 import (
 	"context"
@@ -92,6 +92,6 @@ func (b bucketMySQL) Create(ctx context.Context, name string, endpoint string, c
 		Save(ctx)
 }
 
-func NewBucketRepository(client *ent.Client) BucketRepository {
+func New(client *ent.Client) BucketRepository {
 	return &bucketMySQL{client: client}
 }

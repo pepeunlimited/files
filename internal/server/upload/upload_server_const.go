@@ -1,4 +1,4 @@
-package rest
+package upload
 
 const (
 	// BaseURI for the file upload

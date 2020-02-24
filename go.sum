@@ -69,6 +69,8 @@ github.com/pepeunlimited/authentication-twirp v0.0.0-20200126115353-016cdcd4e8a0
 github.com/pepeunlimited/authentication-twirp v0.0.0-20200126115353-016cdcd4e8a0/go.mod h1:lNR2F+htcon0cMyXm3PQgKwe34nOJL6u9VS2tG7jvsw=
 github.com/pepeunlimited/authentication-twirp v0.0.0-20200201130804-6804210b446a h1:WF7H2Iek6pB7xSNICHM6KM+pRR0W6DHRZXOvxArj6mc=
 github.com/pepeunlimited/authentication-twirp v0.0.0-20200201130804-6804210b446a/go.mod h1:ASILSN/nYY8h+RmSGZu9jbmaIMovNPbGq1mHDWfTrRQ=
+github.com/pepeunlimited/authentication-twirp v0.0.0-20200224163003-fe71e97c3ab4 h1:1EcuD10c5oPrbmWHXTk3xXCrJV8SYaiYoZRkcUV4Uys=
+github.com/pepeunlimited/authentication-twirp v0.0.0-20200224163003-fe71e97c3ab4/go.mod h1:P+jj7xhUX/XO45fXI+ON7+PL1nSdO5vlm2VkxZNjZu4=
 github.com/pepeunlimited/authorization-twirp v0.0.0-20200104135427-e05037d6390f h1:5j5nBwfqaIhEiyX94yCKjDKQfO1XsK+l8H2Pnx+khGY=
 github.com/pepeunlimited/authorization-twirp v0.0.0-20200104135427-e05037d6390f/go.mod h1:JG4rDdGjIbRUrhRIaPDJUNgIkxdbAXGUIB0ubNlbcd0=
 github.com/pepeunlimited/authorization-twirp v0.0.0-20200113105308-9ea151052169/go.mod h1:JG4rDdGjIbRUrhRIaPDJUNgIkxdbAXGUIB0ubNlbcd0=
@@ -92,6 +94,7 @@ github.com/pepeunlimited/users v0.0.0-20200113172413-5fccb15e7674/go.mod h1:DNck
 github.com/pepeunlimited/users v0.0.0-20200122110337-355560065132/go.mod h1:RaSueyyvBwcKPWtkxpw8kcOMeg/Ze8ajdub4Er9kIf8=
 github.com/pepeunlimited/users v0.0.0-20200126085421-584885104818/go.mod h1:cqAcny6dmAElY2DnqD5PmM6oWluzbsEGW2rNG/owong=
 github.com/pepeunlimited/users v0.0.0-20200201115735-057bb66bdeaa/go.mod h1:cqAcny6dmAElY2DnqD5PmM6oWluzbsEGW2rNG/owong=
+github.com/pepeunlimited/users v0.0.0-20200224162352-913b2e2e08f2/go.mod h1:uEBuXEIwiZNECFvA8KocIuceq1zV60zbvfWzIgPxoO4=
 github.com/pkg/errors v0.8.1 h1:iURUrRGxPUNPdy5/HRSm+Yj6okJ6UtLINN0Q9M4+h3I=
 github.com/pkg/errors v0.8.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=

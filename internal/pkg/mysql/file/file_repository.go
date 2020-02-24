@@ -1,4 +1,4 @@
-package filerepo
+package file
 
 import (
 	"context"
@@ -6,13 +6,13 @@ import (
 	"github.com/pepeunlimited/files/internal/pkg/ent"
 	"github.com/pepeunlimited/files/internal/pkg/ent/bucket"
 	"github.com/pepeunlimited/files/internal/pkg/ent/file"
-	"github.com/pepeunlimited/files/internal/pkg/mysql/bucketrepo"
 	"time"
 )
 
 var (
 	ErrFileExist 		= errors.New("files: already exist")
 	ErrFileNotExist 	= errors.New("files: not exist")
+	ErrBucketNotExist   = errors.New("files: bucket not exist")
 )
 
 // many-to-one do_buckets
@@ -166,7 +166,7 @@ func (f filesMySQL) isFilesError(err error) error {
 
 func (f filesMySQL) isSpacesError(err error) error {
 	if ent.IsNotFound(err) {
-		return bucketrepo.ErrBucketsNotExist
+		return ErrBucketNotExist
 	}
 	return err
 }

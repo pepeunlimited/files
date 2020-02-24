@@ -11,7 +11,7 @@ require (
 	github.com/gorilla/mux v1.7.3 // indirect
 	github.com/minio/minio-go v6.0.14+incompatible
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
-	github.com/pepeunlimited/authentication-twirp v0.0.0-20200201130804-6804210b446a
+	github.com/pepeunlimited/authentication-twirp v0.0.0-20200224163003-fe71e97c3ab4
 	github.com/pepeunlimited/microservice-kit v0.0.0-20200126083236-98e28bb35221
 	github.com/twitchtv/twirp v5.10.0+incompatible
 	golang.org/x/oauth2 v0.0.0-20191202225959-858c2ad4c8b6

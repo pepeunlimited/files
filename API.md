@@ -34,7 +34,7 @@ $ curl -X POST \
 $ curl -X POST \
 -H "Content-Type: application/json" \
 "api.dev.pepeunlimited.com/twirp/pepeunlimited.files.FilesService/CreateBucket" \
--d '{"name": "test0r-666", "endpoint": "fra1.digitaloceanspaces.com"}'
+-d '{"name": "test0r-666"}'
 ```
 #### Content-Length
 ```

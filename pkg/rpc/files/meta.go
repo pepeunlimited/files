@@ -1,4 +1,4 @@
-package filesrpc
+package files
 
 const (
 	FileNotFound     = "file_not_found"

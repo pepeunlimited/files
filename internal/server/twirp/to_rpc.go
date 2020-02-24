@@ -2,30 +2,29 @@ package twirp
 
 import (
 	"github.com/pepeunlimited/files/internal/pkg/ent"
-	"github.com/pepeunlimited/files/pkg/filesrpc"
+	"github.com/pepeunlimited/files/pkg/rpc/files"
 	"time"
 )
 
-func toFile(files *ent.File, buckets *ent.Bucket) *filesrpc.File {
-	file := &filesrpc.File{
-		Id:        int64(files.ID),
-		Filename:  files.Filename,
-		CreatedAt: files.CreatedAt.Format(time.RFC3339),
-		UpdatedAt: files.CreatedAt.Format(time.RFC3339),
-		MimeType:  files.MimeType,
-		FileSize:  files.FileSize,
-		UserId:    files.UserID,
-		IsDraft:   files.IsDraft}
-	if buckets == nil {
+func toFile(fromFile *ent.File, fromBuckets *ent.Bucket) *files.File {
+	file := &files.File{
+		Id:        int64(fromFile.ID),
+		Filename:  fromFile.Filename,
+		CreatedAt: fromFile.CreatedAt.Format(time.RFC3339),
+		UpdatedAt: fromFile.CreatedAt.Format(time.RFC3339),
+		MimeType:  fromFile.MimeType,
+		FileSize:  fromFile.FileSize,
+		UserId:    fromFile.UserID,
+		IsDraft:   fromFile.IsDraft}
+	if fromBuckets == nil {
 		return file
 	}
 
-	if buckets.CdnEndpoint == nil {
-		file.FileUrl = "https://"+buckets.Endpoint+"/"+file.Filename
+	if fromBuckets.CdnEndpoint == nil {
+		file.FileUrl = "https://"+fromBuckets.Endpoint+"/"+file.Filename
 	} else {
-		file.FileUrl = "https://"+*buckets.CdnEndpoint+"/"+file.Filename
+		file.FileUrl = "https://"+*fromBuckets.CdnEndpoint+"/"+file.Filename
 	}
-
-	file.SpacesId = int64(buckets.ID)
+	file.SpacesId = int64(fromBuckets.ID)
 	return file
 }

@@ -3,59 +3,50 @@ package twirp
 import (
 	"context"
 	"github.com/pepeunlimited/files/internal/pkg/ent"
-	"github.com/pepeunlimited/files/internal/pkg/mysql/bucketrepo"
-	"github.com/pepeunlimited/files/internal/pkg/mysql/filerepo"
+	"github.com/pepeunlimited/files/internal/pkg/mysql/bucket"
+	"github.com/pepeunlimited/files/internal/pkg/mysql/file"
+	"github.com/pepeunlimited/files/internal/server/errorz"
 	"github.com/pepeunlimited/files/internal/server/validator"
-	"github.com/pepeunlimited/files/pkg/filesrpc"
-	"github.com/pepeunlimited/files/pkg/storage"
+	"github.com/pepeunlimited/files/pkg/fs"
+	"github.com/pepeunlimited/files/pkg/rpc/files"
 	validator2 "github.com/pepeunlimited/microservice-kit/validator"
-	"github.com/twitchtv/twirp"
 	"log"
-	"strings"
 )
 
 type FilesServer struct {
 	validator validator.SpacesServerValidator
-	spaces    bucketrepo.BucketRepository
-	files     filerepo.FileRepository
-	actions   storage.Actions // storage actions..
+	buckets   bucket.BucketRepository
+	files     file.FileRepository
+	fs        fs.FileSystem
 }
 
-func (server FilesServer) CreateBucket(ctx context.Context, params *filesrpc.CreateBucketParams) (*filesrpc.CreateBucketResponse, error) {
+func (server FilesServer) CreateBucket(ctx context.Context, params *files.CreateBucketParams) (*files.CreateBucketResponse, error) {
 	if err := server.validator.CreateBucket(params); err != nil {
 		return nil, err
 	}
-	err := server.actions.CreateBucket(ctx, storage.Buckets{
-		BucketName: params.Name,
-		Endpoint:   params.Endpoint,
-	})
-
-	endpoint := strings.Split(params.Endpoint, ".")
-	if len(endpoint) != 3 {
-		return nil, twirp.InvalidArgumentError("endpoint", "invalid_endpoint")
+	if err := server.fs.CreateBucket(ctx, params.Name); err != nil {
+		return nil, errorz.Fs(err)
 	}
-	cdn := params.Name+"."+endpoint[0]+".cdn."+endpoint[1]+"."+endpoint[2]
-
+	cdn, err := server.fs.CdnEndpoint(params.Name)
 	if err != nil {
-		return nil, twirp.InternalErrorWith(err)
+		return nil, err
 	}
-	bucket, err := server.spaces.Create(ctx, params.Name, params.Endpoint, &cdn)
+	bucket, err := server.buckets.Create(ctx, params.Name, server.fs.Endpoint(), &cdn)
 	if err != nil {
-		server.actions.DeleteBucket(storage.Buckets{
-			BucketName: params.Name,
-			Endpoint:   params.Endpoint,
-		})
-		return nil, twirp.InternalErrorWith(err)
+		if err := server.fs.DeleteBucket(params.Name); err != nil {
+			log.Print("failed to delete bucket: "+ err.Error())
+		}
+		return nil, errorz.File(err)
 	}
-	return &filesrpc.CreateBucketResponse{
-		Endpoint:    storage.Endpoint,
+	return &files.CreateBucketResponse{
+		Endpoint:    server.fs.Endpoint(),
 		CdnEndpoint: *bucket.CdnEndpoint,
 		Name:        bucket.Name,
 		BucketId:    int64(bucket.ID),
 	}, nil
 }
 
-func (server FilesServer) fileByFilename(ctx context.Context, params *filesrpc.Filename) (*ent.File, *ent.Bucket, error) {
+func (server FilesServer) fileByFilename(ctx context.Context, params *files.Filename) (*ent.File, *ent.Bucket, error) {
 	isDeleted := false
 	if params.BucketName != nil && !validator2.IsEmpty(params.BucketName.Value) {
 		return server.files.GetFileByFilenameBucketName(ctx, params.Name, params.BucketName.Value, nil, &isDeleted)
@@ -63,7 +54,7 @@ func (server FilesServer) fileByFilename(ctx context.Context, params *filesrpc.F
 	return server.files.GetFileByFilenameBucketID(ctx, params.Name, int(params.BucketId.Value), nil, &isDeleted)
 }
 
-func (server FilesServer) GetFile(ctx context.Context, params *filesrpc.GetFileParams) (*filesrpc.File, error) {
+func (server FilesServer) GetFile(ctx context.Context, params *files.GetFileParams) (*files.File, error) {
 	if err := server.validator.GetFile(params); err != nil {
 		return nil, err
 	}
@@ -78,23 +69,12 @@ func (server FilesServer) GetFile(ctx context.Context, params *filesrpc.GetFileP
 		file, buckets, err = server.fileByFilename(ctx, params.Filename)
 	}
 	if err != nil {
-		return nil, server.isFileError(err)
+		return nil, errorz.File(err)
 	}
 	return toFile(file, buckets), nil
 }
 
-func (server FilesServer) isFileError(err error) error {
-	switch err {
-	case filerepo.ErrFileNotExist:
-		return twirp.NotFoundError(filesrpc.FileNotFound)
-	case bucketrepo.ErrBucketsNotExist:
-		return twirp.NotFoundError(filesrpc.BucketNotFound)
-	}
-	log.Print("buckets-service: unknown: "+err.Error())
-	return twirp.InternalErrorWith(err)
-}
-
-func (server FilesServer) Delete(ctx context.Context, params *filesrpc.DeleteParams) (*filesrpc.DeleteResponse, error) {
+func (server FilesServer) Delete(ctx context.Context, params *files.DeleteParams) (*files.DeleteResponse, error) {
 	if err := server.validator.Delete(params); err != nil {
 		return nil, err
 	}
@@ -102,7 +82,7 @@ func (server FilesServer) Delete(ctx context.Context, params *filesrpc.DeletePar
 	if params.Filename != nil {
 		file,_, err := server.fileByFilename(ctx, params.Filename)
 		if err != nil {
-			return nil, server.isFileError(err)
+			return nil, errorz.File(err)
 		}
 		fileID = file.ID
 	} else {
@@ -112,47 +92,51 @@ func (server FilesServer) Delete(ctx context.Context, params *filesrpc.DeletePar
 	if !params.IsPermanent {
 		_, err := server.files.GetFileByID(ctx, fileID, nil, &isDeleted)
 		if err != nil {
-			return nil, server.isFileError(err)
+			return nil, errorz.File(err)
 		}
 	}
 	_, err := server.files.MarkAsDeletedByID(ctx, fileID)
 	if err != nil {
-		return nil, server.isFileError(err)
+		return nil, errorz.File(err)
 	}
 	file, buckets, err := server.files.GetFilesBucketByID(ctx, fileID, nil, nil)
 	if err != nil {
-		return nil, server.isFileError(err)
+		return nil, errorz.File(err)
 	}
 	if params.IsPermanent {
-		// call the actions for object delete..
-		if err := server.actions.Delete(ctx, storage.Buckets{BucketName: buckets.Name, Endpoint:buckets.Endpoint}, file.Filename); err == nil {
-			server.files.DeleteFileByID(ctx, fileID)
+		err := server.fs.DeleteFile(file.Filename, buckets.Name)
+		if err != nil {
+			return nil, errorz.Fs(err)
+		}
+		err = server.files.DeleteFileByID(ctx, fileID)
+		if err != nil {
+			return nil, errorz.File(err)
 		}
 	}
-	return &filesrpc.DeleteResponse{}, nil
+	return &files.DeleteResponse{}, nil
 }
 
-func (server FilesServer) GetBuckets(context.Context, *filesrpc.GetBucketsParams) (*filesrpc.GetBucketsResponse, error) {
+func (server FilesServer) GetBuckets(context.Context, *files.GetBucketsParams) (*files.GetBucketsResponse, error) {
 	panic("implement me")
 }
 
-func (server FilesServer) Wipe(ctx context.Context, params *filesrpc.WipeParams) (*filesrpc.WipeParamsResponse, error) {
+func (server FilesServer) Wipe(ctx context.Context, params *files.WipeParams) (*files.WipeParamsResponse, error) {
 	panic("implement me")
 }
 
-func (server FilesServer) GetFiles(ctx context.Context, params *filesrpc.GetFilesParams) (*filesrpc.GetFilesResponse, error) {
+func (server FilesServer) GetFiles(ctx context.Context, params *files.GetFilesParams) (*files.GetFilesResponse, error) {
 	panic("implement me")
 }
 
-func (server FilesServer) Cut(ctx context.Context, params *filesrpc.CutParams) (*filesrpc.CutResponse, error) {
+func (server FilesServer) Cut(ctx context.Context, params *files.CutParams) (*files.CutResponse, error) {
 	panic("implement me")
 }
 
-func NewFilesServer(actions storage.Actions, client *ent.Client) FilesServer {
+func NewFilesServer(client *ent.Client, fs fs.FileSystem) FilesServer {
 	return FilesServer{
-		actions:   actions,
 		validator: validator.NewSpacesServerValidator(),
-		spaces:    bucketrepo.NewBucketRepository(client),
-		files:     filerepo.NewFileRepository(client),
+		buckets:   bucket.New(client),
+		files:     file.NewFileRepository(client),
+		fs:        fs,
 	}
 }

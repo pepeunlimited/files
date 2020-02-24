@@ -1,7 +1,12 @@
 package upload
 
+import "errors"
 
-type UploadDOV1Files struct {
+var (
+	ErrBucketExist 		= errors.New("bucket: exist")
+)
+
+type UploadFile struct {
 	Endpoint  		string `json:"endpoint"`
 	CDNEndpoint 	string `json:"cdn_endpoint"`
 	FileId	  		int64  `json:"file_id"`
