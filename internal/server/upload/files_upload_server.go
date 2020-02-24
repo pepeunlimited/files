@@ -65,7 +65,7 @@ func (server UploadServer) UploadV1Files() http.Handler {
 			httpz.WriteError(w, httpz.NewMsgError(files.FileUploadFailed, http.StatusInternalServerError))
 			return
 		}
-		bucket, err := server.buckets.GetBucketsByName(r.Context(), server.filesystem.Endpoint())
+		bucket, err := server.buckets.GetBucketsByEndpoint(r.Context(), server.filesystem.Endpoint())
 		if err != nil {
 			log.Print("buckets-upload: failed: "+err.Error())
 			httpz.WriteError(w, httpz.NewMsgError(files.FileUploadFailed, http.StatusInternalServerError))

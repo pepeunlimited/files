@@ -1,6 +1,9 @@
 package fs
 
-import "context"
+import (
+	"context"
+	"log"
+)
 
 type FileSystemMock struct {
 	IsDeleteBucket bool
@@ -29,23 +32,27 @@ func (f FileSystemMock) Endpoint() string {
 }
 
 func (f FileSystemMock) DeleteBucket(bucket string) error {
-	panic("implement me")
+	log.Print("deleting bucket...")
+	return nil
 }
 
 func (f FileSystemMock) CreateBucket(ctx context.Context, bucket string) error {
-	panic("implement me")
+	log.Print("creating bucket..")
+	return nil
 }
 
 func (f FileSystemMock) BucketExist(bucket string) (bool, error) {
-	panic("implement me")
+	return false, nil
 }
 
 func (f FileSystemMock) UploadFile(ctx context.Context, file File, meta FileMetaData, bucket string) error {
-	panic("implement me")
+	log.Print("uploading file..")
+	return nil
 }
 
 func (f FileSystemMock) DeleteFile(filename string, bucket string) error {
-	panic("implement me")
+	log.Print("deleting file..")
+	return nil
 }
 
 func (f FileSystemMock) UpdateFile(file File, meta FileMetaData) (*File, error) {
@@ -53,7 +60,8 @@ func (f FileSystemMock) UpdateFile(file File, meta FileMetaData) (*File, error) 
 }
 
 func (f FileSystemMock) GetFile(filename string, bucket string) ([]byte, error) {
-	panic("implement me")
+	log.Print("getting file..")
+	return []byte("asd"), nil
 }
 
 func (f FileSystemMock) GetMetadata(filename string, bucket string) (*FileMetaData, error) {

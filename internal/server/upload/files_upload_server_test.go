@@ -20,7 +20,6 @@ func TestDOFileUploadServer_UploadDOV1FilesSuccess(t *testing.T) {
 	fs        := fs.NewMock("mock.endpoint")
 	server := NewUploadServer(ent.NewEntClient(), authClient, fs)
 	server.buckets.Wipe(ctx)
-
 	fileServer := twirp.NewFilesServer(ent.NewEntClient(), fs)
 	fileServer.CreateBucket(ctx, &files.CreateBucketParams{
 		Name: "bucket",

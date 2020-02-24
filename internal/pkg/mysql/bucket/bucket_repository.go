@@ -18,6 +18,7 @@ var (
 type BucketRepository interface {
 	Create(ctx context.Context, name string, endpoint string, cdnEndpoint *string) (*ent.Bucket, error)
 	GetBucketsByName(ctx context.Context, name string) 				(*ent.Bucket, error)
+	GetBucketsByEndpoint(ctx context.Context, endpoint string) 			(*ent.Bucket, error)
 	GetBucketByID(ctx context.Context, id int) 						(*ent.Bucket, error)
 	DeleteBucketByName(ctx context.Context, name string) 			error
 	GetBuckets(ctx context.Context, pageToken int64, pageSize int32) ([]*ent.Bucket, int64, error)
@@ -29,6 +30,18 @@ type BucketRepository interface {
 type bucketMySQL struct {
 	client *ent.Client
 }
+
+func (b bucketMySQL) GetBucketsByEndpoint(ctx context.Context, endpoint string) (*ent.Bucket, error) {
+	only, err := b.client.Bucket.Query().Where(bucket.Endpoint(endpoint)).Only(ctx)
+	if err != nil {
+		if ent.IsNotFound(err) {
+			return nil, ErrBucketsNotExist
+		}
+		return nil, err
+	}
+	return only, nil
+}
+
 //AND id > ? ORDER BY id ASC LIMIT ?
 func (b bucketMySQL) GetBuckets(ctx context.Context, pageToken int64, pageSize int32) ([]*ent.Bucket, int64, error) {
 	buckets, err := b.client.Bucket.Query().Where(bucket.IDGT(int(pageToken))).Order(ent.Asc(file.FieldID)).Limit(int(pageSize)).All(ctx)
