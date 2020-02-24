@@ -61,3 +61,8 @@ func TestFilesystem_CreateBucketAndUploadFile(t *testing.T) {
 		t.FailNow()
 	}
 }
+
+func TestFilesystem_DeleteBucket(t *testing.T) {
+	do := NewDigitalOcean(Endpoint, AccessKey, SecretKey, PersonalAccessToken)
+	do.DeleteBucket("test0r-666")
+}

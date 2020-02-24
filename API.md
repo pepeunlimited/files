@@ -20,7 +20,7 @@ $ curl -X POST \
 $ curl -X POST \
 -H "Content-Type: application/json" \
 "api.dev.pepeunlimited.com/twirp/pepeunlimited.files.FilesService/Delete" \
--d '{"file_id": 58, "is_permanent": false}'
+-d '{"file_id": 58, "is_permanent": true}'
 ```
 #### DeleteByFilename
 ```
