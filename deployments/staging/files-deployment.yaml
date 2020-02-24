@@ -40,7 +40,7 @@ spec:
               value: $GCS_ACCESS_KEY
             - name: GCS_SECRET_KEY
               value: $GCS_SECRET_KEY
-          image: pepeunlimited/files:0.1.7.1
+          image: pepeunlimited/files:0.1.7.2
           name: files
           ports:
             - containerPort: 8080
