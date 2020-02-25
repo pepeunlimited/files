@@ -41,13 +41,13 @@ func main() {
 	gcsSecretKey 	:= misc.GetEnv(fs.GoogleCloudStorageSecretKey, "")
 
 	if !validator2.IsEmpty(spacesAccessKey) && !validator2.IsEmpty(spacesSecretKey) && !validator2.IsEmpty(doAccessToken)  {
-		log.Print("using filesystem as DigitalOcean's")
+		log.Print("using filesystem as DigitalOcean's..")
 		filesystem = fs.NewDigitalOcean(endpoint, spacesAccessKey, spacesSecretKey, doAccessToken)
 	} else if !validator2.IsEmpty(gcsAccessKey) && !validator2.IsEmpty(gcsSecretKey) {
-		log.Print("using filesystem as Google Cloud Service's")
+		log.Print("using filesystem as Google Cloud Service's..")
 		filesystem = fs.NewGoogleCloud(endpoint, gcsAccessKey, gcsSecretKey)
 	} else {
-		log.Print("using filesystem as Mock")
+		log.Print("using filesystem as Mock..")
 		filesystem = fs.NewMock(endpoint)
 	}
 
