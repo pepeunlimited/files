@@ -18,6 +18,9 @@ const (
 	Version = "0.1.7.2"
 )
 
+func init() {
+	log.SetFlags(log.LstdFlags | log.Lshortfile)
+}
 
 func main() {
 	log.Printf("Starting the FilesServer... version=[%v]", Version)
